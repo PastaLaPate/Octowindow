@@ -14,7 +14,16 @@ type StoreType = {
   userName: string;
 };
 
-class OctoprintNode {
+export class InvalidNode extends Error {
+    constructor(msg: string) {
+        super(msg);
+
+        // Set the prototype explicitly.
+        Object.setPrototypeOf(this, InvalidNode.prototype);
+    }
+}
+
+export class OctoprintNode {
   private node: OctoprintNodeType;
   private httpClient: Axios;
 
@@ -27,7 +36,7 @@ class OctoprintNode {
     this.verifyNode();
   }
 
-  private async verifyNode() {
+  public async verifyNode() {
     // Verify via /static/webassets/packed_client.js because /api/version needs authentication
     // and we want to ensure the node is reachable without authentication first.
     try {
@@ -57,7 +66,7 @@ class OctoprintNode {
   }
 }
 
-class StoreManager {
+export class StoreManager {
   private store: StoreType;
 
   constructor() {

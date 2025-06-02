@@ -19,9 +19,7 @@ type SetupProps = {
 
 export default function Setup(props: SetupProps) {
   const { initialState = SetupState.Welcome, children } = props;
-  const [currentState, setCurrentState] = useState<SetupState>(
-    SetupState.Welcome
-  );
+  const [currentState, setCurrentState] = useState<SetupState>(initialState);
 
   return (
     <AnimatePresence>
