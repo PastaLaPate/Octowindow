@@ -8,6 +8,7 @@ import { RefreshCw } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import ControlledKeyboard from "@/Keyboard";
 import React from "react";
+import { Button } from "@/components/ui/button";
 
 type NodeDiscoveryProps = {
   nodeSelected: (node: OctoprintNodeType) => void;
@@ -70,17 +71,23 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
   const verifyNodeUrl = async (url: string) => {
     setLoading(true);
     setErrorMsg(null);
+    if (!url) {
+      setErrorMsg("Please enter a valid OctoPrint Node URL.");
+      setLoading(false);
+      return;
+    }
     try {
       const nodeType = {
         url,
-        port: 80,
         version: "unknown",
       } as OctoprintNodeType;
       const node = new OctoprintNode(nodeType);
       await node.verifyNode();
       nodeSelected(nodeType);
     } catch (error) {
-      setErrorMsg("Invalid OctoPrint Node URL. Please try again.");
+      setErrorMsg(
+        "Invalid OctoPrint Node URL. Please try again. Tip : Instead of https use http if you are using a self-certified certificate."
+      );
     } finally {
       setLoading(false);
     }
@@ -96,6 +103,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
         transition={{ duration: 1 }}
         className="w-full max-w-xl mx-auto flex flex-col bg-gray-800 text-white p-4 sm:p-8 rounded-2xl shadow-lg overflow-y-auto"
         style={{ minHeight: "20vh" }}
+        layout
       >
         <div className="flex items-center gap-2 mb-6">
           <h1 className="text-4xl sm:text-5xl font-bold">OctoPrint Nodes</h1>
@@ -107,7 +115,24 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
             <RefreshCw  />
           </button>*/}
         </div>
-        {errorMsg && <p className="text-red-500 mb-5 text-xl">{errorMsg}</p>}
+        <motion.div
+          initial={{ height: 0, overflow: "hidden" }}
+          animate={{ height: errorMsg ? "auto" : 0 }}
+          exit={{ height: 0, overflow: "hidden" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          {errorMsg && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+              className="text-red-500 mb-5 text-xl"
+            >
+              {errorMsg}
+            </motion.p>
+          )}
+        </motion.div>
 
         <div className="mb-6 w-full">
           <label
@@ -126,7 +151,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
             value={nodeUrl}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
-            placeholder="https://octoprint.local"
+            placeholder="http://octoprint.local"
           />
         </div>
 
@@ -160,28 +185,12 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
                 ×
               </button>
             </div>
-            <ControlledKeyboard setInput={setKeyboardInput} />
+            <ControlledKeyboard setInput={setKeyboardInput} input={nodeUrl} />
           </motion.div>
         )}
 
         <div className="mt-auto flex justify-center">
-          <button
-            className={`w-full flex justify-center items-center max-w-xs px-8 py-5 bg-blue-700 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            } rounded-2xl text-2xl font-bold hover:bg-blue-800 active:bg-blue-900 transition shadow-lg`}
-            type="button"
-            style={{ touchAction: "manipulation" }}
-            onClick={() => {
-              verifyNodeUrl(nodeUrl);
-            }}
-            disabled={loading}
-          >
-            {loading ? (
-              <RefreshCw className={`w-6 h-6 animate-spin`} />
-            ) : (
-              "Continue"
-            )}
-          </button>
+          <Button loading={loading} onClick={() => verifyNodeUrl(nodeUrl)} />
         </div>
       </motion.div>
     </AnimatePresence>

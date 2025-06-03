@@ -5,24 +5,34 @@ import React from "react";
 
 type ControlledKeyboardProps = {
   setInput: (input: string) => void;
+  input: string;
+  validate?: (input: string) => void;
 };
 
 export default function ControlledKeyboard({
   setInput,
+  input,
+  validate = () => {},
 }: ControlledKeyboardProps) {
   const [layoutName, setLayoutName] = useState("default");
-  const [input, setLocalInput] = useState("");
   const keyboard: RefObject<any> = useRef(null);
 
   const onChange = (input: string) => {
-    setLocalInput(input);
     setInput(input);
     console.log("Input changed", input);
   };
 
   const onKeyPress = (button: string) => {
-    console.log("Button pressed", button);
-
+    if (!(button.startsWith("{") && button.endsWith("}"))) {
+      setInput(input + button);
+    }
+    if (button === "{bksp}" && input.length > 0) {
+      // Remove the last character from the input
+      setInput(input.slice(0, -1));
+    }
+    if (button === "{enter}") {
+      validate(input);
+    }
     if (button === "{shift}" || button === "{lock}") handleShift();
   };
 
@@ -34,7 +44,6 @@ export default function ControlledKeyboard({
     <Keyboard
       keyboardRef={(r) => (keyboard.current = r)}
       layoutName={layoutName}
-      onChange={onChange}
       onKeyPress={onKeyPress}
       theme={"hg-theme-default darkTheme"}
     />

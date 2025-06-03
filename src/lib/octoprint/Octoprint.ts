@@ -9,18 +9,18 @@ export type OctoprintNodeType = {
 type StoreType = {
   connected: boolean;
   host: string;
-  port: number;
+  port: number | undefined;
   apiKey: string;
   userName: string;
 };
 
 export class InvalidNode extends Error {
-    constructor(msg: string) {
-        super(msg);
+  constructor(msg: string) {
+    super(msg);
 
-        // Set the prototype explicitly.
-        Object.setPrototypeOf(this, InvalidNode.prototype);
-    }
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, InvalidNode.prototype);
+  }
 }
 
 export class OctoprintNode {
@@ -30,7 +30,7 @@ export class OctoprintNode {
   constructor(node: OctoprintNodeType) {
     this.node = node;
     this.httpClient = new Axios({
-      baseURL: `${node.url}:${node.port}`,
+      baseURL: `${node.url}${node.port !== undefined ? `:${node.port}` : ""}`,
     });
     // Verify if the node is reachable
     this.verifyNode();
