@@ -20,12 +20,12 @@ type SetupState = (typeof SetupState)[keyof typeof SetupState];
 type SetupProps = {
   initialState?: SetupState;
   children?: React.ReactNode;
+  onCompleted?: () => void;
 };
 
 export default function Setup(props: SetupProps) {
-  const { initialState = SetupState.Welcome, children } = props;
+  const { initialState = SetupState.Welcome, children, onCompleted } = props;
   const [currentState, setCurrentState] = useState<SetupState>(initialState);
-  const [nodeInfos, setNodeInfos] = useState<OctoprintNodeType>();
   const [node, setNode] = useState<OctoprintNode>();
 
   let content: React.ReactNode = null;
@@ -39,14 +39,18 @@ export default function Setup(props: SetupProps) {
     content = (
       <NodeDiscovery
         nodeSelected={(nodeInfo, octoprintNode) => {
-          setNodeInfos(nodeInfo);
           setNode(octoprintNode);
           setCurrentState(SetupState.Authorization);
         }}
       />
     );
   } else if (currentState === SetupState.Authorization) {
-    content = node ? <Authorization node={node} /> : null;
+    content = node ? (
+      <Authorization
+        node={node}
+        onSuccess={() => setCurrentState(SetupState.Configuration)}
+      />
+    ) : null;
   } else if (currentState === SetupState.Configuration) {
     content = (
       <motion.div
@@ -57,7 +61,7 @@ export default function Setup(props: SetupProps) {
         <h2 className="text-2xl mb-4">Configuration</h2>
         <button
           className="px-4 py-2 bg-green-500 text-white rounded"
-          onClick={() => setCurrentState(SetupState.Welcome)}
+          onClick={() => onCompleted?.()}
         >
           Finish Setup
         </button>

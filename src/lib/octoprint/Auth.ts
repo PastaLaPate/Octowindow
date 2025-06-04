@@ -17,20 +17,20 @@ export default class AuthorizationWorkflow {
     });
   }
 
-  public probeForWorkflow(signal?: AbortSignal): Promise<boolean> {
+  public probeForWorkflow(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.httpClient
         .get("/plugin/appkeys/probe")
         .then((response: AxiosResponse) => {
           resolve(response.status === 204);
         })
-        .catch((error: any) => {
+        .catch((error: Error) => {
           reject(error);
         });
     });
   }
 
-  public requestAuthorization(signal?: AbortSignal): Promise<string> {
+  public requestAuthorization(): Promise<string> {
     return new Promise((resolve, reject) => {
       this.httpClient
         .post("/plugin/appkeys/request", {
@@ -41,21 +41,52 @@ export default class AuthorizationWorkflow {
           if (
             response.status === 201 &&
             response.data &&
-            response.data.app_token &&
-            response.data.auth_dialog
+            response.data.app_token
           ) {
             this.appToken = response.data.app_token;
-            resolve(response.data.auth_dialog);
+            resolve(response.headers["Location"]);
           } else {
             reject(new Error("Failed to obtain API key"));
           }
         })
-        .catch((error: any) => {
+        .catch((error: Error) => {
           reject(error);
         });
     });
   }
-
+  // see https://docs.octoprint.org/en/master/bundledplugins/appkeys.html#workflow
+  public async getApiKey(signal?: AbortSignal): Promise<string> {
+    if (!this.appToken) {
+      throw new Error(
+        "App token is not set. Please request authorization first."
+      );
+    }
+    return new Promise<string>((resolve, reject) => {
+      const timer = setInterval(async () => {
+        console.log("Checking for API key...");
+        if (signal?.aborted) {
+          clearInterval(timer);
+          reject(new Error("Authorization aborted"));
+          return;
+        }
+        const response = await this.httpClient.get(
+          "/plugin/appkeys/request/" + this.appToken
+        );
+        if (response.status === 202) {
+          // Still waiting for user confirmation
+          return;
+        } else if (response.status === 200 && response.data) {
+          // User confirmed, we got the API key
+          this.apiKey = response.data.api_key;
+          clearInterval(timer);
+          resolve(this.apiKey);
+        } else if (response.status === 404) {
+          resolve("User denied the request");
+        }
+      }, 1000);
+    });
+  }
+  /* DEPRECATED: Using ratpoison means no popup + needs keyboard to login
   public createWindow(auth_dialog_url: string, signal?: AbortSignal): Window {
     const width = 400;
     const height = 400;
@@ -134,5 +165,5 @@ export default class AuthorizationWorkflow {
         }
       }, 500);
     });
-  }
+  }*/
 }

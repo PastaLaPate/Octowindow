@@ -43,17 +43,13 @@ export class OctoprintNode {
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
   }
 
-  public async authenticate(signal?: AbortSignal): Promise<void> {
+  public async authenticate(signal?: AbortSignal): Promise<string> {
     if (!this.node.url) {
       throw new InvalidNode("Node URL or port is not defined");
     }
 
-    // Check for abort before starting
-    if (signal?.aborted) throw new Error("Authentication aborted");
-
     // Check if the node supports the appkeys plugin
-    const supportsAppKeys = await this.authWorflow.probeForWorkflow(signal);
-    if (signal?.aborted) throw new Error("Authentication aborted");
+    const supportsAppKeys = await this.authWorflow.probeForWorkflow();
     if (!supportsAppKeys) {
       throw new InvalidNode(
         "The OctoPrint node does not support the appkeys plugin"
@@ -61,33 +57,11 @@ export class OctoprintNode {
     }
 
     // Request authorization
-    const authDialogUrl = await this.authWorflow.requestAuthorization(signal);
+    await this.authWorflow.requestAuthorization();
     if (signal?.aborted) throw new Error("Authentication aborted");
-    if (!authDialogUrl) {
-      throw new InvalidNode("Failed to obtain authorization dialog URL");
-    }
 
-    // Open the popup only if not aborted
-    if (signal?.aborted) throw new Error("Authentication aborted");
-    const popup = this.authWorflow.createWindow(authDialogUrl);
-
-    // Wait for API key, abort if needed
-    const apiKeyPromise = this.authWorflow.getApiKey(popup, signal);
-
-    if (signal) {
-      // If aborted, close the popup and throw
-      const abortPromise = new Promise<never>((_, reject) => {
-        signal.addEventListener("abort", () => {
-          try {
-            popup.close();
-          } catch {}
-          reject(new Error("Authentication aborted"));
-        });
-      });
-      this.apiKey = await Promise.race([apiKeyPromise, abortPromise]);
-    } else {
-      this.apiKey = await apiKeyPromise;
-    }
+    this.apiKey = await this.authWorflow.getApiKey(signal);
+    return this.apiKey;
   }
 
   public async verifyNode(signal?: AbortSignal) {
@@ -111,6 +85,30 @@ export class OctoprintNode {
     return false;
   }
 
+  public loadFromStore(storeManager: StoreManager) {
+    this.apiKey = storeManager.store.apiKey || undefined;
+    this.node.url = storeManager.store.host;
+    this.authWorflow.userName = storeManager.store.userName;
+
+    if (this.node.url === "" || this.node.port === 0) {
+      throw new InvalidNode("Node URL or port is not defined");
+    }
+
+    // Reinitialize the HTTP client with the loaded URL and port
+    this.httpClient = new Axios({
+      baseURL: `${this.node.url}`,
+    });
+  }
+
+  public saveToStore(storeManager: StoreManager) {
+    storeManager.store.connected = this.apiKey !== undefined;
+    storeManager.store.host = this.node.url;
+    storeManager.store.port = this.node.port;
+    storeManager.store.apiKey = this.apiKey || "";
+    storeManager.store.userName = this.authWorflow.userName;
+    storeManager.saveStore();
+  }
+
   public getUrl(): string {
     return this.node.url;
   }
@@ -125,7 +123,7 @@ export class OctoprintNode {
 }
 
 export class StoreManager {
-  private store: StoreType;
+  public store: StoreType;
 
   constructor() {
     this.store = {
@@ -166,7 +164,7 @@ export class StoreManager {
 
   public saveStore() {
     for (const key in this.store) {
-      if (this.store.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(this.store, key)) {
         localStorage.setItem(key, String(this.store[key as keyof StoreType]));
       }
     }

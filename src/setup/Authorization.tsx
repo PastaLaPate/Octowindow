@@ -1,13 +1,14 @@
-import type { OctoprintNode } from "@/lib/octoprint/Octoprint";
+import { StoreManager, type OctoprintNode } from "@/lib/octoprint/Octoprint";
 import SetupFrame from "./SetupFrame";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 
 type AuthorizationProps = {
   node: OctoprintNode;
+  onSuccess?: (apiKey: string) => void;
 };
 
-export default function Authorization({ node }: AuthorizationProps) {
+export default function Authorization({ node, onSuccess }: AuthorizationProps) {
   const [loading, setLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -15,10 +16,14 @@ export default function Authorization({ node }: AuthorizationProps) {
     setLoading(true);
     abortControllerRef.current = new AbortController();
     try {
-      await node.authenticate(abortControllerRef.current.signal);
+      const apiKey = await node.authenticate(abortControllerRef.current.signal);
+      node.saveToStore(new StoreManager());
+      onSuccess?.(apiKey);
     } catch (e) {
       // handle error or abort
+      console.error("Authentication failed:", e);
     } finally {
+      console.log("Authentication process completed.");
       setLoading(false);
     }
   };
