@@ -1,4 +1,5 @@
 import { Axios } from "axios";
+import AuthorizationWorkflow from "./Auth";
 
 export type OctoprintNodeType = {
   url: string;
@@ -26,14 +27,41 @@ export class InvalidNode extends Error {
 export class OctoprintNode {
   private node: OctoprintNodeType;
   private httpClient: Axios;
+  public authWorflow: AuthorizationWorkflow;
+  private apiKey: string | undefined;
 
   constructor(node: OctoprintNodeType) {
     this.node = node;
+    const baseUrl = `${node.url}${
+      node.port !== undefined ? `:${node.port}` : ""
+    }`;
     this.httpClient = new Axios({
-      baseURL: `${node.url}${node.port !== undefined ? `:${node.port}` : ""}`,
+      baseURL: baseUrl,
     });
     // Verify if the node is reachable
     this.verifyNode();
+    this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
+  }
+
+  public async authenticate() {
+    if (!this.node.url) {
+      throw new InvalidNode("Node URL or port is not defined");
+    }
+
+    // Check if the node supports the appkeys plugin
+    const supportsAppKeys = await this.authWorflow.probeForWorkflow();
+    if (!supportsAppKeys) {
+      throw new InvalidNode(
+        "The OctoPrint node does not support the appkeys plugin"
+      );
+    }
+
+    // Request authorization
+    const authDialogUrl = await this.authWorflow.requestAuthorization();
+    if (!authDialogUrl) {
+      throw new InvalidNode("Failed to obtain authorization dialog URL");
+    }
+    this.apiKey = await this.authWorflow.getApiKey(authDialogUrl);
   }
 
   public async verifyNode() {

@@ -8,12 +8,14 @@ import { RefreshCw } from "lucide-react";
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   destructive?: boolean;
+  children?: React.ReactNode;
 };
 
 export function Button({
   loading,
   destructive,
   className,
+  children,
   ...props
 }: ButtonProps) {
   return (
@@ -29,7 +31,7 @@ export function Button({
       disabled={loading}
       {...props}
     >
-      {loading ? <RefreshCw className={`w-6 h-6 animate-spin`} /> : "Continue"}
+      {loading ? <RefreshCw className={`w-6 h-6 animate-spin`} /> : children}
     </button>
   );
 }
