@@ -3,10 +3,7 @@ import WelcomeAnimation from "./WelcomeAnim";
 import { AnimatePresence, motion } from "framer-motion";
 import NodeDiscovery from "./NodeDiscovery";
 import Authorization from "./Authorization";
-import type {
-  OctoprintNode,
-  OctoprintNodeType,
-} from "@/lib/octoprint/Octoprint";
+import type { OctoprintNode } from "@/lib/octoprint/Octoprint";
 
 const SetupState = {
   Welcome: "welcome",

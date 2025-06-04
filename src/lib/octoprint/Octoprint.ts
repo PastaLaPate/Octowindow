@@ -3,14 +3,14 @@ import AuthorizationWorkflow from "./Auth";
 
 export type OctoprintNodeType = {
   url: string;
-  port: number;
+  port?: number;
   version: string;
 };
 
 type StoreType = {
   connected: boolean;
   host: string;
-  port: number | undefined;
+  port?: number;
   apiKey: string;
   userName: string;
 };
@@ -24,14 +24,29 @@ export class InvalidNode extends Error {
   }
 }
 
+type ConnectionInfos = {
+  connected: boolean;
+  printerName: string;
+};
+
 export class OctoprintNode {
   private node: OctoprintNodeType;
   private httpClient: Axios;
   public authWorflow: AuthorizationWorkflow;
   private apiKey: string | undefined;
 
-  constructor(node: OctoprintNodeType) {
-    this.node = node;
+  constructor(node?: OctoprintNodeType) {
+    if (!node) {
+      this.node = {
+        url: "",
+        port: undefined,
+        version: "",
+      };
+      this.loadFromStore(new StoreManager());
+      node = this.node;
+    } else {
+      this.node = node;
+    }
     const baseUrl = `${node.url}${
       node.port !== undefined ? `:${node.port}` : ""
     }`;
@@ -39,8 +54,35 @@ export class OctoprintNode {
       baseURL: baseUrl,
     });
     // Verify if the node is reachable
-    this.verifyNode();
+    //this.verifyNode();
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
+  }
+
+  public async getApiVersion() {
+    if (!this.apiKey) {
+      throw new InvalidNode("API key is not set. Please authenticate first.");
+    }
+
+    try {
+      const response = await this.httpClient.get("/api/version", {
+        headers: { "X-Api-Key": this.apiKey },
+      });
+      if (response.status === 200 && response.data) {
+        if (
+          this.node.version === "Unknown" ||
+          this.node.version === "" ||
+          this.node.version !== response.data.text
+        ) {
+          this.node.version = response.data.text;
+          this.saveToStore(new StoreManager());
+        }
+        return this.node.version;
+      }
+    } catch (error) {
+      console.error("Error fetching API version:", error);
+      throw new Error("Failed to fetch API version");
+    }
+    return "Unknown";
   }
 
   public async authenticate(signal?: AbortSignal): Promise<string> {
@@ -88,6 +130,7 @@ export class OctoprintNode {
   public loadFromStore(storeManager: StoreManager) {
     this.apiKey = storeManager.store.apiKey || undefined;
     this.node.url = storeManager.store.host;
+    this.node.version = "Unknown";
     this.authWorflow.userName = storeManager.store.userName;
 
     if (this.node.url === "" || this.node.port === 0) {
@@ -113,7 +156,7 @@ export class OctoprintNode {
     return this.node.url;
   }
 
-  public getPort(): number {
+  public getPort(): number | undefined {
     return this.node.port;
   }
 
