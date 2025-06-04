@@ -17,7 +17,10 @@ export default function Authorization({ node }: AuthorizationProps) {
   };
 
   return (
-    <SetupFrame key={"authorization"}>
+    <SetupFrame
+      key={"authorization"}
+      className="flex flex-col items-center justify-center"
+    >
       <div className="flex items-center gap-2 mb-6">
         <h1 className="text-4xl sm:text-5xl font-bold">Authentification</h1>
         {/*<button
