@@ -17,7 +17,7 @@ export default class AuthorizationWorkflow {
     });
   }
 
-  public probeForWorkflow() {
+  public probeForWorkflow(signal?: AbortSignal): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.httpClient
         .get("/plugin/appkeys/probe")
@@ -30,7 +30,7 @@ export default class AuthorizationWorkflow {
     });
   }
 
-  public requestAuthorization(): Promise<string> {
+  public requestAuthorization(signal?: AbortSignal): Promise<string> {
     return new Promise((resolve, reject) => {
       this.httpClient
         .post("/plugin/appkeys/request", {
@@ -55,32 +55,68 @@ export default class AuthorizationWorkflow {
         });
     });
   }
-  public async getApiKey(auth_dialog_url: string): Promise<string> {
+
+  public createWindow(auth_dialog_url: string, signal?: AbortSignal): Window {
+    const width = 400;
+    const height = 400;
+    const left = 100;
+    const top = 100;
+
+    const authWindow = window.open(
+      auth_dialog_url,
+      "auth",
+      `resizable=no,status=no,location=no,toolbar=no,menubar=no,width=${width},height=${height},top=${top},left=${left}`
+    );
+
+    if (!authWindow) {
+      throw new Error("Failed to open authorization window.");
+    }
+    return authWindow;
+  }
+
+  public async getApiKey(
+    authWindow: Window,
+    signal?: AbortSignal
+  ): Promise<string> {
     if (!this.appToken) {
       throw new Error(
         "App token is not set. Please request authorization first."
       );
     }
 
-    const width = 600;
-    const height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-
-    const authWindow = window.open(
-      auth_dialog_url,
-      "auth",
-      `width=${width},height=${height},top=${top},left=${left}`
-    );
-
-    if (!authWindow) {
-      throw new Error("Failed to open authorization window.");
-    }
-
     return new Promise<string>((resolve, reject) => {
+      let finished = false;
+      const cleanup = () => {
+        finished = true;
+        clearInterval(timer);
+        if (!authWindow.closed) {
+          try {
+            authWindow.close();
+          } catch {}
+        }
+      };
+
+      // Listen for abort
+      if (signal) {
+        signal.addEventListener(
+          "abort",
+          () => {
+            if (!finished) {
+              cleanup();
+              reject(new Error("Authorization aborted"));
+            }
+          },
+          { once: true }
+        );
+      }
+
       const timer = setInterval(async () => {
+        if (signal?.aborted) {
+          cleanup();
+          return;
+        }
         if (authWindow.closed) {
-          clearInterval(timer);
+          cleanup();
           try {
             const AuthConfirmation = await this.httpClient.get(
               "/plugin/appkeys/request/" + this.appToken

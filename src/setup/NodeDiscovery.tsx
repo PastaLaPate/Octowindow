@@ -69,7 +69,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
   const verifyNodeUrl = async (url: string) => {
     setLoading(true);
     setErrorMsg(null);
-    if (!url) {
+    if (!url || !url.startsWith("http://")) {
       setErrorMsg("Please enter a valid OctoPrint Node URL.");
       setLoading(false);
       return;
@@ -93,15 +93,8 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
 
   return (
     <SetupFrame key={"node-discovery"}>
-      <div className="flex items-center gap-2 mb-6">
-        <h1 className="text-4xl sm:text-5xl font-bold">OctoPrint Nodes</h1>
-        {/*<button
-            className="ml-2 p-3 rounded-full hover:bg-gray-700 active:bg-gray-600 transition"
-            style={{ touchAction: "manipulation" }}
-            aria-label="Refresh"
-          >
-            <RefreshCw  />
-          </button>*/}
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-4xl font-bold">OctoPrint Nodes</h1>
       </div>
       <motion.div
         initial={{ height: 0, overflow: "hidden" }}
@@ -122,10 +115,10 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
         )}
       </motion.div>
 
-      <div className="mb-6 w-full">
+      <div className="mb-4 sm:mb-6 w-full">
         <label
           htmlFor="nodeUrl"
-          className="block text-white text-lg sm:text-2xl font-bold mb-3"
+          className="block text-white text-base sm:text-lg font-bold mb-2 sm:mb-3"
         >
           Node URL:
         </label>
@@ -135,7 +128,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
           id="nodeUrl"
           inputMode="url"
           autoComplete="off"
-          className="shadow appearance-none border border-gray-600 rounded-xl w-full py-4 px-4 text-white bg-gray-900 text-lg sm:text-xl leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="shadow appearance-none border border-gray-600 rounded-lg w-full py-3 px-3 text-white bg-gray-900 text-base sm:text-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={nodeUrl}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
@@ -159,27 +152,25 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
             background: "#1f2937",
             borderTopLeftRadius: "1.5rem",
             borderTopRightRadius: "1.5rem",
-            padding: "1rem 0.5rem 2rem 0.5rem",
+            padding: "1rem 0.5rem .5rem 0.5rem",
             boxShadow: "0 -4px 24px rgba(0,0,0,0.3)",
           }}
         >
-          <div className="flex justify-end mb-2 pr-4">
-            <button
-              className="text-white text-2xl bg-gray-700 rounded-full px-4 py-1 active:bg-gray-600"
-              style={{ touchAction: "manipulation" }}
-              onClick={() => setIsKeyboardVisible(false)}
-              aria-label="Close Keyboard"
-              type="button"
-            >
-              ×
-            </button>
-          </div>
-          <ControlledKeyboard setInput={setKeyboardInput} input={nodeUrl} />
+          <ControlledKeyboard
+            setInput={setKeyboardInput}
+            input={nodeUrl}
+            close={() => setIsKeyboardVisible(false)}
+          />
         </motion.div>
       )}
 
       <div className="mt-auto flex justify-center">
-        <Button loading={loading} onClick={() => verifyNodeUrl(nodeUrl)}>
+        <Button
+          variant="default"
+          loading={loading}
+          className="w-full sm:w-auto py-3 text-base sm:text-lg"
+          onClick={() => verifyNodeUrl(nodeUrl)}
+        >
           Continue
         </Button>
       </div>

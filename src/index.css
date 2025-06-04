@@ -160,6 +160,13 @@
   background: #1c4995;
 }
 
+.kbd-close-btn {
+  flex: 0 0 50px !important; /* or any small width you want */
+  max-width: 50px !important;
+  min-width: 50px !important;
+  padding: 0 4px !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

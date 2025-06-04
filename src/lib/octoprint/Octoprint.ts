@@ -43,13 +43,17 @@ export class OctoprintNode {
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
   }
 
-  public async authenticate() {
+  public async authenticate(signal?: AbortSignal): Promise<void> {
     if (!this.node.url) {
       throw new InvalidNode("Node URL or port is not defined");
     }
 
+    // Check for abort before starting
+    if (signal?.aborted) throw new Error("Authentication aborted");
+
     // Check if the node supports the appkeys plugin
-    const supportsAppKeys = await this.authWorflow.probeForWorkflow();
+    const supportsAppKeys = await this.authWorflow.probeForWorkflow(signal);
+    if (signal?.aborted) throw new Error("Authentication aborted");
     if (!supportsAppKeys) {
       throw new InvalidNode(
         "The OctoPrint node does not support the appkeys plugin"
@@ -57,24 +61,50 @@ export class OctoprintNode {
     }
 
     // Request authorization
-    const authDialogUrl = await this.authWorflow.requestAuthorization();
+    const authDialogUrl = await this.authWorflow.requestAuthorization(signal);
+    if (signal?.aborted) throw new Error("Authentication aborted");
     if (!authDialogUrl) {
       throw new InvalidNode("Failed to obtain authorization dialog URL");
     }
-    this.apiKey = await this.authWorflow.getApiKey(authDialogUrl);
+
+    // Open the popup only if not aborted
+    if (signal?.aborted) throw new Error("Authentication aborted");
+    const popup = this.authWorflow.createWindow(authDialogUrl);
+
+    // Wait for API key, abort if needed
+    const apiKeyPromise = this.authWorflow.getApiKey(popup, signal);
+
+    if (signal) {
+      // If aborted, close the popup and throw
+      const abortPromise = new Promise<never>((_, reject) => {
+        signal.addEventListener("abort", () => {
+          try {
+            popup.close();
+          } catch {}
+          reject(new Error("Authentication aborted"));
+        });
+      });
+      this.apiKey = await Promise.race([apiKeyPromise, abortPromise]);
+    } else {
+      this.apiKey = await apiKeyPromise;
+    }
   }
 
-  public async verifyNode() {
+  public async verifyNode(signal?: AbortSignal) {
     // Verify via /static/webassets/packed_client.js because /api/version needs authentication
     // and we want to ensure the node is reachable without authentication first.
     try {
       const response = await this.httpClient.get(
-        "/static/webassets/packed_client.js"
+        "/static/webassets/packed_client.js",
+        { signal }
       );
       if (response.status === 200) {
         return true;
       }
     } catch (error) {
+      if (signal?.aborted) {
+        throw new Error("Verification aborted");
+      }
       console.error("Error verifying node:", error);
       throw new Error("Node is not reachable");
     }

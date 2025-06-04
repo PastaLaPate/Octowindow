@@ -1,7 +1,7 @@
 import type { OctoprintNode } from "@/lib/octoprint/Octoprint";
 import SetupFrame from "./SetupFrame";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type AuthorizationProps = {
   node: OctoprintNode;
@@ -9,11 +9,26 @@ type AuthorizationProps = {
 
 export default function Authorization({ node }: AuthorizationProps) {
   const [loading, setLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleAuthenticate = async () => {
     setLoading(true);
-    await node.authenticate();
+    abortControllerRef.current = new AbortController();
+    try {
+      await node.authenticate(abortControllerRef.current.signal);
+    } catch (e) {
+      // handle error or abort
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRetry = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     setLoading(false);
+    // Optionally, reset error state here
   };
 
   return (
@@ -22,17 +37,13 @@ export default function Authorization({ node }: AuthorizationProps) {
       className="flex flex-col items-center justify-center"
     >
       <div className="flex items-center gap-2 mb-6">
-        <h1 className="text-4xl sm:text-5xl font-bold">Authentification</h1>
-        {/*<button
-            className="ml-2 p-3 rounded-full hover:bg-gray-700 active:bg-gray-600 transition"
-            style={{ touchAction: "manipulation" }}
-            aria-label="Refresh"
-          >
-            <RefreshCw  />
-          </button>*/}
+        <h1 className="text-4xl sm:text-5xl font-bold">Authentication</h1>
       </div>
       <Button onClick={handleAuthenticate} loading={loading}>
         Authenticate
+      </Button>
+      <Button className="mt-5" variant="text" onClick={handleRetry}>
+        Retry
       </Button>
     </SetupFrame>
   );
