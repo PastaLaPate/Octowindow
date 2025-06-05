@@ -1,5 +1,7 @@
 import { Axios } from "axios";
 import AuthorizationWorkflow from "./Auth";
+import { FileAPI } from "./apis/FileAPI";
+import { PrinterAPI } from "./apis/PrinterAPI";
 
 export type OctoprintNodeType = {
   url: string;
@@ -24,16 +26,15 @@ export class InvalidNode extends Error {
   }
 }
 
-type ConnectionInfos = {
-  connected: boolean;
-  printerName: string;
-};
-
 export class OctoprintNode {
   private node: OctoprintNodeType;
   private httpClient: Axios;
-  public authWorflow: AuthorizationWorkflow;
   private apiKey: string | undefined;
+
+  public file: FileAPI;
+  public printer: PrinterAPI;
+
+  public authWorflow: AuthorizationWorkflow;
 
   constructor(node?: OctoprintNodeType) {
     if (!node) {
@@ -56,6 +57,8 @@ export class OctoprintNode {
     // Verify if the node is reachable
     //this.verifyNode();
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
+    this.file = new FileAPI(this.httpClient);
+    this.printer = new PrinterAPI(this.httpClient);
   }
 
   public async getApiVersion() {
@@ -131,7 +134,6 @@ export class OctoprintNode {
     this.apiKey = storeManager.store.apiKey || undefined;
     this.node.url = storeManager.store.host;
     this.node.version = "Unknown";
-    this.authWorflow.userName = storeManager.store.userName;
 
     if (this.node.url === "" || this.node.port === 0) {
       throw new InvalidNode("Node URL or port is not defined");
@@ -140,6 +142,9 @@ export class OctoprintNode {
     // Reinitialize the HTTP client with the loaded URL and port
     this.httpClient = new Axios({
       baseURL: `${this.node.url}`,
+      headers: {
+        "X-Api-Key": this.apiKey || "",
+      },
     });
   }
 
