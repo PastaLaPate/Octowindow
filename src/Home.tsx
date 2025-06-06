@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { OctoprintNode } from "./lib/octoprint/Octoprint";
-import type { Temp } from "./lib/octoprint/apis/PrinterAPI";
+import {
+  allFalseFlags,
+  type ConnectionInfos,
+  type Temp,
+} from "./lib/octoprint/apis/PrinterAPI";
 
 export default function Home() {
   const [node, setNode] = useState<OctoprintNode>();
@@ -14,11 +18,19 @@ export default function Home() {
     target: 0,
     targetDevice: "tool",
   });
+  const [connectionInfos, setConnectionInfos] = useState<ConnectionInfos>({
+    connected: false,
+    printerName: "",
+    flags: allFalseFlags,
+  });
   useEffect(() => {
     const node = new OctoprintNode();
     node?.printer.addListener("temp", (tool, bed) => {
       setBedTemp(bed);
       setToolTemp(tool);
+    });
+    node?.printer.addListener("status", (infos) => {
+      setConnectionInfos(infos);
     });
     setNode(node);
   }, []);
@@ -28,6 +40,12 @@ export default function Home() {
       <p>
         {Math.round(toolTemp.current)}/ {Math.round(toolTemp.target)}
       </p>
+      <p>{connectionInfos.connected ? connectionInfos.printerName : ""}</p>
+      <div
+        className={`w-2.5 h-2.5 rounded-full ${
+          connectionInfos.connected ? "bg-green-500" : "bg-red-600"
+        }`}
+      />
     </div>
   );
 }

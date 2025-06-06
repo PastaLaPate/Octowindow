@@ -17,8 +17,9 @@ export const ConnectionFlags = {
 } as const;
 
 export type ConnectionInfos = {
+  connected: boolean;
   printerName: string;
-  flags: (typeof ConnectionFlags)[];
+  flags: { [K in keyof typeof ConnectionFlags]: boolean };
 };
 
 export const SocketMessageType = {
@@ -50,7 +51,17 @@ export type ListenerTypes = {
   jobStatus: (newJobStatus: Print) => void;
 };
 
+export type PrinterProfile = {
+  current: boolean;
+  id: string;
+  name: string;
+};
+
 export type SocketMessageType = keyof typeof SocketMessageType;
+
+export const allFalseFlags = Object.fromEntries(
+  Object.keys(ConnectionFlags).map((k) => [k, false])
+) as { [K in keyof typeof ConnectionFlags]: boolean };
 
 export class PrinterAPI extends OctoprintAPI {
   /* TODO: Remove this shit and use websockets (because this endpoints requires a wtf permisison never said how to
@@ -64,6 +75,8 @@ export class PrinterAPI extends OctoprintAPI {
     status?: ListenerTypes["status"][];
     jobStatus?: ListenerTypes["jobStatus"][];
   };
+  private activeProfile: PrinterProfile;
+  public connectionInfos: ConnectionInfos;
 
   constructor(httpClienta: Axios) {
     super(httpClienta);
@@ -84,6 +97,11 @@ export class PrinterAPI extends OctoprintAPI {
         },
       }
     );
+    this.connectionInfos = {
+      connected: false,
+      flags: allFalseFlags,
+      printerName: "",
+    };
     sessionInfos.then((resp) => {
       if (resp.status === 200) {
         resp.data = JSON.parse(resp.data);
@@ -114,6 +132,12 @@ export class PrinterAPI extends OctoprintAPI {
       }
     });
     this.listeners = { temp: [], status: [], jobStatus: [] };
+    this.activeProfile = {
+      current: false,
+      name: "",
+      id: "",
+    };
+    this.fetchProfiles();
   }
 
   public addListener<T extends keyof ListenerTypes>(
@@ -125,8 +149,6 @@ export class PrinterAPI extends OctoprintAPI {
     }
     this.listeners[type]!.push(callback as any);
   }
-
-  public async getConnectionInfos() {}
 
   private parseMSG = (msg: MessageEvent<any>) => {
     const data = JSON.parse(msg.data);
@@ -140,13 +162,32 @@ export class PrinterAPI extends OctoprintAPI {
     switch (msgType) {
       case SocketMessageType.connected:
         break;
+      case SocketMessageType.history:
+        const historyData = data["history"];
+        this.connectionInfos = {
+          connected: historyData.state.flags.operational,
+          printerName: this.activeProfile.name,
+          flags: historyData.state.flags,
+        };
+        this.callListeners("status", this.connectionInfos);
+        break;
       case SocketMessageType.current:
         const currentData = data["current"];
-        const state = currentData;
+        const state = currentData.state;
 
-        if (state.temps && state.temps[0]) {
-          const tool = state.temps[0].tool0;
-          const bed = state.temps[0].bed;
+        if (
+          this.connectionInfos.flags["operational"] !== state.flags.operational
+        ) {
+          this.connectionInfos = {
+            printerName: this.activeProfile.name,
+            connected: state.flags.operational,
+            flags: state.flags,
+          };
+          this.callListeners("status", this.connectionInfos);
+        }
+        if (currentData.temps && currentData.temps[0]) {
+          const tool = currentData.temps[0].tool0;
+          const bed = currentData.temps[0].bed;
           console.log(tool, bed);
           this.callListeners(
             "temp",
@@ -173,6 +214,26 @@ export class PrinterAPI extends OctoprintAPI {
       (this.listeners[type]! as ListenerTypes[T][]).forEach((element) => {
         (element as (...args: any[]) => void).apply(null, args);
       });
+    }
+  }
+
+  private async fetchProfiles() {
+    const resp = await this.httpClient.get("/api/printerprofiles");
+    if (resp.status !== 200) {
+      return;
+    }
+    resp.data = JSON.parse(resp.data);
+    for (const [index, profile] of Object.entries(
+      resp.data.profiles as Record<string, any>
+    )) {
+      if (profile.current) {
+        this.activeProfile = {
+          current: true,
+          name: profile.name,
+          id: index,
+        };
+        break;
+      }
     }
   }
 }
