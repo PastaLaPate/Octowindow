@@ -37,6 +37,10 @@ export class OctoprintNode {
   public authWorflow: AuthorizationWorkflow;
 
   constructor(node?: OctoprintNodeType) {
+    this.httpClient = new Axios({
+      baseURL: "",
+    });
+    let baseUrl = "";
     if (!node) {
       this.node = {
         url: "",
@@ -47,13 +51,12 @@ export class OctoprintNode {
       node = this.node;
     } else {
       this.node = node;
+      baseUrl = `${node.url}${node.port !== undefined ? `:${node.port}` : ""}`;
+      this.httpClient = new Axios({
+        baseURL: baseUrl,
+      });
     }
-    const baseUrl = `${node.url}${
-      node.port !== undefined ? `:${node.port}` : ""
-    }`;
-    this.httpClient = new Axios({
-      baseURL: baseUrl,
-    });
+
     // Verify if the node is reachable
     //this.verifyNode();
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
