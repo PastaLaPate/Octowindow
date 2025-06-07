@@ -5,6 +5,14 @@ import {
   type ConnectionInfos,
   type Temp,
 } from "./lib/octoprint/apis/PrinterAPI";
+import TopBar from "./components/Topbar";
+
+export type OctoprintState = {
+  node: OctoprintNode;
+  bedTemp: Temp;
+  toolTemp: Temp;
+  connectionInfos: ConnectionInfos;
+};
 
 export default function Home() {
   const [node, setNode] = useState<OctoprintNode>();
@@ -36,16 +44,17 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="home-container">
-      <p>
-        {Math.round(toolTemp.current)}/ {Math.round(toolTemp.target)}
-      </p>
-      <p>{connectionInfos.connected ? connectionInfos.printerName : ""}</p>
-      <div
-        className={`w-2.5 h-2.5 rounded-full ${
-          connectionInfos.connected ? "bg-green-500" : "bg-red-600"
-        }`}
-      />
+    <div className="w-screen h-screen home-container bg-gray-900">
+      {node && (
+        <TopBar
+          octoprintState={{
+            node: node,
+            bedTemp: bedTemp,
+            toolTemp: toolTemp,
+            connectionInfos: connectionInfos,
+          }}
+        />
+      )}
     </div>
   );
 }
