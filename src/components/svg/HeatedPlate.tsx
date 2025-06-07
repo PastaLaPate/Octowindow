@@ -1,8 +1,9 @@
 export default function HeatedPlate({
   stroke = "#010000",
-  ...props
+  className = "",
 }: {
   stroke: string;
+  className: string;
 }) {
   return (
     <svg
@@ -13,7 +14,7 @@ export default function HeatedPlate({
       xmlSpace="preserve"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
-      {...props}
+      className={className}
     >
       <g>
         <path

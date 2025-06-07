@@ -1,11 +1,17 @@
-export default function Nozzle({ stroke, ...props }: { stroke: string }) {
+export default function Nozzle({
+  stroke,
+  className = "",
+}: {
+  stroke: string;
+  className: string;
+}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       id="mdi-printer-3d-nozzle-outline"
       viewBox="0 0 24 24"
       fill={stroke}
-      {...props}
+      className={className}
       strokeWidth={0.5}
     >
       <path

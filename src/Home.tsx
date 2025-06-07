@@ -6,6 +6,8 @@ import {
   type Temp,
 } from "./lib/octoprint/apis/PrinterAPI";
 import TopBar from "./components/Topbar";
+import Actions from "./components/Actions";
+import PrintStatus from "./components/PrintStatus";
 
 export type OctoprintState = {
   node: OctoprintNode;
@@ -44,7 +46,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-screen h-screen home-container bg-gray-900">
+    <div className="flex flex-col w-screen h-screen home-container bg-gray-900">
       {node && (
         <TopBar
           octoprintState={{
@@ -55,6 +57,10 @@ export default function Home() {
           }}
         />
       )}
+      <div className="flex flex-row flex-1 min-h-0">
+        <PrintStatus />
+        <Actions />
+      </div>
     </div>
   );
 }

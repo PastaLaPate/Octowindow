@@ -9,7 +9,7 @@ type TopBarProps = {
 export default function TopBar({ octoprintState }: TopBarProps) {
   //h-[5%]
   return (
-    <div className="sm:h-10 md:h-14 bg-gray-800 flex items-center justify-between">
+    <div className="sm:h-10 md:h-14 bg-gray-800 relative flex items-center justify-between">
       <div className="flex flex-row items-center">
         {octoprintState.toolTemp.current !== 0 && (
           <>
@@ -17,7 +17,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
               <Nozzle stroke="#FFFFFF" className="w-full h-full" />
             </div>
             <p className="text-lg">
-              {String(octoprintState.toolTemp.current) +
+              {String(Math.round(octoprintState.toolTemp.current)) +
                 (octoprintState.toolTemp.target !== 0
                   ? `/${octoprintState.toolTemp.target}`
                   : "")}
@@ -30,7 +30,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
               <HeatedPlate stroke="#FFFFFF" className="w-full h-full" />
             </div>
             <p className="text-lg">
-              {String(octoprintState.toolTemp.current) +
+              {String(Math.round(octoprintState.toolTemp.current)) +
                 (octoprintState.toolTemp.target !== 0
                   ? `/${octoprintState.toolTemp.target}`
                   : "")}
@@ -38,7 +38,9 @@ export default function TopBar({ octoprintState }: TopBarProps) {
           </>
         )}
       </div>
-      <h2>OctoWindow</h2>
+      <h2 className="w-max absolute left-1/2 -translate-x-1/2 text-center">
+        OctoWindow
+      </h2>
       <div className="flex flex-row items-center gap-2">
         <p>
           {octoprintState.connectionInfos.connected
