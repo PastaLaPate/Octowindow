@@ -164,12 +164,15 @@ export class PrinterAPI extends OctoprintAPI {
         break;
       case SocketMessageType.history:
         const historyData = data["history"];
-        this.connectionInfos = {
-          connected: historyData.state.flags.operational,
-          printerName: this.activeProfile.name,
-          flags: historyData.state.flags,
-        };
-        this.callListeners("status", this.connectionInfos);
+
+        this.fetchProfiles().then(() => {
+          this.connectionInfos = {
+            connected: historyData.state.flags.operational,
+            printerName: this.activeProfile.name,
+            flags: historyData.state.flags,
+          };
+          this.callListeners("status", this.connectionInfos);
+        });
         break;
       case SocketMessageType.current:
         const currentData = data["current"];
@@ -178,12 +181,15 @@ export class PrinterAPI extends OctoprintAPI {
         if (
           this.connectionInfos.flags["operational"] !== state.flags.operational
         ) {
-          this.connectionInfos = {
-            printerName: this.activeProfile.name,
-            connected: state.flags.operational,
-            flags: state.flags,
-          };
-          this.callListeners("status", this.connectionInfos);
+          // Make sure we have the correct activate profile
+          this.fetchProfiles().then(() => {
+            this.connectionInfos = {
+              printerName: this.activeProfile.name,
+              connected: state.flags.operational,
+              flags: state.flags,
+            };
+            this.callListeners("status", this.connectionInfos);
+          });
         }
         if (currentData.temps && currentData.temps[0]) {
           const tool = currentData.temps[0].tool0;
