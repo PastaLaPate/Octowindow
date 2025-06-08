@@ -8,10 +8,14 @@ function App() {
   const [isSetupComplete, setIsSetupComplete] = useState(
     new StoreManager().store.connected
   );
-  return !isSetupComplete ? (
-    <Setup onCompleted={() => setIsSetupComplete(true)} />
-  ) : (
-    <Home />
+  return (
+    <div className="dark">
+      {!isSetupComplete ? (
+        <Setup onCompleted={() => setIsSetupComplete(true)} />
+      ) : (
+        <Home />
+      )}
+    </div>
   );
 }
 
