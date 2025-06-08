@@ -1,6 +1,6 @@
-import type { OctoprintState } from "@/Home";
 import Nozzle from "./svg/Nozzle";
 import HeatedPlate from "./svg/HeatedPlate";
+import type { OctoprintState } from "@/routes/app/Home";
 
 type TopBarProps = {
   octoprintState: OctoprintState;

@@ -1,22 +1,15 @@
 import { useEffect, useState } from "react";
-import { OctoprintNode } from "./lib/octoprint/Octoprint";
+import "./App.css";
+import { OctoprintNode } from "../../lib/octoprint/Octoprint";
 import {
   allFalseFlags,
   type ConnectionInfos,
   type Temp,
-} from "./lib/octoprint/apis/PrinterAPI";
-import TopBar from "./components/Topbar";
-import Actions from "./components/Actions";
-import PrintStatus from "./components/PrintStatus";
+} from "@/lib/octoprint/apis/PrinterAPI";
+import TopBar from "@/components/Topbar";
+import { Outlet } from "react-router";
 
-export type OctoprintState = {
-  node: OctoprintNode;
-  bedTemp: Temp;
-  toolTemp: Temp;
-  connectionInfos: ConnectionInfos;
-};
-
-export default function Home() {
+function App() {
   const [node, setNode] = useState<OctoprintNode>();
   const [bedTemp, setBedTemp] = useState<Temp>({
     current: 0,
@@ -44,9 +37,8 @@ export default function Home() {
     });
     setNode(node);
   }, []);
-
   return (
-    <div className="flex flex-col w-screen h-screen home-container bg-gray-900">
+    <div className="flex h-screen w-screen flex-col bg-gray-900">
       {node && (
         <TopBar
           octoprintState={{
@@ -57,10 +49,26 @@ export default function Home() {
           }}
         />
       )}
-      <div className="flex flex-row flex-1 min-h-0">
-        <PrintStatus />
-        <Actions />
-      </div>
+      <Outlet
+        context={{
+          node: node,
+          bedTemp: bedTemp,
+          toolTemp: toolTemp,
+          connectionInfos: connectionInfos,
+        }}
+      />
     </div>
   );
+  /*
+  return (
+    <div>
+      {!isSetupComplete ? (
+        <Setup onCompleted={() => setIsSetupComplete(true)} />
+      ) : (
+        <Home />
+      )}
+    </div>
+  );*/
 }
+
+export default App;

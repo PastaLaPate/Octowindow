@@ -37,6 +37,7 @@ export type Print = {
   name: string;
   path: string;
   size: string;
+  thumbnail: string;
 };
 
 export type Temp = {
@@ -60,7 +61,7 @@ export type PrinterProfile = {
 export type SocketMessageType = keyof typeof SocketMessageType;
 
 export const allFalseFlags = Object.fromEntries(
-  Object.keys(ConnectionFlags).map((k) => [k, false])
+  Object.keys(ConnectionFlags).map((k) => [k, false]),
 ) as { [K in keyof typeof ConnectionFlags]: boolean };
 
 export class PrinterAPI extends OctoprintAPI {
@@ -95,7 +96,7 @@ export class PrinterAPI extends OctoprintAPI {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     this.connectionInfos = {
       connected: false,
@@ -120,12 +121,12 @@ export class PrinterAPI extends OctoprintAPI {
                 event: true,
                 plugins: false,
               },
-            })
+            }),
           );
           this.send(
             JSON.stringify({
               auth: `${usrName}:${sessionID}`,
-            })
+            }),
           );
         };
         this.socket.onmessage = this.parseMSG;
@@ -142,7 +143,7 @@ export class PrinterAPI extends OctoprintAPI {
 
   public addListener<T extends keyof ListenerTypes>(
     type: T,
-    callback: ListenerTypes[T]
+    callback: ListenerTypes[T],
   ) {
     if (!this.listeners[type]) {
       this.listeners[type] = [];
@@ -206,7 +207,7 @@ export class PrinterAPI extends OctoprintAPI {
               targetDevice: "bed",
               current: bed.actual,
               target: bed.target,
-            }
+            },
           );
         }
         break;
@@ -230,7 +231,7 @@ export class PrinterAPI extends OctoprintAPI {
     }
     resp.data = JSON.parse(resp.data);
     for (const [index, profile] of Object.entries(
-      resp.data.profiles as Record<string, any>
+      resp.data.profiles as Record<string, any>,
     )) {
       if (profile.current) {
         this.activeProfile = {
