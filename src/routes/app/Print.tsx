@@ -1,10 +1,12 @@
-import { useNavigate, useOutletContext } from "react-router";
-import type { OctoprintState } from "./Home";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Image, Printer, Trash } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { useNavigate, useOutletContext } from "react-router";
+
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+
+import type { OctoprintState } from "./Home";
 
 type ViewType = "list" | "gallery";
 
@@ -40,10 +42,16 @@ function Print3D({
   },
   viewType,
   depth = 0,
+  onTrash = () => {},
+  onShowThumbnail = () => {},
+  onPrint = () => {},
 }: {
   print?: Print;
   viewType: ViewType;
   depth?: number;
+  onTrash?: () => void;
+  onShowThumbnail?: () => void;
+  onPrint?: () => void;
 }) {
   return viewType == "gallery" ? (
     <div></div>
@@ -53,10 +61,12 @@ function Print3D({
       <p>{print.display}</p>
       <p>·</p>
       <p className="text-sm text-slate-400">{print.path}</p>
+      <p>·</p>
+      <p className="text-sm text-slate-400">{print.size}</p>
       <div className="ml-auto flex h-10 flex-row items-center gap-6">
-        <Trash className="h-8 w-8" />
-        <Image className="h-8 w-8" />
-        <Printer className="h-8 w-8" />
+        <Trash onClick={onTrash} className="h-8 w-8" />
+        <Image onClick={onShowThumbnail} className="h-8 w-8" />
+        <Printer onClick={onPrint} className="h-8 w-8" />
       </div>
     </CListNode>
   );
@@ -66,10 +76,12 @@ function Directory({
   dir,
   viewType,
   depth = 0,
+  onPrint = () => {},
 }: {
   dir: Dir;
   viewType: ViewType;
   depth?: number;
+  onPrint?: (print: Print) => void;
 }) {
   const [opened, setOpened] = useState(false);
   return viewType == "gallery" ? (
@@ -100,6 +112,7 @@ function Directory({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
+            className="gap-2 flex flex-col"
           >
             {dir.children.map((node) => {
               if ("children" in node) {
@@ -118,6 +131,7 @@ function Directory({
                     print={node as Print}
                     viewType={viewType}
                     depth={depth + 1}
+                    onPrint={() => onPrint(node as Print)}
                   />
                 );
               }
@@ -146,14 +160,29 @@ function FileViewer({
       <Directory
         dir={{
           name: "some_shits",
+          display: "some_shits",
           path: "/local/some_shits",
           size: "10 MB",
-          children: [{
-          name: "some_shits",
-          path: "/local/some_shits",
-          size: "10 MB",
-          children: Array.from({length: 3}, () => ({ name: "aled", path: "/local/some_shits/aled", size: "10MB" }))}
-        ,...Array.from({length: 3}, () => ({ name: "aled", path: "/local/some_shits/aled", size: "10MB" }))]
+          children: [
+            {
+              display: "some_shits",
+              name: "some_shits",
+              path: "/local/some_shits",
+              size: "10 MB",
+              children: Array.from({ length: 3 }, () => ({
+                display: "Alex",
+                name: "aled.gcode",
+                path: "/local/some_shits/aled.gcode",
+                size: "10MB",
+              })),
+            },
+            ...Array.from({ length: 3 }, () => ({
+              display: "Aled",
+              name: "aled.gcode",
+              path: "/local/some_shits/aled.gcode",
+              size: "10MB",
+            })),
+          ],
         }}
         viewType={viewType}
       />
@@ -162,7 +191,7 @@ function FileViewer({
   );
 }
 
-export default function Print() {
+export default function PrintPage() {
   const [viewType, setViewType] = useState<ViewType>("list");
   const OctoprintState = useOutletContext() as OctoprintState;
   const navigate = useNavigate();
