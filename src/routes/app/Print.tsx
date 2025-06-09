@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Image, Printer, Trash } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router";
+import { ref } from "process";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import { cn } from "@/lib/utils";
@@ -57,7 +58,7 @@ function Print3D({
     <div></div>
   ) : (
     <CListNode depth={depth}>
-      <img src={print.thumbnail} width={40} height={40} />
+      <img alt="thumbnail" src={print.thumbnail} width={40} height={40} />
       <p>{print.display}</p>
       <p>·</p>
       <p className="text-sm text-slate-400">{print.path}</p>
@@ -149,6 +150,17 @@ function FileViewer({
   octoprintState: OctoprintState;
   viewType: ViewType;
 }) {
+  const [files, setFiles] = useState<Dir[]>([]);
+
+  const refresh = async () => {
+    setFiles(await octoprintState.node.file.getAllFiles());
+  };
+
+  useEffect(() => {
+    refresh();
+    0;
+  }, []);
+
   return (
     <div
       className={cn(
@@ -156,7 +168,14 @@ function FileViewer({
         viewType == "gallery" ? "flex-row flex-wrap" : "flex-col",
       )}
     >
+      {files.map((dir) => {
+        return (
+          <Directory dir={dir} viewType={viewType} key={dir.name} depth={0} />
+        );
+      })}
+      {/*
       {Array(3).fill(<Print3D viewType={viewType} />)}
+      
       <Directory
         dir={{
           name: "some_shits",
@@ -186,7 +205,7 @@ function FileViewer({
         }}
         viewType={viewType}
       />
-      {Array(3).fill(<Print3D viewType={viewType} />)}
+      {Array(3).fill(<Print3D viewType={viewType} />)}*/}
     </div>
   );
 }
@@ -195,7 +214,7 @@ export default function PrintPage() {
   const [viewType, setViewType] = useState<ViewType>("list");
   const OctoprintState = useOutletContext() as OctoprintState;
   const navigate = useNavigate();
-  return (
+  return OctoprintState.node !== undefined ? (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-4 rounded-2xl bg-slate-900 p-10">
         <div className="flex flex-row items-center justify-center gap-4">
@@ -212,5 +231,7 @@ export default function PrintPage() {
         <FileViewer octoprintState={OctoprintState} viewType={viewType} />
       </div>
     </div>
+  ) : (
+    <></>
   );
 }

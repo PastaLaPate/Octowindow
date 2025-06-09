@@ -1,12 +1,16 @@
-import { StoreManager } from "@/lib/octoprint/Octoprint";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
+
+import { StoreManager } from "@/lib/octoprint/Octoprint";
 
 export default function Index() {
   const navigate = useNavigate();
-  if (new StoreManager().store.connected) {
-    navigate("/app/");
-  } else {
-    navigate("/setup/");
-  }
+  useEffect(() => {
+    if (new StoreManager().store.connected) {
+      navigate("/app/");
+    } else {
+      navigate("/setup/");
+    }
+  }, []);
   return <div />;
 }

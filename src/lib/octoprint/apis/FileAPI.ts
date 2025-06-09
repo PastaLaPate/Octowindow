@@ -63,6 +63,30 @@ type FileInfo = FilesInformation & {
   thumbnail?: string;
 };
 
+function humanFileSize(bytes: number, si = false, dp = 1) {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+
+  const units = si
+    ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u = -1;
+  const r = 10 ** dp;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
+
+  return bytes.toFixed(dp) + " " + units[u];
+}
+
 // TODO: Create the whole FileAPI
 export class FileAPI extends OctoprintAPI {
   public async printFile(origin: string, filePath: string) {
@@ -91,11 +115,11 @@ export class FileAPI extends OctoprintAPI {
     });
     const sdFiles: (Node | Dir | Print)[] = this.processFiles(
       "sd",
-      SDResp.data.files,
+      JSON.parse(SDResp.data).files,
     );
     const localFiles: (Node | Dir | Print)[] = this.processFiles(
       "local",
-      localResp.data.files,
+      JSON.parse(localResp.data).files,
     );
     if (localResp.status !== 200 || SDResp.status !== 200) {
       return [];
@@ -131,7 +155,7 @@ export class FileAPI extends OctoprintAPI {
           name: folder.name,
           display: folder.display,
           path: folder.path,
-          size: String(folder.size),
+          size: humanFileSize(folder.size, true, 2),
           children: this.processFiles(origin, folder.children),
         });
       } else if (file.type === "model" || file.type === "machinecode") {
@@ -140,10 +164,13 @@ export class FileAPI extends OctoprintAPI {
           display: print.display,
           name: print.name,
           path: print.path,
-          size: String(print.size),
+          size: humanFileSize(print.size, true, 2),
           thumbnail: print.thumbnail
-            ? path.join(this.httpClient.defaults.baseURL ?? "", print.thumbnail)
-            : "",
+            ? new URL(
+                print.thumbnail,
+                this.httpClient.defaults.baseURL ?? undefined,
+              ).toString()
+            : "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png",
         });
       }
     });

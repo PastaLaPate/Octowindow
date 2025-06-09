@@ -1,8 +1,9 @@
-import { cn } from "@/lib/utils";
 import type { ClassValue } from "clsx";
 import { Settings, type LucideProps } from "lucide-react";
 import type React from "react";
 import { useNavigate } from "react-router";
+
+import { cn } from "@/lib/utils";
 
 export default function ActionBox({
   className = "",
@@ -24,7 +25,7 @@ export default function ActionBox({
   return (
     <div
       className={cn(
-        "relative m-5 flex h-full w-full flex-[1_0_20%] flex-col items-center justify-center gap-4 bg-slate-800",
+        "relative flex sm:h-24 lg:h-60 w-full flex-[1_0_20%] flex-col items-center justify-center gap-4 bg-slate-800",
         className,
       )}
       onClick={() => navigate(to)}
