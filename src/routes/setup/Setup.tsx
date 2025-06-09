@@ -55,9 +55,9 @@ export default function Setup(props: SetupProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <h2 className="text-2xl mb-4">Configuration</h2>
+        <h2 className="mb-4 text-2xl">Configuration</h2>
         <button
-          className="px-4 py-2 bg-green-500 text-white rounded"
+          className="rounded bg-green-500 px-4 py-2 text-white"
           onClick={() => onCompleted?.()}
         >
           Finish Setup
@@ -67,7 +67,7 @@ export default function Setup(props: SetupProps) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen w-screen bg-gray-900 text-white">
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-900 text-white">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentState}

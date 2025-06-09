@@ -3,12 +3,12 @@ import ActionBox from "./ActionBox";
 
 export default function Actions() {
   return (
-    <div className="h-full w-[50vw] px-9 flex items-center">
-      <div className="grid grid-cols-2 gap-4 w-full h-2/3 items-center justify-items-center">
+    <div className="flex h-full w-[50vw] items-center px-9">
+      <div className="grid h-2/3 w-full grid-cols-2 items-center justify-items-center gap-4">
         <ActionBox label="Control" icon={Move} color="bg-purple-600" />
         <ActionBox label="Terminal" icon={Terminal} color="bg-cyan-600" />
         <ActionBox label="Preheat" icon={Flame} color="bg-orange-600" />
-        <ActionBox label="Settings" icon={Settings} color="bg-gray-600" />
+        <ActionBox label="Settings" icon={Settings} color="bg-slate-600" />
         <ActionBox
           label="Print"
           icon={Printer}

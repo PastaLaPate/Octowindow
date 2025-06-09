@@ -46,7 +46,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setNodeUrl(event.target.value);
     },
-    []
+    [],
   );
 
   const handleInputFocus = () => {
@@ -84,7 +84,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
       nodeSelected(nodeType, node);
     } catch (error) {
       setErrorMsg(
-        "Invalid OctoPrint Node URL. Please try again. Tip : Instead of https use http if you are using a self-certified certificate."
+        "Invalid OctoPrint Node URL. Please try again. Tip : Instead of https use http if you are using a self-certified certificate.",
       );
     } finally {
       setLoading(false);
@@ -93,8 +93,8 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
 
   return (
     <SetupFrame key={"node-discovery"}>
-      <div className="flex items-center gap-2 mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-4xl font-bold">OctoPrint Nodes</h1>
+      <div className="mb-4 flex items-center gap-2 sm:mb-6">
+        <h1 className="text-2xl font-bold sm:text-4xl">OctoPrint Nodes</h1>
       </div>
       <motion.div
         initial={{ height: 0, overflow: "hidden" }}
@@ -108,17 +108,17 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 0.3, duration: 0.3 }}
-            className="text-red-500 mb-5 text-xl"
+            className="mb-5 text-xl text-red-500"
           >
             {errorMsg}
           </motion.p>
         )}
       </motion.div>
 
-      <div className="mb-4 sm:mb-6 w-full">
+      <div className="mb-4 w-full sm:mb-6">
         <label
           htmlFor="nodeUrl"
-          className="block text-white text-base sm:text-lg font-bold mb-2 sm:mb-3"
+          className="mb-2 block text-base font-bold text-white sm:mb-3 sm:text-lg"
         >
           Node URL:
         </label>
@@ -128,7 +128,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
           id="nodeUrl"
           inputMode="url"
           autoComplete="off"
-          className="shadow appearance-none border border-gray-600 rounded-lg w-full py-3 px-3 text-white bg-gray-900 text-base sm:text-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full appearance-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-3 text-base leading-tight text-white shadow focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-lg"
           value={nodeUrl}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
@@ -168,7 +168,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
         <Button
           variant="default"
           loading={loading}
-          className="w-full sm:w-auto py-3 text-base sm:text-lg"
+          className="w-full py-3 text-base sm:w-auto sm:text-lg"
           onClick={() => verifyNodeUrl(nodeUrl)}
         >
           Continue

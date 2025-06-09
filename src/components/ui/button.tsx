@@ -22,21 +22,21 @@ export function Button({
     <button
       className={cn(
         "appearance-none",
-        "w-full flex justify-center items-center max-w-xs px-8 py-5 font-bold rounded-2xl text-2xl shadow-lg transition",
-        loading && "opacity-50 cursor-not-allowed",
+        "flex w-full max-w-xs items-center justify-center rounded-2xl px-8 py-5 text-2xl font-bold shadow-lg transition",
+        loading && "cursor-not-allowed opacity-50",
         variant === "destructive" || destructive
           ? "bg-red-600 text-white hover:bg-red-700 active:bg-red-800"
           : variant === "text"
-          ? "bg-transparent shadow-none text-xl px-0 py-0 max-w-none rounded-none text-gray-300 underline hover:text-white active:text-gray-400 hover:bg-transparent active:bg-transparent"
-          : "bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900",
-        className
+            ? "max-w-none rounded-none bg-transparent px-0 py-0 text-xl text-slate-300 underline shadow-none hover:bg-transparent hover:text-white active:bg-transparent active:text-slate-400"
+            : "bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900",
+        className,
       )}
       type="button"
       style={{ touchAction: "manipulation" }}
       disabled={loading}
       {...props}
     >
-      {loading ? <RefreshCw className={`w-6 h-6 animate-spin`} /> : children}
+      {loading ? <RefreshCw className={`h-6 w-6 animate-spin`} /> : children}
     </button>
   );
 }

@@ -19,9 +19,9 @@ export default function SetupFrame({
         transition={{ duration: 1 }}
         className={cn(
           // Responsive: full width, less padding, smaller radius on small screens
-          "w-full max-w-xl mx-auto flex flex-col bg-gray-800 text-white p-2 sm:p-4 md:p-8 rounded-lg sm:rounded-2xl shadow-lg overflow-y-auto",
-          "min-h-[40vh] max-h-[100dvh] sm:max-h-[90vh]",
-          className
+          "mx-auto flex w-full max-w-xl flex-col overflow-y-auto rounded-lg bg-slate-800 p-2 text-white shadow-lg sm:rounded-2xl sm:p-4 md:p-8",
+          "max-h-[100dvh] min-h-[40vh] sm:max-h-[90vh]",
+          className,
         )}
         style={{
           minHeight: "40vh",

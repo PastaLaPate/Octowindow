@@ -38,7 +38,7 @@ function App() {
     setNode(node);
   }, []);
   return (
-    <div className="flex h-screen w-screen flex-col bg-gray-900">
+    <div className="flex h-screen w-screen flex-col bg-slate-950">
       {node && (
         <TopBar
           octoprintState={{
@@ -49,14 +49,16 @@ function App() {
           }}
         />
       )}
-      <Outlet
-        context={{
-          node: node,
-          bedTemp: bedTemp,
-          toolTemp: toolTemp,
-          connectionInfos: connectionInfos,
-        }}
-      />
+      <div className="flex h-full min-h-0 w-screen flex-1">
+        <Outlet
+          context={{
+            node: node,
+            bedTemp: bedTemp,
+            toolTemp: toolTemp,
+            connectionInfos: connectionInfos,
+          }}
+        />
+      </div>
     </div>
   );
   /*

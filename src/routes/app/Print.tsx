@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router";
 import type { OctoprintState } from "./Home";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Image, Printer, Trash } from "lucide-react";
 import { useState } from "react";
 import type { Print } from "@/lib/octoprint/apis/PrinterAPI";
 import { cn } from "@/lib/utils";
@@ -24,9 +24,16 @@ function Print3D({
   return viewType == "gallery" ? (
     <div></div>
   ) : (
-    <div className="flex w-full items-center gap-3 rounded-2xl bg-gray-700 p-4 text-xl">
+    <div className="flex w-full items-center gap-2 rounded-2xl bg-slate-800 p-4 text-xl">
+      <img src={print.thumbnail} width={40} height={40} />
       <p>{print.display}</p>
-      <p>{print.path}</p>
+      <p>·</p>
+      <p className="text-sm text-slate-400">{print.path}</p>
+      <div className="ml-auto flex h-10 flex-row items-center gap-6">
+        <Trash className="h-8 w-8" />
+        <Image className="h-8 w-8" />
+        <Printer className="h-8 w-8" />
+      </div>
     </div>
   );
 }
@@ -41,11 +48,11 @@ function FileViewer({
   return (
     <div
       className={cn(
-        "flex w-full gap-2",
+        "flex w-full gap-2 overflow-y-auto",
         viewType == "gallery" ? "flex-row flex-wrap" : "flex-col",
       )}
     >
-      {Array(10).fill(<Print3D viewType={viewType} />)}
+      {Array(20).fill(<Print3D viewType={viewType} />)}
     </div>
   );
 }
@@ -54,10 +61,10 @@ export default function Print() {
   const [viewType, setViewType] = useState<ViewType>("list");
   const OctoprintState = useOutletContext() as OctoprintState;
   return (
-    <div className="flex h-full w-screen items-center justify-center">
-      <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-4 rounded-2xl bg-gray-800 p-10">
+    <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
+      <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-4 rounded-2xl bg-slate-900 p-10">
         <div className="flex flex-row items-center justify-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-700 transition hover:bg-gray-600">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-800 transition hover:bg-slate-700">
             <ArrowLeft className="h-10 w-10" />
           </div>
           <p className="text-4xl font-bold">Select a file</p>

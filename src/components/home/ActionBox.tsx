@@ -24,16 +24,16 @@ export default function ActionBox({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 relative flex-[1_0_20%] m-5 justify-center items-center bg-gray-800 w-full h-full",
-        className
+        "relative m-5 flex h-full w-full flex-[1_0_20%] flex-col items-center justify-center gap-4 bg-slate-800",
+        className,
       )}
       onClick={() => navigate(to)}
     >
       <div className="h-2/6 w-2/6">
-        <Icon className="w-full h-full" />
+        <Icon className="h-full w-full" />
       </div>
       <p className="text-2xl font-bold">{label}</p>
-      <div className={cn("absolute bottom-0 w-full h-0.5", color)} />
+      <div className={cn("absolute bottom-0 h-0.5 w-full", color)} />
     </div>
   );
 }
