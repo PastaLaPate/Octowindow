@@ -59,6 +59,7 @@ export const allFalseFlags = Object.fromEntries(
 export class PrinterAPI extends OctoprintAPI {
   /* TODO: Remove this shit and use websockets (because this endpoints requires a wtf permisison never said how to
   obtain) 
+  Finally done
     https://docs.octoprint.org/en/master/api/push.html
   */
 

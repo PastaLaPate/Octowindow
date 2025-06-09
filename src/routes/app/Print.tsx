@@ -2,11 +2,13 @@ import { useNavigate, useOutletContext } from "react-router";
 import type { OctoprintState } from "./Home";
 import { ArrowLeft, ArrowRight, Image, Printer, Trash } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import type { Dir, Node, Print } from "@/lib/octoprint/apis/FileAPI";
+import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 
 type ViewType = "list" | "gallery";
+
+// TODO: Add Gallery view type
 
 function CListNode({
   depth = 0,
@@ -146,12 +148,16 @@ function FileViewer({
           name: "some_shits",
           path: "/local/some_shits",
           size: "10 MB",
-          children: [
-            { name: "aled", path: "/local/some_shits/aled", size: "10MB" },
-          ],
+          children: [{
+          name: "some_shits",
+          path: "/local/some_shits",
+          size: "10 MB",
+          children: Array.from({length: 3}, () => ({ name: "aled", path: "/local/some_shits/aled", size: "10MB" }))}
+        ,...Array.from({length: 3}, () => ({ name: "aled", path: "/local/some_shits/aled", size: "10MB" }))]
         }}
         viewType={viewType}
       />
+      {Array(3).fill(<Print3D viewType={viewType} />)}
     </div>
   );
 }

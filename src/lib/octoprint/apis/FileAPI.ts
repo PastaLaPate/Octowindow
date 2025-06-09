@@ -7,7 +7,7 @@ export type Node = {
 };
 
 export type Dir = Node & {
-  children: Node[];
+  children: (Node | Print | Dir)[];
 };
 
 export type Print = Node & {
@@ -15,6 +15,7 @@ export type Print = Node & {
   thumbnail: string; // Thumbnail URL
 };
 
+// TODO: Create the whole FileAPI
 export class FileAPI extends OctoprintAPI {
   public async getFiles() {}
 }
