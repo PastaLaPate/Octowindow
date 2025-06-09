@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { OctoprintNode } from "../../lib/octoprint/Octoprint";
+import { OctoprintNode } from "@/lib/octoprint/Octoprint";
 import {
   allFalseFlags,
   type ConnectionInfos,

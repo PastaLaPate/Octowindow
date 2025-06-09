@@ -1,6 +1,6 @@
 import type { Axios } from "axios";
 import { OctoprintAPI } from "./OctoprintAPI";
-import { cp, stat } from "fs";
+import type { Print } from "./FileAPI";
 
 export const ConnectionFlags = {
   cancelling: "cancelling",
@@ -31,14 +31,6 @@ export const SocketMessageType = {
   slicingProgress: "slicingProgress",
   plugin: "plugin",
 } as const;
-
-export type Print = {
-  display: string;
-  name: string;
-  path: string;
-  size: string;
-  thumbnail: string;
-};
 
 export type Temp = {
   targetDevice: "tool" | "bed";
@@ -72,9 +64,9 @@ export class PrinterAPI extends OctoprintAPI {
 
   private socket?: WebSocket;
   private listeners: {
-    temp?: ListenerTypes["temp"][];
-    status?: ListenerTypes["status"][];
-    jobStatus?: ListenerTypes["jobStatus"][];
+    temp: Array<(tool: Temp, bed: Temp) => void>;
+    status: Array<(newStatus: ConnectionInfos) => void>;
+    jobStatus: Array<(newJobStatus: Print) => void>;
   };
   private activeProfile: PrinterProfile;
   public connectionInfos: ConnectionInfos;
@@ -145,13 +137,10 @@ export class PrinterAPI extends OctoprintAPI {
     type: T,
     callback: ListenerTypes[T],
   ) {
-    if (!this.listeners[type]) {
-      this.listeners[type] = [];
-    }
-    this.listeners[type]!.push(callback as any);
+    (this.listeners[type] as ListenerTypes[T][]).push(callback);
   }
 
-  private parseMSG = (msg: MessageEvent<any>) => {
+  private parseMSG = (msg: MessageEvent) => {
     const data = JSON.parse(msg.data);
     const msgType = Object.keys(data)[0];
     // Check if msgType is in SocketMessageType
@@ -163,7 +152,7 @@ export class PrinterAPI extends OctoprintAPI {
     switch (msgType) {
       case SocketMessageType.connected:
         break;
-      case SocketMessageType.history:
+      case SocketMessageType.history: {
         const historyData = data["history"];
 
         this.fetchProfiles().then(() => {
@@ -175,7 +164,8 @@ export class PrinterAPI extends OctoprintAPI {
           this.callListeners("status", this.connectionInfos);
         });
         break;
-      case SocketMessageType.current:
+      }
+      case SocketMessageType.current: {
         const currentData = data["current"];
         const state = currentData.state;
 
@@ -211,6 +201,7 @@ export class PrinterAPI extends OctoprintAPI {
           );
         }
         break;
+      }
     }
   };
   private callListeners<T extends keyof ListenerTypes>(
@@ -218,8 +209,8 @@ export class PrinterAPI extends OctoprintAPI {
     ...args: Parameters<ListenerTypes[T]>
   ) {
     if (this.listeners[type]) {
-      (this.listeners[type]! as ListenerTypes[T][]).forEach((element) => {
-        (element as (...args: any[]) => void).apply(null, args);
+      (this.listeners[type]! as Array<(...args: Parameters<ListenerTypes[T]>) => void>).forEach((element) => {
+        element(...(args as Parameters<ListenerTypes[T]>));
       });
     }
   }
@@ -230,8 +221,12 @@ export class PrinterAPI extends OctoprintAPI {
       return;
     }
     resp.data = JSON.parse(resp.data);
+    type ProfileData = {
+      name: string;
+      current: boolean;
+    };
     for (const [index, profile] of Object.entries(
-      resp.data.profiles as Record<string, any>,
+      resp.data.profiles as Record<string, ProfileData>,
     )) {
       if (profile.current) {
         this.activeProfile = {

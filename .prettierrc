@@ -1,5 +1,10 @@
+
 {
-  "tabWidth": 2,
+  "trailingComma": "es5",
+  "tabWidth": 4,
   "useTabs": false,
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "semi": true,
+  
+  "plugins": ["prettier-plugin-tailwindcss", "@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": ["<BUILTIN_MODULES>", "<THIRD_PARTY_MODULE>", "", "@/lib/(.*)$", "@/components/(.*)$", "", "@/(.*)$" , "^(?!.*[.]css$)[./].*$", ".css$"]
 }
