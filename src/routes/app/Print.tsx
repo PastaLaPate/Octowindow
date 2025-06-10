@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Image, Printer, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router";
+import { toast } from "sonner";
 import { ref } from "process";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
@@ -38,6 +39,7 @@ function Print3D({
     display: "Benchy",
     path: "/local/benchy.gcode",
     size: "10 MB",
+    origin: "local",
     thumbnail:
       "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png",
   },
@@ -113,7 +115,7 @@ function Directory({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
-            className="gap-2 flex flex-col"
+            className="flex flex-col gap-2"
           >
             {dir.children.map((node) => {
               if ("children" in node) {
@@ -170,7 +172,21 @@ function FileViewer({
     >
       {files.map((dir) => {
         return (
-          <Directory dir={dir} viewType={viewType} key={dir.name} depth={0} />
+          <Directory
+            dir={dir}
+            viewType={viewType}
+            key={dir.name}
+            depth={0}
+            onPrint={(print) => {
+              octoprintState.node.file
+                .printFile(dir.origin, print.path)
+                .catch((e) => {
+                  if (e instanceof Error) {
+                    toast.error(e.message);
+                  }
+                });
+            }}
+          />
         );
       })}
       {/*

@@ -1,6 +1,7 @@
 import type { Axios } from "axios";
-import { OctoprintAPI } from "./OctoprintAPI";
+
 import type { Print } from "./FileAPI";
+import { OctoprintAPI } from "./OctoprintAPI";
 
 export const ConnectionFlags = {
   cancelling: "cancelling",
@@ -36,6 +37,8 @@ export type Temp = {
   targetDevice: "tool" | "bed";
   current: number;
   target: number;
+  setTemp: (newTemp: number) => void;
+  addTemp: (addCelsius: number) => void; // can be negative
 };
 
 export type ListenerTypes = {
@@ -82,9 +85,9 @@ export class PrinterAPI extends OctoprintAPI {
     ).replace(/^http/, "ws");
     const sessionInfos = httpClienta.post(
       "/api/login",
-      JSON.stringify({
+      {
         passive: true,
-      }),
+      },
       {
         headers: {
           "Content-Type": "application/json",
@@ -210,7 +213,11 @@ export class PrinterAPI extends OctoprintAPI {
     ...args: Parameters<ListenerTypes[T]>
   ) {
     if (this.listeners[type]) {
-      (this.listeners[type]! as Array<(...args: Parameters<ListenerTypes[T]>) => void>).forEach((element) => {
+      (
+        this.listeners[type]! as Array<
+          (...args: Parameters<ListenerTypes[T]>) => void
+        >
+      ).forEach((element) => {
         element(...(args as Parameters<ListenerTypes[T]>));
       });
     }

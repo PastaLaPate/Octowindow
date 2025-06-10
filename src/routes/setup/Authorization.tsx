@@ -1,7 +1,9 @@
-import { StoreManager, type OctoprintNode } from "@/lib/octoprint/Octoprint";
-import SetupFrame from "./SetupFrame";
-import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
+
+import { StoreManager, type OctoprintNode } from "@/lib/octoprint/Octoprint";
+import { Button } from "@/components/ui/button";
+
+import SetupFrame from "./SetupFrame";
 
 type AuthorizationProps = {
   node: OctoprintNode;
@@ -41,8 +43,8 @@ export default function Authorization({ node, onSuccess }: AuthorizationProps) {
       key={"authorization"}
       className="flex flex-col items-center justify-center"
     >
-      <div className="flex items-center gap-2 mb-6">
-        <h1 className="text-4xl sm:text-5xl font-bold">Authentication</h1>
+      <div className="mb-6 flex items-center gap-2">
+        <h1 className="text-4xl font-bold sm:text-5xl">Authentication</h1>
       </div>
       <Button onClick={handleAuthenticate} loading={loading}>
         Authenticate

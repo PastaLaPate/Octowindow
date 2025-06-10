@@ -1,5 +1,6 @@
-import { useState, useRef, type RefObject } from "react";
+import { useRef, useState, type RefObject } from "react";
 import Keyboard, { type KeyboardLayoutObject } from "react-simple-keyboard";
+
 import "react-simple-keyboard/build/css/index.css";
 
 type ControlledKeyboardProps = {

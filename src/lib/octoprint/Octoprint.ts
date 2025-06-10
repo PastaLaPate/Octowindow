@@ -1,7 +1,8 @@
-import { Axios } from "axios";
-import AuthorizationWorkflow from "./Auth";
+import axios, { Axios } from "axios";
+
 import { FileAPI } from "./apis/FileAPI";
 import { PrinterAPI } from "./apis/PrinterAPI";
+import AuthorizationWorkflow from "./Auth";
 
 export type OctoprintNodeType = {
   url: string;
@@ -54,6 +55,7 @@ export class OctoprintNode {
       baseUrl = `${node.url}${node.port !== undefined ? `:${node.port}` : ""}`;
       this.httpClient = new Axios({
         baseURL: baseUrl,
+        transformRequest: axios.defaults.transformRequest,
       });
     }
 
@@ -100,7 +102,7 @@ export class OctoprintNode {
     const supportsAppKeys = await this.authWorflow.probeForWorkflow();
     if (!supportsAppKeys) {
       throw new InvalidNode(
-        "The OctoPrint node does not support the appkeys plugin"
+        "The OctoPrint node does not support the appkeys plugin",
       );
     }
 
@@ -118,7 +120,7 @@ export class OctoprintNode {
     try {
       const response = await this.httpClient.get(
         "/static/webassets/packed_client.js",
-        { signal }
+        { signal },
       );
       if (response.status === 200) {
         return true;
@@ -148,6 +150,7 @@ export class OctoprintNode {
       headers: {
         "X-Api-Key": this.apiKey || "",
       },
+      transformRequest: axios.defaults.transformRequest,
     });
   }
 

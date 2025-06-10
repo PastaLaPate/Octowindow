@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
+
 import "./App.css";
-import { OctoprintNode } from "@/lib/octoprint/Octoprint";
+
+import { Outlet } from "react-router";
+
 import {
   allFalseFlags,
   type ConnectionInfos,
   type Temp,
 } from "@/lib/octoprint/apis/PrinterAPI";
+import { OctoprintNode } from "@/lib/octoprint/Octoprint";
 import TopBar from "@/components/Topbar";
-import { Outlet } from "react-router";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
   const [node, setNode] = useState<OctoprintNode>();
@@ -39,6 +43,7 @@ function App() {
   }, []);
   return (
     <div className="flex h-screen w-screen flex-col bg-slate-950">
+      <Toaster position="bottom-left" richColors />
       {node && (
         <TopBar
           octoprintState={{

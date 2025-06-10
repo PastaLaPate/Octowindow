@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 type Props = {
   onFinish: () => void;
@@ -33,7 +33,7 @@ export default function WelcomeAnimation({ onFinish }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 1 }}
-            className="text-white text-4xl font-bold"
+            className="text-4xl font-bold text-white"
           >
             Welcome to OctoWindow
           </motion.h1>

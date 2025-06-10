@@ -1,9 +1,11 @@
-import { useState } from "react";
-import WelcomeAnimation from "./WelcomeAnim";
 import { AnimatePresence, motion } from "framer-motion";
-import NodeDiscovery from "./NodeDiscovery";
-import Authorization from "./Authorization";
+import { useState } from "react";
+
 import type { OctoprintNode } from "@/lib/octoprint/Octoprint";
+
+import Authorization from "./Authorization";
+import NodeDiscovery from "./NodeDiscovery";
+import WelcomeAnimation from "./WelcomeAnim";
 
 const SetupState = {
   Welcome: "welcome",

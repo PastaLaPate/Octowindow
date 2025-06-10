@@ -1,4 +1,5 @@
 import path from "path-browserify";
+import urlJoin from "url-join";
 
 import { OctoprintAPI } from "./OctoprintAPI";
 
@@ -7,6 +8,7 @@ export type Node = {
   display: string;
   size: string; // Size like 10 MB
   path: string;
+  origin: "local" | "sdcard";
 };
 
 export type Dir = Node & {
@@ -91,14 +93,14 @@ function humanFileSize(bytes: number, si = false, dp = 1) {
 export class FileAPI extends OctoprintAPI {
   public async printFile(origin: string, filePath: string) {
     const resp = await this.httpClient.post(
-      path.join("/api/files", origin, filePath),
+      urlJoin("/api/files", origin, filePath),
       {
         command: "select",
         print: true,
       },
     );
     if (resp.status === 409) {
-      throw Error("Printer already printing...");
+      throw Error("Printer already printing or isn't connected...");
     }
   }
 
@@ -114,7 +116,7 @@ export class FileAPI extends OctoprintAPI {
       },
     });
     const sdFiles: (Node | Dir | Print)[] = this.processFiles(
-      "sd",
+      "sdcard",
       JSON.parse(SDResp.data).files,
     );
     const localFiles: (Node | Dir | Print)[] = this.processFiles(
@@ -130,12 +132,14 @@ export class FileAPI extends OctoprintAPI {
         display: "SD",
         name: "sdcard",
         size: "",
+        origin: "sdcard",
         path: "/sdcard/",
         children: sdFiles,
       },
       {
         display: "Local",
         name: "local",
+        origin: "local",
         size: "",
         path: "/local/",
         children: localFiles,
@@ -144,7 +148,7 @@ export class FileAPI extends OctoprintAPI {
   }
 
   private processFiles(
-    origin: "local" | "sd",
+    origin: "local" | "sdcard",
     files: FilesInformation[],
   ): (Node | Dir | Print)[] {
     const tree: (Node | Dir | Print)[] = [];
@@ -157,6 +161,7 @@ export class FileAPI extends OctoprintAPI {
           path: folder.path,
           size: humanFileSize(folder.size, true, 2),
           children: this.processFiles(origin, folder.children),
+          origin: origin,
         });
       } else if (file.type === "model" || file.type === "machinecode") {
         const print = file as FileInfo;
@@ -165,6 +170,7 @@ export class FileAPI extends OctoprintAPI {
           name: print.name,
           path: print.path,
           size: humanFileSize(print.size, true, 2),
+          origin: origin,
           thumbnail: print.thumbnail
             ? new URL(
                 print.thumbnail,

@@ -1,7 +1,8 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { RefreshCw } from "lucide-react";
 import type { ClassValue } from "clsx";
+import { RefreshCw } from "lucide-react";
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;

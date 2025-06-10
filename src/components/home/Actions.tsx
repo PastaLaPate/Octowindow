@@ -4,8 +4,8 @@ import ActionBox from "./ActionBox";
 
 export default function Actions() {
   return (
-    <div className="flex w-[50vw] h-full items-center justify-center px-9">
-      <div className="grid  w-full grid-cols-2 items-center justify-items-center gap-4">
+    <div className="flex h-full w-[50vw] items-center justify-center px-9">
+      <div className="grid w-full grid-cols-2 items-center justify-items-center gap-4">
         <ActionBox label="Control" icon={Move} color="bg-purple-600" />
         <ActionBox label="Terminal" icon={Terminal} color="bg-cyan-600" />
         <ActionBox label="Preheat" icon={Flame} color="bg-orange-600" />

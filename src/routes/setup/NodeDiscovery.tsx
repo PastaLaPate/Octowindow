@@ -1,12 +1,13 @@
+import { motion } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
 import {
   OctoprintNode,
   type OctoprintNodeType,
 } from "@/lib/octoprint/Octoprint";
-import { useCallback, useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
-import ControlledKeyboard from "@/Keyboard";
-import React from "react";
 import { Button } from "@/components/ui/button";
+
+import ControlledKeyboard from "@/Keyboard";
 import SetupFrame from "./SetupFrame";
 
 type NodeDiscoveryProps = {
