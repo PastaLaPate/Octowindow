@@ -1,12 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Image, Printer, Trash } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Image,
+  Printer,
+  RefreshCw,
+  Trash,
+} from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router";
 import { toast } from "sonner";
-import { ref } from "process";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./Home";
 
@@ -147,22 +154,15 @@ function Directory({
 }
 function FileViewer({
   octoprintState,
+  files,
   viewType,
+  loading,
 }: {
   octoprintState: OctoprintState;
+  files: Dir[];
   viewType: ViewType;
+  loading: boolean;
 }) {
-  const [files, setFiles] = useState<Dir[]>([]);
-
-  const refresh = async () => {
-    setFiles(await octoprintState.node.file.getAllFiles());
-  };
-
-  useEffect(() => {
-    refresh();
-    0;
-  }, []);
-
   return (
     <div
       className={cn(
@@ -170,25 +170,27 @@ function FileViewer({
         viewType == "gallery" ? "flex-row flex-wrap" : "flex-col",
       )}
     >
-      {files.map((dir) => {
-        return (
-          <Directory
-            dir={dir}
-            viewType={viewType}
-            key={dir.name}
-            depth={0}
-            onPrint={(print) => {
-              octoprintState.node.file
-                .printFile(dir.origin, print.path)
-                .catch((e) => {
-                  if (e instanceof Error) {
-                    toast.error(e.message);
-                  }
-                });
-            }}
-          />
-        );
-      })}
+      {!loading
+        ? files.map((dir) => {
+            return (
+              <Directory
+                dir={dir}
+                viewType={viewType}
+                key={dir.name}
+                depth={0}
+                onPrint={(print) => {
+                  octoprintState.node.file
+                    .printFile(dir.origin, print.path)
+                    .catch((e) => {
+                      if (e instanceof Error) {
+                        toast.error(e.message);
+                      }
+                    });
+                }}
+              />
+            );
+          })
+        : Array.from({ length: 3 }, () => <Skeleton className="h-20" />)}
       {/*
       {Array(3).fill(<Print3D viewType={viewType} />)}
       
@@ -230,10 +232,23 @@ export default function PrintPage() {
   const [viewType, setViewType] = useState<ViewType>("list");
   const OctoprintState = useOutletContext() as OctoprintState;
   const navigate = useNavigate();
-  return OctoprintState.node !== undefined ? (
+  const [files, setFiles] = useState<Dir[]>([]);
+  const [loading, setLoading] = useState(true);
+  const refresh = async () => {
+    setLoading(true);
+    if (OctoprintState.node !== undefined) {
+      setFiles(await OctoprintState.node.file.getAllFiles());
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, [OctoprintState]);
+  return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
-      <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-4 rounded-2xl bg-slate-900 p-10">
-        <div className="flex flex-row items-center justify-center gap-4">
+      <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
+        <div className="flex w-full flex-row items-center justify-center gap-4">
           <div className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition hover:bg-slate-700">
             <ArrowLeft
               className="h-10 w-10"
@@ -243,11 +258,27 @@ export default function PrintPage() {
             />
           </div>
           <p className="text-4xl font-bold">Select a file</p>
+          <div
+            className={cn(
+              "ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-800",
+              loading ? "animate-spin" : "",
+            )}
+            onClick={() => {
+              if (!loading) {
+                refresh();
+              }
+            }}
+          >
+            <RefreshCw className="h-8 w-8" />
+          </div>
         </div>
-        <FileViewer octoprintState={OctoprintState} viewType={viewType} />
+        <FileViewer
+          octoprintState={OctoprintState}
+          files={files}
+          viewType={viewType}
+          loading={loading}
+        />
       </div>
     </div>
-  ) : (
-    <></>
   );
 }
