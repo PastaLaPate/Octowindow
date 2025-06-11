@@ -25,6 +25,7 @@ const KeyboardLayouts: KeyboardLayoutObject = {
     "{shift} Z X C V B N M < > ? {shift}",
     ".com @ {space} {close}",
   ],
+  numeric: ["1 2 3", "4 5 6", "7 8 9", "{close} {bksp} {enter}"],
 };
 
 export default function ControlledKeyboard({

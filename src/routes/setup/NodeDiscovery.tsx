@@ -128,7 +128,6 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
           type="text"
           id="nodeUrl"
           inputMode="url"
-          autoComplete="off"
           className="w-full appearance-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-3 text-base leading-tight text-white shadow focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-lg"
           value={nodeUrl}
           onChange={handleInputChange}

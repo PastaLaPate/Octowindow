@@ -137,6 +137,34 @@ export class PrinterAPI extends OctoprintAPI {
     this.fetchProfiles();
   }
 
+  public async setBedTemp(target: number) {
+    const resp = await this.httpClient.post("/api/printer/bed", {
+      command: "target",
+      target: target,
+    });
+    if (resp.status === 400) {
+      throw Error(
+        "Target outside of the supported range, or the request is invalid.",
+      );
+    } else if (resp.status === 409) {
+      throw Error("Printer isn't operational or doesn't have bed");
+    }
+  }
+
+  public async setToolTemp(target: number) {
+    const resp = await this.httpClient.post("/api/printer/tool", {
+      commmand: "target",
+      targets: {
+        tool: target,
+      },
+    });
+    if (resp.status === 400) {
+      throw Error("Isn't in temp range");
+    } else if (resp.status === 409) {
+      throw Error("Printer isn't operational");
+    }
+  }
+
   public addListener<T extends keyof ListenerTypes>(
     type: T,
     callback: ListenerTypes[T],
@@ -196,11 +224,19 @@ export class PrinterAPI extends OctoprintAPI {
               targetDevice: "tool",
               current: tool.actual,
               target: tool.target,
+              setTemp: this.setToolTemp,
+              addTemp(addCelsius) {
+                this.setTemp(this.current + addCelsius);
+              },
             },
             {
               targetDevice: "bed",
               current: bed.actual,
               target: bed.target,
+              setTemp: this.setBedTemp,
+              addTemp(addCelsius) {
+                this.setTemp(this.current + addCelsius);
+              },
             },
           );
         }
