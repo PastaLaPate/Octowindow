@@ -25,7 +25,7 @@ export default function ActionBox({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-[1_0_20%] flex-col items-center justify-center gap-4 bg-slate-800 sm:h-24 lg:h-60",
+        "relative flex w-full flex-[1_0_20%] flex-col items-center justify-center gap-4 bg-slate-800 sm:h-24 lg:h-40 xl:h-60",
         className,
       )}
       onClick={() => navigate(to)}
