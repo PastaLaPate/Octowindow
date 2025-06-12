@@ -19,11 +19,15 @@ function App() {
     current: 0,
     target: 0,
     targetDevice: "bed",
+    addTemp(addCelsius) {},
+    setTemp(newTemp) {},
   });
   const [toolTemp, setToolTemp] = useState<Temp>({
     current: 0,
     target: 0,
     targetDevice: "tool",
+    addTemp(addCelsius) {},
+    setTemp(newTemp) {},
   });
   const [connectionInfos, setConnectionInfos] = useState<ConnectionInfos>({
     connected: false,
