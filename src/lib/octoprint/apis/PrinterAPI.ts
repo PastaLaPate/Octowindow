@@ -224,7 +224,7 @@ export class PrinterAPI extends OctoprintAPI {
               targetDevice: "tool",
               current: tool.actual,
               target: tool.target,
-              setTemp: this.setToolTemp,
+              setTemp: (newTemp) => this.setToolTemp(newTemp),
               addTemp(addCelsius) {
                 this.setTemp(this.current + addCelsius);
               },
@@ -233,7 +233,7 @@ export class PrinterAPI extends OctoprintAPI {
               targetDevice: "bed",
               current: bed.actual,
               target: bed.target,
-              setTemp: this.setBedTemp,
+              setTemp: (newTemp) => this.setBedTemp(newTemp),
               addTemp(addCelsius) {
                 this.setTemp(this.current + addCelsius);
               },

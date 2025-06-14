@@ -8,6 +8,7 @@ type ControlledKeyboardProps = {
   input: string;
   validate?: (input: string) => void;
   close?: () => void;
+  numeric?: boolean;
 };
 
 const KeyboardLayouts: KeyboardLayoutObject = {
@@ -33,8 +34,11 @@ export default function ControlledKeyboard({
   input,
   validate = () => {},
   close = () => {},
+  numeric = false,
 }: ControlledKeyboardProps) {
-  const [layoutName, setLayoutName] = useState("default");
+  const [layoutName, setLayoutName] = useState(
+    !numeric ? "default" : "numeric",
+  );
   const keyboard: RefObject<any> = useRef(null);
 
   const onChange = (input: string) => {
@@ -60,7 +64,9 @@ export default function ControlledKeyboard({
   };
 
   const handleShift = () => {
-    setLayoutName(layoutName === "default" ? "shift" : "default");
+    if (!numeric) {
+      setLayoutName(layoutName === "default" ? "shift" : "default");
+    }
   };
 
   return (

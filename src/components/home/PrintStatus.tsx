@@ -3,6 +3,8 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router";
 
+import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
+
 import ControlledKeyboard from "@/Keyboard";
 import type { OctoprintState } from "@/routes/app/Home";
 import HeatedPlate from "../svg/HeatedPlate";
@@ -18,9 +20,7 @@ function TempViewer({
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [tempInput, setNumberInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const temp =
-    target === "tool" ? octoprintState.toolTemp : octoprintState.bedTemp;
-
+  const [temp, setTemp] = useState<Temp | undefined>(undefined);
   // Close keyboard if click is outside input and keyboard
   useEffect(() => {
     if (!isKeyboardVisible) return;
@@ -42,6 +42,12 @@ function TempViewer({
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [isKeyboardVisible]);
+
+  useEffect(() => {
+    setTemp(
+      target === "tool" ? octoprintState.toolTemp : octoprintState.bedTemp,
+    );
+  }, [octoprintState]);
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,19 +80,21 @@ function TempViewer({
       ) : (
         <HeatedPlate stroke={"#FFFFFF"} className="h-24 w-24" />
       )}
-      <input
-        className="w-min"
-        title="Set target"
-        ref={inputRef}
-        type="number"
-        id="temp"
-        autoComplete="off"
-        onChange={handleInputChange}
-        onFocus={handleInputFocus}
-        value={isKeyboardVisible ? tempInput : Math.round(temp.current)}
-      />
+      {temp && (
+        <input
+          className="w-min"
+          title="Set target"
+          ref={inputRef}
+          type="number"
+          id="temp"
+          autoComplete="off"
+          onChange={handleInputChange}
+          onFocus={handleInputFocus}
+          value={isKeyboardVisible ? tempInput : Math.round(temp.current)}
+        />
+      )}
       <p className="text-2xl text-slate-500">
-        {temp.target !== 0 ? `${temp.target}` : ""}
+        {temp && (temp.target !== 0 ? `${temp.target}` : "")}
       </p>
       {isKeyboardVisible && (
         <motion.div
@@ -108,11 +116,19 @@ function TempViewer({
             boxShadow: "0 -4px 24px rgba(0,0,0,0.3)",
           }}
         >
-          <ControlledKeyboard
-            setInput={setKeyboardInput}
-            input={tempInput}
-            close={() => setIsKeyboardVisible(false)}
-          />
+          {temp && (
+            <ControlledKeyboard
+              setInput={setKeyboardInput}
+              input={tempInput}
+              close={() => setIsKeyboardVisible(false)}
+              validate={(input) => {
+                setIsKeyboardVisible(false);
+                console.log(temp);
+                temp.setTemp(Math.round(Number(tempInput)));
+              }}
+              numeric={true}
+            />
+          )}
         </motion.div>
       )}
     </div>
