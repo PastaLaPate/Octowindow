@@ -75,6 +75,7 @@ function TempViewer({
         <HeatedPlate stroke={"#FFFFFF"} className="h-24 w-24" />
       )}
       <input
+        className="w-min"
         title="Set target"
         ref={inputRef}
         type="number"

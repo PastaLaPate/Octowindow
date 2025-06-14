@@ -11,6 +11,7 @@ export default function ActionBox({
   icon = Settings,
   label = "Settings",
   to = "/app",
+  onClick,
 }: {
   className?: ClassValue;
   color?: ClassValue;
@@ -19,6 +20,7 @@ export default function ActionBox({
   >;
   label?: string;
   to?: string;
+  onClick?: () => void;
 }) {
   const Icon = icon;
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ export default function ActionBox({
         "relative flex w-full flex-[1_0_20%] flex-col items-center justify-center gap-4 bg-slate-800 sm:h-24 lg:h-40 xl:h-60",
         className,
       )}
-      onClick={() => navigate(to)}
+      onClick={() => (onClick ? onClick() : navigate(to))}
     >
       <div className="h-2/6 w-2/6">
         <Icon className="h-full w-full" />
