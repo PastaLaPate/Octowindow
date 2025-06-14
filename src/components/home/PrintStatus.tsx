@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
+import { cn } from "@/lib/utils";
 
 import ControlledKeyboard from "@/Keyboard";
 import type { OctoprintState } from "@/routes/app/Home";
@@ -76,13 +77,16 @@ function TempViewer({
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-slate-900 p-5 px-10">
       {target === "tool" ? (
-        <Nozzle stroke={"#FFFFFF"} className="h-24 w-24" />
+        <Nozzle stroke={"var(--nozzle-color)"} className="h-24 w-24" />
       ) : (
-        <HeatedPlate stroke={"#FFFFFF"} className="h-24 w-24" />
+        <HeatedPlate stroke={"var(--heated-bed-color)"} className="h-24 w-24" />
       )}
       {temp && (
         <input
-          className="w-20 text-center text-2xl"
+          className={cn(
+            "w-20 text-center text-2xl font-bold",
+            target === "tool" ? "text-blue-200" : "text-yellow-200",
+          )}
           title="Set target"
           ref={inputRef}
           type="number"

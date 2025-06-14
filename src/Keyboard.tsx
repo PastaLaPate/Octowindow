@@ -70,31 +70,35 @@ export default function ControlledKeyboard({
   };
 
   return (
-    <Keyboard
-      keyboardRef={(r) => (keyboard.current = r)}
-      layout={KeyboardLayouts}
-      layoutName={layoutName}
-      onKeyPress={onKeyPress}
-      display={{
-        "{bksp}": "backspace",
-        "{tab}": "tab",
-        "{lock}": "caps",
-        "{shift}": "⇧",
-        "{enter}": "⏎",
-        "{space}": " ",
-        "{close}": "✖",
-      }}
-      buttonTheme={[
-        {
-          class: "kbd-close-btn",
-          buttons: "{close}",
-        },
-        {
-          class: "kbd-space-btn",
-          buttons: "{space}",
-        },
-      ]}
-      theme={"hg-theme-default darkTheme"}
-    />
+    <div className="pointer-events-auto fixed inset-0 z-50 flex items-end justify-center bg-black/40">
+      <div className="w-full max-w-md">
+        <Keyboard
+          keyboardRef={(r) => (keyboard.current = r)}
+          layout={KeyboardLayouts}
+          layoutName={layoutName}
+          onKeyPress={onKeyPress}
+          display={{
+            "{bksp}": "backspace",
+            "{tab}": "tab",
+            "{lock}": "caps",
+            "{shift}": "⇧",
+            "{enter}": "⏎",
+            "{space}": " ",
+            "{close}": "✖",
+          }}
+          buttonTheme={[
+            {
+              class: "kbd-close-btn",
+              buttons: "{close}",
+            },
+            {
+              class: "kbd-space-btn",
+              buttons: "{space}",
+            },
+          ]}
+          theme={"hg-theme-default darkTheme"}
+        />
+      </div>
+    </div>
   );
 }
