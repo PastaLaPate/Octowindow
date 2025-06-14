@@ -82,7 +82,7 @@ function TempViewer({
       )}
       {temp && (
         <input
-          className="w-min"
+          className="w-20 text-center text-2xl"
           title="Set target"
           ref={inputRef}
           type="number"
@@ -123,8 +123,8 @@ function TempViewer({
               close={() => setIsKeyboardVisible(false)}
               validate={(input) => {
                 setIsKeyboardVisible(false);
-                console.log(temp);
                 temp.setTemp(Math.round(Number(tempInput)));
+                setNumberInput("");
               }}
               numeric={true}
             />
