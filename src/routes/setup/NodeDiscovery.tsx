@@ -5,9 +5,9 @@ import {
   OctoprintNode,
   type OctoprintNodeType,
 } from "@/lib/octoprint/Octoprint";
+import ControlledInput from "@/components/ControlledInput";
 import { Button } from "@/components/ui/button";
 
-import ControlledKeyboard from "@/Keyboard";
 import SetupFrame from "./SetupFrame";
 
 type NodeDiscoveryProps = {
@@ -43,29 +43,11 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [isKeyboardVisible]);
 
-  const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setNodeUrl(event.target.value);
-    },
-    [],
-  );
-
-  const handleInputFocus = () => {
-    setIsKeyboardVisible(true);
-  };
-
   useEffect(() => {
     if (isKeyboardVisible && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isKeyboardVisible]);
-
-  const setKeyboardInput = (input: string) => {
-    setNodeUrl(input);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
 
   const verifyNodeUrl = async (url: string) => {
     setLoading(true);
@@ -117,52 +99,14 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
       </motion.div>
 
       <div className="mb-4 w-full sm:mb-6">
-        <label
-          htmlFor="nodeUrl"
-          className="mb-2 block text-base font-bold text-white sm:mb-3 sm:text-lg"
-        >
-          Node URL:
-        </label>
-        <input
-          ref={inputRef}
-          type="text"
-          id="nodeUrl"
-          inputMode="url"
-          className="w-full appearance-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-3 text-base leading-tight text-white shadow focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-lg"
+        <ControlledInput
           value={nodeUrl}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
+          onChange={setNodeUrl}
+          label="Node URL:"
           placeholder="http://octoprint.local"
+          numeric={false}
         />
       </div>
-
-      {isKeyboardVisible && (
-        <motion.div
-          className="keyboard-wrapper"
-          initial={{ y: "100%", opacity: 0 }}
-          animate={{ y: "0%", opacity: 1 }}
-          exit={{ y: "100%", opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            zIndex: 50,
-            background: "#1f2937",
-            borderTopLeftRadius: "1.5rem",
-            borderTopRightRadius: "1.5rem",
-            padding: "1rem 0.5rem .5rem 0.5rem",
-            boxShadow: "0 -4px 24px rgba(0,0,0,0.3)",
-          }}
-        >
-          <ControlledKeyboard
-            setInput={setKeyboardInput}
-            input={nodeUrl}
-            close={() => setIsKeyboardVisible(false)}
-          />
-        </motion.div>
-      )}
 
       <div className="mt-auto flex justify-center">
         <Button

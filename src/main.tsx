@@ -26,18 +26,7 @@ createRoot(document.getElementById("root")!).render(
           <Route index element={<Home />} />
           <Route path="/app/print" element={<PrintPage />} />
         </Route>
-        <Route
-          path="/setup"
-          element={
-            <Setup
-              onCompleted={() => {
-                setTimeout(() => {
-                  useNavigate()("/app");
-                }, 1000);
-              }}
-            />
-          }
-        />
+        <Route path="/setup" element={<Setup />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

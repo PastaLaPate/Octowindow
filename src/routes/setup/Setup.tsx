@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 import type { OctoprintNode } from "@/lib/octoprint/Octoprint";
 
@@ -27,6 +28,7 @@ export default function Setup(props: SetupProps) {
   const [currentState, setCurrentState] = useState<SetupState>(initialState);
   const [node, setNode] = useState<OctoprintNode>();
 
+  const navigate = useNavigate();
   let content: React.ReactNode = null;
   if (currentState === SetupState.Welcome) {
     content = (
@@ -60,7 +62,7 @@ export default function Setup(props: SetupProps) {
         <h2 className="mb-4 text-2xl">Configuration</h2>
         <button
           className="rounded bg-green-500 px-4 py-2 text-white"
-          onClick={() => onCompleted?.()}
+          onClick={() => navigate("/app")}
         >
           Finish Setup
         </button>
