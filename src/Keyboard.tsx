@@ -70,7 +70,7 @@ export default function ControlledKeyboard({
   };
 
   return (
-    <div className="pointer-events-auto fixed inset-0 z-50 flex items-end justify-center bg-black/40">
+    <div className="pointer-events-auto fixed inset-0 z-[500] flex items-end justify-center bg-black/40">
       <div className="w-full">
         <Keyboard
           keyboardRef={(r) => (keyboard.current = r)}

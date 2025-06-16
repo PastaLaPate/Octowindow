@@ -31,9 +31,10 @@ function CListNode({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-2xl bg-slate-800 p-4 text-xl",
+        "flex items-center gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-lg transition hover:scale-[102%] hover:border-blue-500 active:scale-100",
+        "sm:gap-4 sm:p-2",
       )}
-      style={{ marginLeft: depth * 20 }}
+      style={{ marginLeft: depth * 20, minWidth: 0 }}
     >
       {children}
     </div>
@@ -122,7 +123,7 @@ function Directory({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-2 px-4 pt-3"
           >
             {dir.children.map((node) => {
               if ("children" in node) {
@@ -166,7 +167,7 @@ function FileViewer({
   return (
     <div
       className={cn(
-        "flex w-full gap-2 overflow-y-auto",
+        "flex w-full gap-2 overflow-y-auto p-10",
         viewType == "gallery" ? "flex-row flex-wrap" : "flex-col",
       )}
     >
