@@ -23,9 +23,11 @@ type ViewType = "list" | "gallery";
 
 function CListNode({
   depth = 0,
+  onClick = () => {},
   children,
 }: {
   depth?: number;
+  onClick?: () => void;
   children?: ReactNode;
 }) {
   return (
@@ -35,6 +37,7 @@ function CListNode({
         "sm:gap-4 sm:p-2",
       )}
       style={{ marginLeft: depth * 20, minWidth: 0 }}
+      onClick={onClick}
     >
       {children}
     </div>
@@ -102,14 +105,13 @@ function Directory({
       className={cn("flex flex-col gap-2")}
       style={{ marginLeft: depth * 20 }}
     >
-      <CListNode>
+      <CListNode onClick={() => setOpened(!opened)}>
         <div className="flex h-10 items-center">
           <ArrowRight
             className={cn(
               "h-8 w-8 transition-transform",
               opened ? "rotate-90" : "rotate-0",
             )}
-            onClick={() => setOpened(!opened)}
           />
         </div>
         <p>{dir.name}</p>

@@ -65,14 +65,15 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
     useEffect(() => {
       if (!isKeyboardVisible) return;
       const handleClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
         const input = inputRef.current;
-        const keyboard = document.querySelector(".keyboard-wrapper");
+        const keyboard = document.querySelector(".custom-keyboard-root");
+        // Use composedPath for better support with portals/shadow DOM
+        const path = e.composedPath ? e.composedPath() : [];
         if (
           input &&
-          !input.contains(target) &&
+          !path.includes(input) &&
           keyboard &&
-          !keyboard.contains(target)
+          !path.includes(keyboard)
         ) {
           setIsKeyboardVisible(false);
         }
@@ -124,7 +125,7 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
         />
         {isKeyboardVisible && (
           <motion.div
-            className="keyboard-wrapper w-screen"
+            className="w-screen"
             initial={{ y: "100%", opacity: 0 }}
             animate={{ y: "0%", opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
