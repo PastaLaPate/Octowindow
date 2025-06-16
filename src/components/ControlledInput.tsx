@@ -17,9 +17,13 @@ type ControlledInputProps = {
   placeholder?: string;
   label?: string;
   numeric?: boolean;
-  validate?: (value: string) => void;
+  validate?: (
+    value: string,
+    setIsKeyboardVisible: (val: boolean) => void,
+  ) => void;
   className?: string;
   inputClassName?: string;
+  standAlonePlaceholder?: boolean;
 };
 
 const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
@@ -33,6 +37,7 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
       validate,
       className = "",
       inputClassName = "",
+      standAlonePlaceholder = false,
     },
     ref,
   ) => {
@@ -109,7 +114,9 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
             `w-full appearance-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-3 text-base leading-tight text-white shadow focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-lg`,
             inputClassName,
           )}
-          value={value}
+          value={
+            isKeyboardVisible || !standAlonePlaceholder ? value : placeholder
+          }
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           placeholder={placeholder}
@@ -137,8 +144,13 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
             <ControlledKeyboard
               setInput={setKeyboardInput}
               input={value}
-              close={() => setIsKeyboardVisible(false)}
-              validate={validate}
+              close={() => {
+                setKeyboardInput("");
+                setIsKeyboardVisible(false);
+              }}
+              validate={(val) => {
+                validate?.(val, setIsKeyboardVisible);
+              }}
               numeric={numeric}
             />
           </motion.div>

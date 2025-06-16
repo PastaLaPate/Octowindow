@@ -38,16 +38,19 @@ function TempViewer({
       )}
       {temp && (
         <ControlledInput
-          value={tempInput === "" ? String(temp.current) : tempInput}
+          placeholder={String(temp.current)}
+          value={tempInput}
+          standAlonePlaceholder={true}
           onChange={setNumberInput}
           label={target === "tool" ? "Tool" : "Bed"}
           numeric={true}
-          validate={(input) => {
+          validate={(input, setIsKeyboardVisible) => {
             temp.setTemp(Math.round(Number(input)));
-            setNumberInput(" ");
+            setNumberInput("");
+            setIsKeyboardVisible(false);
           }}
           inputClassName={cn(
-            "text-center",
+            "text-center w-26",
             target === "tool"
               ? "text-blue-200 font-bold"
               : "text-yellow-200 font-bold",
