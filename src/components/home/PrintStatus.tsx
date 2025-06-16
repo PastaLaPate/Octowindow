@@ -5,8 +5,8 @@ import { useOutletContext } from "react-router";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
 import { cn } from "@/lib/utils";
+import ControlledKeyboard from "@/components/Keyboard";
 
-import ControlledKeyboard from "@/Keyboard";
 import type { OctoprintState } from "@/routes/app/Home";
 import ControlledInput from "../ControlledInput";
 import HeatedPlate from "../svg/HeatedPlate";

@@ -8,8 +8,7 @@ import React, {
 } from "react";
 
 import { cn } from "@/lib/utils";
-
-import ControlledKeyboard from "@/Keyboard";
+import ControlledKeyboard from "@/components/Keyboard";
 
 type ControlledInputProps = {
   value: string;
@@ -64,10 +63,9 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
     // Close keyboard if click is outside input and keyboard
     useEffect(() => {
       if (!isKeyboardVisible) return;
-      const handleClick = (e: MouseEvent) => {
+      const handlePointerDown = (e: PointerEvent) => {
         const input = inputRef.current;
         const keyboard = document.querySelector(".custom-keyboard-root");
-        // Use composedPath for better support with portals/shadow DOM
         const path = e.composedPath ? e.composedPath() : [];
         if (
           input &&
@@ -78,8 +76,9 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
           setIsKeyboardVisible(false);
         }
       };
-      document.addEventListener("mousedown", handleClick);
-      return () => document.removeEventListener("mousedown", handleClick);
+      document.addEventListener("pointerdown", handlePointerDown);
+      return () =>
+        document.removeEventListener("pointerdown", handlePointerDown);
     }, [isKeyboardVisible]);
 
     const handleInputChange = useCallback(

@@ -71,8 +71,8 @@ export default function ControlledKeyboard({
 
   return (
     <div
-      className="custom-keyboard-root pointer-events-auto fixed inset-0 z-[500] flex items-end justify-center bg-black/40"
       onMouseDown={(e) => e.preventDefault()}
+      className="pointer-events-auto fixed inset-0 z-[500] flex items-end justify-center bg-black/40"
     >
       <div className="w-full">
         <Keyboard
@@ -99,7 +99,7 @@ export default function ControlledKeyboard({
               buttons: "{space}",
             },
           ]}
-          theme={"hg-theme-default darkTheme"}
+          theme={"hg-theme-default custom-keyboard-root darkTheme"}
         />
       </div>
     </div>
