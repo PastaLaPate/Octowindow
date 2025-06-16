@@ -21,7 +21,6 @@ function TempViewer({
 }) {
   const [tempInput, setNumberInput] = useState("");
   const [temp, setTemp] = useState<Temp | undefined>(undefined);
-  // Close keyboard if click is outside input and keyboard
 
   useEffect(() => {
     setTemp(
@@ -30,12 +29,25 @@ function TempViewer({
   }, [octoprintState]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-slate-900 p-5 px-10">
-      {target === "tool" ? (
-        <Nozzle stroke={"var(--nozzle-color)"} className="h-24 w-24" />
-      ) : (
-        <HeatedPlate stroke={"var(--heated-bed-color)"} className="h-24 w-24" />
+    <div
+      className={cn(
+        "sm:gap-3sm:p-2 relative flex flex-1 flex-col items-center justify-between gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-2 !px-0 shadow-lg transition hover:border-blue-500 active:scale-100 sm:p-2 md:p-5",
+        "min-w-0",
       )}
+      style={{
+        minWidth: 0,
+      }} // Responsive width
+    >
+      <div className="flex h-14 w-14 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24">
+        {target === "tool" ? (
+          <Nozzle stroke={"var(--nozzle-color)"} className="h-full w-full" />
+        ) : (
+          <HeatedPlate
+            stroke={"var(--heated-bed-color)"}
+            className="h-full w-full"
+          />
+        )}
+      </div>
       {temp && (
         <ControlledInput
           placeholder={String(temp.current)}
@@ -50,25 +62,31 @@ function TempViewer({
             setIsKeyboardVisible(false);
           }}
           inputClassName={cn(
-            "text-center w-26",
+            "text-center w-20 sm:w-24",
             target === "tool"
               ? "text-blue-200 font-bold"
               : "text-yellow-200 font-bold",
           )}
-          className="flex flex-col items-center justify-center gap-3 text-center"
+          className="flex flex-col items-center justify-center gap-2 text-center"
         />
       )}
-      <p className="text-2xl text-slate-500">
+      <p className="text-lg text-slate-500 sm:text-xl">
         {temp && (temp.target !== 0 ? `${temp.target}` : "")}
       </p>
+      {/* Optional: bottom colored bar for accent */}
+      <div
+        className={cn(
+          "absolute bottom-0 h-2 w-full rounded-b-2xl",
+          target === "tool" ? "bg-blue-500" : "bg-yellow-500",
+        )}
+      />
     </div>
   );
 }
-
 export default function PrintStatus() {
   const octoprintState: OctoprintState = useOutletContext();
   return (
-    <div className="flex h-full w-[50vw] items-center justify-center gap-5">
+    <div className="flex h-full w-[50vw] items-center justify-center gap-3 p-5">
       <TempViewer octoprintState={octoprintState} target="tool" />
       <TempViewer octoprintState={octoprintState} target="bed" />
     </div>
