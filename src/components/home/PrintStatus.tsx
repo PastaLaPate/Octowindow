@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router";
+import { toast } from "sonner";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
 import { cn } from "@/lib/utils";
@@ -57,6 +58,7 @@ function TempViewer({
           label={target === "tool" ? "Tool" : "Bed"}
           numeric={true}
           validate={(input, setIsKeyboardVisible) => {
+            toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
             temp.setTemp(Math.round(Number(input)));
             setNumberInput("");
             setIsKeyboardVisible(false);
