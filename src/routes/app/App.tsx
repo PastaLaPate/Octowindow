@@ -13,6 +13,8 @@ import { OctoprintNode } from "@/lib/octoprint/Octoprint";
 import TopBar from "@/components/Topbar";
 import { Toaster } from "@/components/ui/sonner";
 
+import { AnimationLayout } from "../PageAnimation";
+
 function App() {
   const [node, setNode] = useState<OctoprintNode>();
   const [bedTemp, setBedTemp] = useState<Temp>({
@@ -46,29 +48,31 @@ function App() {
     setNode(node);
   }, []);
   return (
-    <div className="flex h-screen w-screen flex-col bg-slate-950">
-      <Toaster position="bottom-left" richColors />
-      {node && (
-        <TopBar
-          octoprintState={{
-            node: node,
-            bedTemp: bedTemp,
-            toolTemp: toolTemp,
-            connectionInfos: connectionInfos,
-          }}
-        />
-      )}
-      <div className="flex h-full min-h-0 w-screen flex-1">
-        <Outlet
-          context={{
-            node: node,
-            bedTemp: bedTemp,
-            toolTemp: toolTemp,
-            connectionInfos: connectionInfos,
-          }}
-        />
+    <AnimationLayout>
+      <div className="flex h-screen w-screen flex-col bg-slate-950">
+        <Toaster position="bottom-left" richColors />
+        {node && (
+          <TopBar
+            octoprintState={{
+              node: node,
+              bedTemp: bedTemp,
+              toolTemp: toolTemp,
+              connectionInfos: connectionInfos,
+            }}
+          />
+        )}
+        <div className="flex h-full min-h-0 w-screen flex-1">
+          <Outlet
+            context={{
+              node: node,
+              bedTemp: bedTemp,
+              toolTemp: toolTemp,
+              connectionInfos: connectionInfos,
+            }}
+          />
+        </div>
       </div>
-    </div>
+    </AnimationLayout>
   );
   /*
   return (
