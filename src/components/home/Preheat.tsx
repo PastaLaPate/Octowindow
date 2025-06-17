@@ -92,7 +92,7 @@ function TempPreset({
   const [toolTemp, setToolTemp] = useState(initToolTemp);
 
   return (
-    <button
+    <div
       onClick={() => {
         if (startingCreating && create) {
           setStartingCreating(false);
@@ -100,8 +100,9 @@ function TempPreset({
           onSelected();
         }
       }}
-      className="group flex h-[280px] max-w-[180px] min-w-[140px] flex-col items-center justify-between gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100 sm:max-w-[220px] sm:min-w-[180px] sm:gap-4 sm:p-5"
-      type="button"
+      className={
+        "group flex h-[280px] max-w-[180px] min-w-[140px] flex-col items-center justify-between gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:border-blue-500 focus:outline-none active:scale-100 sm:max-w-[220px] sm:min-w-[180px] sm:gap-4 sm:p-5"
+      }
     >
       {!create || !startingCreating ? (
         <>
@@ -137,7 +138,7 @@ function TempPreset({
           </div>
         )
       )}
-    </button>
+    </div>
   );
 }
 
