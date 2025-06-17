@@ -15,9 +15,9 @@ import {
 type PreheatTempProps = {
   label: string;
   icon: "nozzle" | "bed";
-  value: number;
+  value: string | number;
   editable?: boolean;
-  onChange?: (val: number) => void;
+  onChange?: (val: string) => void;
   className?: string;
 };
 
@@ -52,14 +52,11 @@ export function PreheatTemp({
       {editable && onChange ? (
         <ControlledInput
           value={String(value)}
-          onChange={(v) => {
-            const n = Number(v.replace(/\D/g, ""));
-            if (!isNaN(n)) onChange(n);
-          }}
+          onChange={onChange}
           numeric
           inputClassName="text-base font-bold text-blue-200 sm:text-lg w-14 text-center ml-3 p-0 px-2"
           className="w-16"
-          placeholder="0"
+          placeholder={icon === "nozzle" ? "200" : "60"}
         />
       ) : (
         <span
@@ -76,8 +73,8 @@ export function PreheatTemp({
 
 function TempPreset({
   name = "Name",
-  initBedTemp = 60,
-  initToolTemp = 200,
+  initBedTemp = 0,
+  initToolTemp = 0,
   onSelected = () => {},
   create = false,
 }: {
@@ -113,16 +110,16 @@ function TempPreset({
             <PreheatTemp
               label="Nozzle"
               icon="nozzle"
-              value={toolTemp}
+              value={!startingCreating && toolTemp === 0 ? "" : toolTemp}
               editable={!startingCreating}
-              onChange={setToolTemp}
+              onChange={(v) => setToolTemp(Number(v))}
             />
             <PreheatTemp
               label="Bed"
               icon="bed"
-              value={bedTemp}
+              value={!startingCreating && bedTemp === 0 ? "" : bedTemp}
               editable={!startingCreating}
-              onChange={setBedTemp}
+              onChange={(v) => setBedTemp(Number(v))}
             />
           </div>
           <span className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1 text-sm font-bold text-white shadow transition group-hover:bg-blue-700 sm:mt-4 sm:text-lg">
