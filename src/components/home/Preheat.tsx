@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { Flame, Plus } from "lucide-react";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -220,12 +220,24 @@ function TempPreset({
               onChange={(v) => setBedTemp(Number(v))}
             />
           </div>
-          <span
-            className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1 text-sm font-bold text-white shadow transition group-hover:bg-blue-700 hover:scale-105 hover:bg-blue-500 active:scale-95 sm:mt-4 sm:text-lg"
-            onClick={handleClick}
-          >
-            {create ? "Create" : "Select"}
-          </span>
+          {create ? (
+            <span
+              className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1 text-sm font-bold text-white shadow transition group-hover:bg-blue-700 hover:scale-105 hover:bg-blue-500 active:scale-95 sm:mt-4 sm:text-lg"
+              onClick={handleClick}
+            >
+              Create
+            </span>
+          ) : (
+            <div
+              className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 px-4 py-1 text-sm font-bold shadow-lg transition sm:mt-4 sm:text-lg"
+              onClick={handleClick}
+            >
+              <div className="">
+                <Flame className="h-full w-full" />
+              </div>
+              <span>Preheat</span>
+            </div>
+          )}
         </>
       ) : (
         startingCreating && (
@@ -270,42 +282,53 @@ export default function PreHeat({
               Select a temp preset or create one.
             </DrawerTitle>
           </DrawerHeader>
-          <motion.div
-            layout
-            className="flex w-full items-center justify-center gap-4 overflow-x-auto overflow-y-hidden py-4"
-          >
-            <AnimatePresence initial={false}>
-              {tempPresetManager.getTempPresets().map((preset, index) => (
+          <div className="relative mb-5 w-full overflow-hidden">
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-slate-950 from-40% to-transparent"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-slate-950 from-40% to-transparent"></div>
+
+            <motion.div
+              layout
+              className="flex w-full items-center justify-start gap-4 overflow-x-auto overflow-y-hidden px-6"
+            >
+              <div className="min-w-[1.5rem] shrink-0 sm:min-w-[2rem]" />{" "}
+              {/* Left spacer */}
+              <AnimatePresence initial={false}>
+                {tempPresetManager.getTempPresets().map((preset, index) => (
+                  <motion.div
+                    key={preset.id}
+                    layout
+                    layoutId={`preset-${preset.id}`}
+                    initial={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
+                    animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
+                    exit={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="shrink-0"
+                  >
+                    <TempPreset
+                      initName={preset.name}
+                      initBedTemp={preset.bedTemp}
+                      initToolTemp={preset.toolTemp}
+                      presetManager={tempPresetManager}
+                    />
+                  </motion.div>
+                ))}
                 <motion.div
-                  key={preset.id}
+                  key="create"
                   layout
-                  layoutId={`preset-${preset.id}`}
+                  layoutId="create"
                   initial={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
                   animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
                   exit={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="shrink-0"
                 >
-                  <TempPreset
-                    initName={preset.name}
-                    initBedTemp={preset.bedTemp}
-                    initToolTemp={preset.toolTemp}
-                    presetManager={tempPresetManager}
-                  />
+                  <TempPreset create={true} presetManager={tempPresetManager} />
                 </motion.div>
-              ))}
-              <motion.div
-                key="create"
-                layout
-                layoutId="create"
-                initial={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
-                animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
-                exit={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              >
-                <TempPreset create={true} presetManager={tempPresetManager} />
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
+              </AnimatePresence>
+              <div className="min-w-[1.5rem] shrink-0 sm:min-w-[2rem]" />{" "}
+              {/* Right spacer */}
+            </motion.div>
+          </div>
         </DrawerContent>
       </DrawerPortal>
     </Drawer>
