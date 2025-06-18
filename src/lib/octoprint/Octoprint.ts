@@ -10,14 +10,6 @@ export type OctoprintNodeType = {
   version: string;
 };
 
-type StoreType = {
-  connected: boolean;
-  host: string;
-  port?: number;
-  apiKey: string;
-  userName: string;
-};
-
 export class InvalidNode extends Error {
   constructor(msg: string) {
     super(msg);
@@ -176,6 +168,22 @@ export class OctoprintNode {
   }
 }
 
+export type TTempPreset = {
+  id?: number; // Unique identifier for the preset
+  name: string;
+  bedTemp: number;
+  toolTemp: number;
+};
+
+type StoreType = {
+  connected: boolean;
+  host: string;
+  port?: number;
+  apiKey: string;
+  userName: string;
+  tempPresets?: TTempPreset[];
+};
+
 export class StoreManager {
   public store: StoreType;
 
@@ -186,6 +194,7 @@ export class StoreManager {
       port: 0,
       apiKey: "",
       userName: "",
+      tempPresets: [],
     };
     this.loadStore();
   }
@@ -211,6 +220,8 @@ export class StoreManager {
           case "userName":
             this.store.userName = value;
             break;
+          case "tempPresets":
+            this.store.tempPresets = JSON.parse(value) as TTempPreset[];
         }
       }
     });
@@ -219,6 +230,13 @@ export class StoreManager {
   public saveStore() {
     for (const key in this.store) {
       if (Object.prototype.hasOwnProperty.call(this.store, key)) {
+        if (key === "tempPresets") {
+          localStorage.setItem(
+            key,
+            JSON.stringify(this.store.tempPresets || []),
+          );
+          continue;
+        }
         localStorage.setItem(key, String(this.store[key as keyof StoreType]));
       }
     }

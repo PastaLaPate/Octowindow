@@ -1,4 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState, type RefObject } from "react";
+import { createPortal } from "react-dom";
 import Keyboard, { type KeyboardLayoutObject } from "react-simple-keyboard";
 
 import "react-simple-keyboard/build/css/index.css";
@@ -69,39 +71,36 @@ export default function ControlledKeyboard({
     }
   };
 
-  return (
-    <div
-      onMouseDown={(e) => e.preventDefault()}
-      className="pointer-events-auto fixed inset-0 z-[500] flex items-end justify-center bg-black/40"
-    >
-      <div className="w-full">
-        <Keyboard
-          keyboardRef={(r) => (keyboard.current = r)}
-          layout={KeyboardLayouts}
-          layoutName={layoutName}
-          onKeyPress={onKeyPress}
-          display={{
-            "{bksp}": "backspace",
-            "{tab}": "tab",
-            "{lock}": "caps",
-            "{shift}": "⇧",
-            "{enter}": "⏎",
-            "{space}": " ",
-            "{close}": "✖",
-          }}
-          buttonTheme={[
-            {
-              class: "kbd-close-btn",
-              buttons: "{close}",
-            },
-            {
-              class: "kbd-space-btn",
-              buttons: "{space}",
-            },
-          ]}
-          theme={"hg-theme-default custom-keyboard-root darkTheme"}
-        />
-      </div>
-    </div>
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        className="pointer-events-auto fixed inset-0 z-[9999] flex items-end justify-center bg-black/40"
+      >
+        <div className="w-full">
+          <Keyboard
+            keyboardRef={(r) => (keyboard.current = r)}
+            layout={numeric ? KeyboardLayouts : undefined}
+            layoutName={layoutName}
+            onChange={onChange}
+            onKeyPress={onKeyPress}
+            display={{
+              "{bksp}": "backspace",
+              "{tab}": "tab",
+              "{lock}": "caps",
+              "{shift}": "⇧",
+              "{enter}": "⏎",
+              "{space}": " ",
+              "{close}": "✖",
+            }}
+            theme={"hg-theme-default darkTheme"}
+          />
+        </div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body,
   );
 }

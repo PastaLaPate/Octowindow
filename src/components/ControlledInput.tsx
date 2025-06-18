@@ -123,37 +123,18 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
           autoComplete="off"
         />
         {isKeyboardVisible && (
-          <motion.div
-            className="w-screen"
-            initial={{ y: "100%", opacity: 0 }}
-            animate={{ y: "0%", opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            style={{
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              zIndex: 50,
-              background: "#1f2937",
-              borderTopLeftRadius: "1.5rem",
-              borderTopRightRadius: "1.5rem",
-              padding: "1rem 0.5rem .5rem 0.5rem",
-              boxShadow: "0 -4px 24px rgba(0,0,0,0.3)",
+          <ControlledKeyboard
+            setInput={setKeyboardInput}
+            input={value}
+            close={() => {
+              setKeyboardInput("");
+              setIsKeyboardVisible(false);
             }}
-          >
-            <ControlledKeyboard
-              setInput={setKeyboardInput}
-              input={value}
-              close={() => {
-                setKeyboardInput("");
-                setIsKeyboardVisible(false);
-              }}
-              validate={(val) => {
-                validate?.(val, setIsKeyboardVisible);
-              }}
-              numeric={numeric}
-            />
-          </motion.div>
+            validate={(val) => {
+              validate?.(val, setIsKeyboardVisible);
+            }}
+            numeric={numeric}
+          />
         )}
       </div>
     );
