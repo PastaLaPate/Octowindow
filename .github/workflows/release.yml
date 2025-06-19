@@ -1,0 +1,70 @@
+name: Release on Merge from Dev to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to get commit history
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the Vite app
+        run: npm run build
+
+      - name: Zip the build output
+        run: |
+          cd dist
+          zip -r ../frontend.zip ./
+          cd ..
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latest=$(git tag --sort=-creatordate | grep '^0\.0\.' | head -n1 || echo "0.0.0")
+          echo "latest_tag=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Generate new version tag
+        id: version
+        run: |
+          patch=$(echo "${{ steps.get_latest_tag.outputs.latest_tag }}" | awk -F. '{print $3 + 1}')
+          echo "new_version=0.0.$patch" >> "$GITHUB_OUTPUT"
+
+      - name: Get commits since last tag
+        id: changelog
+        run: |
+          since="${{ steps.get_latest_tag.outputs.latest_tag }}"
+          if [ "$since" = "0.0.0" ]; then
+            range=""
+          else
+            range="$since..HEAD"
+          fi
+
+          log=$(git log $range --pretty=format:"%h: %s")
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$log" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.new_version }}
+          name: Release ${{ steps.version.outputs.new_version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: frontend.zip
