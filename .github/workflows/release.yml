@@ -18,16 +18,22 @@ jobs:
         with:
           fetch-depth: 0 # Needed to get commit history
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "pnpm"
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-      - name: Build the Vite app
-        run: npm run build
+      - name: Install dependencies with pnpm
+        run: pnpm install
+
+      - name: Build Vite app
+        run: pnpm build
 
       - name: Zip the build output
         run: |
