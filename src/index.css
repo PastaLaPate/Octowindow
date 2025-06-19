@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -6,6 +7,7 @@
 @theme {
   --color-nozzle: var(--nozzle-color);
   --color-heated-bed: var(--heated-bed-color);
+  --font-Montserrat: "Montserrat", sans-serif;
 }
 
 :root {
@@ -192,4 +194,8 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
+}
+
+* {
+  font-family: "Montserrat";
 }

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Flame, Plus } from "lucide-react";
+import { Flame, Plus, Trash } from "lucide-react";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -60,6 +60,19 @@ class PresetsManager {
       console.warn(`Preset with name ${preset.name} does not exist.`);
     }
     this.updateListeners.forEach((listener) => listener());
+  }
+
+  removeTempPreset(presetId: number): void {
+    const presets = this.getTempPresets();
+    const index = presets.findIndex((p) => p.id === presetId);
+    if (index !== -1) {
+      presets.splice(index, 1);
+      this.storeManager.store.tempPresets = presets;
+      this.storeManager.saveStore();
+      this.updateListeners.forEach((listener) => listener());
+    } else {
+      toast.warning(`Preset with ID ${presetId} does not exist.`);
+    }
   }
 }
 
@@ -186,68 +199,96 @@ function TempPreset({
         }
       }}
     >
-      {!create || !startingCreating ? (
-        <>
-          {!create ? (
-            <p className="text-base font-bold text-blue-400 transition group-hover:text-blue-300 sm:text-xl">
-              {name}
-            </p>
-          ) : (
-            <ControlledInput
-              value={name}
-              placeholder="Name"
-              onChange={(v) => setName(v)}
-              validate={(v, setIsKeyboardVisible) => {
-                setIsKeyboardVisible(false);
-              }}
-              inputClassName="text-base text-center font-bold text-blue-400 transition group-hover:text-blue-300 w-full py-0"
-              className="w-20"
-            />
-          )}
-          <div className="flex w-full flex-col gap-1 sm:gap-2">
-            <PreheatTemp
-              label="Nozzle"
-              icon="nozzle"
-              value={!startingCreating && toolTemp === 0 ? "" : toolTemp}
-              editable={!startingCreating}
-              onChange={(v) => setToolTemp(Number(v))}
-            />
-            <PreheatTemp
-              label="Bed"
-              icon="bed"
-              value={!startingCreating && bedTemp === 0 ? "" : bedTemp}
-              editable={!startingCreating}
-              onChange={(v) => setBedTemp(Number(v))}
-            />
-          </div>
-          {create ? (
-            <span
-              className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1 text-sm font-bold text-white shadow transition group-hover:bg-blue-700 hover:scale-105 hover:bg-blue-500 active:scale-95 sm:mt-4 sm:text-lg"
-              onClick={handleClick}
-            >
-              Create
-            </span>
-          ) : (
-            <div
-              className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 px-4 py-1 text-sm font-bold shadow-lg transition sm:mt-4 sm:text-lg"
-              onClick={handleClick}
-            >
-              <div className="">
-                <Flame className="h-full w-full" />
-              </div>
-              <span>Preheat</span>
+      <AnimatePresence mode="wait" initial={false}>
+        {!create || !startingCreating ? (
+          <motion.div
+            key="form"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="flex w-full flex-col items-center gap-5"
+          >
+            {!create ? (
+              <p className="text-base font-bold text-blue-400 transition group-hover:text-blue-300 sm:text-xl">
+                {name}
+              </p>
+            ) : (
+              <ControlledInput
+                value={name}
+                placeholder="Name"
+                onChange={(v) => setName(v)}
+                validate={(v, setIsKeyboardVisible) => {
+                  setIsKeyboardVisible(false);
+                }}
+                inputClassName="text-base text-center font-bold text-blue-400 transition group-hover:text-blue-300 w-full py-0"
+                className="w-20"
+              />
+            )}
+            <div className="flex w-full flex-col gap-1 sm:gap-2">
+              <PreheatTemp
+                label="Nozzle"
+                icon="nozzle"
+                value={!startingCreating && toolTemp === 0 ? "" : toolTemp}
+                editable={!startingCreating}
+                onChange={(v) => setToolTemp(Number(v))}
+              />
+              <PreheatTemp
+                label="Bed"
+                icon="bed"
+                value={!startingCreating && bedTemp === 0 ? "" : bedTemp}
+                editable={!startingCreating}
+                onChange={(v) => setBedTemp(Number(v))}
+              />
             </div>
-          )}
-        </>
-      ) : (
-        startingCreating && (
-          <div className="flex h-full w-full items-center justify-center">
+            {create ? (
+              <span
+                className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1 text-sm font-bold text-white shadow transition group-hover:bg-blue-700 hover:scale-105 hover:bg-blue-500 active:scale-95 sm:mt-4 sm:text-lg"
+                onClick={handleClick}
+              >
+                Create
+              </span>
+            ) : (
+              <div className="flex h-15 w-full items-center justify-center">
+                <div
+                  onClick={() => {
+                    presetManager.removeTempPreset(
+                      presetManager
+                        .getTempPresets()
+                        .find((p) => p.name === name)?.id || -1,
+                    );
+                  }}
+                  className="ml-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110 hover:border-2 hover:bg-red-600 hover:text-white"
+                >
+                  <Trash className="h-6 w-6" />
+                </div>
+                <div
+                  className="flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 px-4 py-1 text-sm font-bold shadow-lg transition sm:text-lg"
+                  onClick={handleClick}
+                >
+                  <div>
+                    <Flame className="h-full w-full" />
+                  </div>
+                  <span>Preheat</span>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div
+            key="plus"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="flex h-full w-full items-center justify-center"
+          >
             <div className="flex h-20 w-20 items-center">
               <Plus className="h-full w-full" />
             </div>
-          </div>
-        )
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -288,10 +329,8 @@ export default function PreHeat({
 
             <motion.div
               layout
-              className="flex w-full items-center justify-start gap-4 overflow-x-auto overflow-y-hidden px-6"
+              className="flex w-full items-center justify-start gap-4 overflow-x-auto overflow-y-hidden px-10"
             >
-              <div className="min-w-[1.5rem] shrink-0 sm:min-w-[2rem]" />{" "}
-              {/* Left spacer */}
               <AnimatePresence initial={false}>
                 {tempPresetManager.getTempPresets().map((preset, index) => (
                   <motion.div
@@ -325,8 +364,6 @@ export default function PreHeat({
                   <TempPreset create={true} presetManager={tempPresetManager} />
                 </motion.div>
               </AnimatePresence>
-              <div className="min-w-[1.5rem] shrink-0 sm:min-w-[2rem]" />{" "}
-              {/* Right spacer */}
             </motion.div>
           </div>
         </DrawerContent>
