@@ -43,7 +43,9 @@ jobs:
 
       - name: Zip backend folder to backend.zip
         run: |
-          zip -r backend.zip backend
+          cd backend
+          zip -r ../backend.zip ./
+          cd ..
 
       - name: Get latest tag
         id: get_latest_tag
