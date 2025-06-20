@@ -5,8 +5,8 @@ import {
   OctoprintNode,
   type OctoprintNodeType,
 } from "@/lib/octoprint/Octoprint";
+import { Button } from "@/components/button";
 import ControlledInput from "@/components/ControlledInput";
-import { Button } from "@/components/ui/button";
 
 import SetupFrame from "./SetupFrame";
 
