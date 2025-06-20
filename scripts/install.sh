@@ -3,59 +3,62 @@
 set -e
 
 GITHUB_REPO="PastaLaPate/Octowindow"
-INSTALL_DIR="/opt/octodash-frontend"
-SERVER_PORT=80
+DEFAULT_PATH="/opt/octowindow"
+read -rp "Enter installation path [default: $DEFAULT_PATH]: " INSTALL_PATH
+INSTALL_PATH="${INSTALL_PATH:-$DEFAULT_PATH}"
 
-echo "[+] Checking if Node.js and npm are installed..."
+FRONTEND_DIR="$INSTALL_PATH/frontend"
+BACKEND_DIR="$INSTALL_PATH/backend"
+
+echo "[+] Installation path set to: $INSTALL_PATH"
+
+sudo apt-get install -y curl unzip
+
+echo "[1/7] Checking if Node.js and npm are installed..."
 if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+  sudo apt-get update
   echo "[!] Node.js or npm not found. Installing Node.js..."
   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
   sudo apt-get install -y nodejs
 fi
 
-echo "[+] Node.js version: $(node -v)"
-echo "[+] npm version: $(npm -v)"
+echo "[✓] Node.js: $(node -v), npm: $(npm -v)"
 
 echo "[+] Installing express if not installed..."
 npm list -g express || sudo npm install -g express
 
-echo "[+] Fetching latest frontend.zip release..."
-ASSET_URL=$(curl -s https://api.github.com/repos/$GITHUB_REPO/releases/latest \
-  | grep browser_download_url \
-  | grep frontend.zip \
-  | cut -d '"' -f 4)
+echo "[2/7] Fetching latest release info from GitHub..."
+API_URL="https://api.github.com/repos/$GITHUB_REPO/releases/latest"
+ASSET_LIST=$(curl -s $API_URL)
 
-if [ -z "$ASSET_URL" ]; then
-  echo "[x] Could not find frontend.zip in latest release."
+FRONTEND_URL=$(echo "$ASSET_LIST" | grep browser_download_url | grep frontend.zip | cut -d '"' -f 4)
+BACKEND_URL=$(echo "$ASSET_LIST" | grep browser_download_url | grep backend.zip | cut -d '"' -f 4)
+
+if [[ -z "$FRONTEND_URL" || -z "$BACKEND_URL" ]]; then
+  echo "[x] Missing frontend.zip or backend.zip in the latest release."
   exit 1
 fi
 
-mkdir -p "$INSTALL_DIR"
-cd "$INSTALL_DIR"
+echo "[3/7] Downloading and extracting frontend..."
+sudo mkdir -p "$FRONTEND_DIR"
+sudo curl -L "$FRONTEND_URL" -o "$FRONTEND_DIR/frontend.zip"
+sudo unzip -o "$FRONTEND_DIR/frontend.zip" -d "$FRONTEND_DIR"
+sudo rm "$FRONTEND_DIR/frontend.zip"
 
-echo "[+] Downloading from $ASSET_URL..."
-curl -L "$ASSET_URL" -o frontend.zip
+echo "[4/7] Downloading and extracting backend..."
+sudo mkdir -p "$BACKEND_DIR"
+sudo curl -L "$BACKEND_URL" -o "$BACKEND_DIR/backend.zip"
+sudo unzip -o "$BACKEND_DIR/backend.zip" -d "$BACKEND_DIR"
+sudo rm "$BACKEND_DIR/backend.zip"
 
-echo "[+] Extracting..."
-unzip -o frontend.zip
-rm frontend.zip
+echo "[5/7] Installing backend dependencies..."
+cd "$BACKEND_DIR"
+npm install
 
-echo "[+] Creating basic express server in $INSTALL_DIR/server.js..."
+echo "[6/7] Launching backend server..."
+nohup node server.js > server.log 2>&1 &
 
-cat <<EOF > "$INSTALL_DIR/server.js"
-const express = require('express');
-const app = express();
-const port = $SERVER_PORT;
-
-app.use(express.static(__dirname));
-
-app.listen(port, () => {
-  console.log(\`Frontend available at http://localhost:\${port}\`);
-});
-EOF
-
-echo "[+] Installing express locally just in case..."
-npm install express
-
-echo "[✓] Done! You can now run:"
-echo "    node $INSTALL_DIR/server.js"
+echo "[7/7] ✅ Installed and running!"
+echo "- Frontend is in: $FRONTEND_DIR"
+echo "- Backend is in: $BACKEND_DIR"
+echo "- Server log: $BACKEND_DIR/server.log"
