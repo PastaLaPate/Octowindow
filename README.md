@@ -42,7 +42,7 @@ cd {YOUR_INSTALL_DIR}/backend
 ratpoison &
 npm start &
 chromium \
-  --kiosk http://127.0.0.1 \
+  --kiosk http://127.0.0.1:3000 \
   --force-dark-mode \
   --disable pinch
 ```
