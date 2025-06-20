@@ -105,6 +105,9 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
           label="Node URL:"
           placeholder="http://octoprint.local"
           numeric={false}
+          validate={(v, setIsKeyboardVisible) => {
+            setIsKeyboardVisible(false);
+          }}
         />
       </div>
 
