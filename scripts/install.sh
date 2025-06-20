@@ -11,15 +11,16 @@ FRONTEND_DIR="$INSTALL_PATH/frontend"
 BACKEND_DIR="$INSTALL_PATH/backend"
 
 echo "[+] Installation path set to: $INSTALL_PATH"
-
-sudo apt-get install -y curl unzip
+echo "[+] Updating repos from apt"
+sudo apt-get update -qq
+echo "[+] Installing required packages..."
+sudo apt-get install -y -qq curl unzip
 
 echo "[1/7] Checking if Node.js and npm are installed..."
 if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-  sudo apt-get update
   echo "[!] Node.js or npm not found. Installing Node.js..."
   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-  sudo apt-get install -y nodejs
+  sudo apt-get install -y -qq nodejs
 fi
 
 echo "[✓] Node.js: $(node -v), npm: $(npm -v)"
