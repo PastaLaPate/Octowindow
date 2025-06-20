@@ -16,7 +16,7 @@ console.log(`Serving frontend from: ${frontendPath}`);
 app.use(express.static(frontendPath));
 
 // Optional: fallback to index.html for SPA routing
-app.get("*", (req, res) => {
+app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 

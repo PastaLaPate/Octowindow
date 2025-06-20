@@ -54,12 +54,9 @@ sudo rm "$BACKEND_DIR/backend.zip"
 
 echo "[5/7] Installing backend dependencies..."
 cd "$BACKEND_DIR"
-npm install
+sudo npm install
 
-echo "[6/7] Launching backend server..."
-nohup node server.js > server.log 2>&1 &
-
-echo "[7/7] ✅ Installed and running!"
+echo "[6/6] ✅ Installed and running!"
 echo "- Frontend is in: $FRONTEND_DIR"
 echo "- Backend is in: $BACKEND_DIR"
 echo "- Server log: $BACKEND_DIR/server.log"
