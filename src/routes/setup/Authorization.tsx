@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 import { StoreManager, type OctoprintNode } from "@/lib/octoprint/Octoprint";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
 
 import SetupFrame from "./SetupFrame";
 
