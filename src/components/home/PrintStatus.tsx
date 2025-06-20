@@ -64,7 +64,7 @@ function TempViewer({
             setIsKeyboardVisible(false);
           }}
           inputClassName={cn(
-            "text-center w-20 sm:w-24",
+            "text-center w-20 sm:w-28 sm:text-4xl lg:w-80 lg:text-5xl",
             target === "tool"
               ? "text-blue-200 font-bold"
               : "text-yellow-200 font-bold",
