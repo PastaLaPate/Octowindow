@@ -2,6 +2,7 @@
   "name": "octowindow-backend",
   "version": "0.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
