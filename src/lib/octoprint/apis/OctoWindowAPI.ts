@@ -59,12 +59,29 @@ export class OctoWindowAPI extends OctoprintAPI {
           duration: 30000,
           action: {
             label: "Update",
-            onClick: () => {},
+            onClick: () => {
+              this.update();
+            },
           },
         },
       );
     } else {
       toast.success("You are using the latest version of OctoWindow.");
+    }
+  }
+
+  public async update(): Promise<void> {
+    try {
+      const response = await this.httpClient.post("/update");
+      if (response.status === 200) {
+        toast.success("OctoWindow is updating. Please wait...");
+      } else {
+        throw new Error("Failed to initiate update process.");
+      }
+    } catch (error) {
+      error instanceof Error
+        ? toast.error(`Update failed: ${error.message}`)
+        : toast.error("Update failed: An unknown error occurred.");
     }
   }
 
