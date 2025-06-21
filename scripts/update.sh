@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+# NOTE: Sudo is not necessary because the user should have been chowned the installation directory during installation.
+
 GITHUB_REPO="PastaLaPate/Octowindow"
 INSTALL_PATH="${1:-/opt/octowindow}"
 FRONTEND_DIR="$INSTALL_PATH/frontend"
@@ -15,7 +17,7 @@ pkill -f ratpoison || true
 sleep 2
 
 echo "[+] Removing previous frontend and backend..."
-sudo rm -rf "$FRONTEND_DIR" "$BACKEND_DIR"
+rm -rf "$FRONTEND_DIR" "$BACKEND_DIR"
 
 echo "[+] Fetching latest release info from GitHub..."
 API_URL="https://api.github.com/repos/$GITHUB_REPO/releases/latest"
@@ -30,20 +32,20 @@ if [[ -z "$FRONTEND_URL" || -z "$BACKEND_URL" ]]; then
 fi
 
 echo "[+] Downloading and extracting frontend..."
-sudo mkdir -p "$FRONTEND_DIR"
-sudo curl -L "$FRONTEND_URL" -o "$FRONTEND_DIR/frontend.zip"
-sudo unzip -o "$FRONTEND_DIR/frontend.zip" -d "$FRONTEND_DIR"
-sudo rm "$FRONTEND_DIR/frontend.zip"
+mkdir -p "$FRONTEND_DIR"
+curl -L "$FRONTEND_URL" -o "$FRONTEND_DIR/frontend.zip"
+unzip -o "$FRONTEND_DIR/frontend.zip" -d "$FRONTEND_DIR"
+rm "$FRONTEND_DIR/frontend.zip"
 
 echo "[+] Downloading and extracting backend..."
-sudo mkdir -p "$BACKEND_DIR"
-sudo curl -L "$BACKEND_URL" -o "$BACKEND_DIR/backend.zip"
-sudo unzip -o "$BACKEND_DIR/backend.zip" -d "$BACKEND_DIR"
-sudo rm "$BACKEND_DIR/backend.zip"
+mkdir -p "$BACKEND_DIR"
+curl -L "$BACKEND_URL" -o "$BACKEND_DIR/backend.zip"
+unzip -o "$BACKEND_DIR/backend.zip" -d "$BACKEND_DIR"
+rm "$BACKEND_DIR/backend.zip"
 
 echo "[+] Installing backend dependencies..."
 cd "$BACKEND_DIR"
-sudo npm install
+npm install
 
 echo "[+] Restarting X server..."
 # Launch X server with your preferred options
