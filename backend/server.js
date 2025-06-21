@@ -1,4 +1,4 @@
-import bonjour, { Bonjour } from "bonjour-service"; // you must install this
+import { Bonjour } from "bonjour-service"; // you must install this
 
 import cors from "cors";
 import express from "express";
@@ -128,7 +128,7 @@ app.post("/api/update", async (req, res) => {
 
     // 3. Execute it with sudo (pass install path if needed)
     exec(
-      `sudo ${updateScriptPath} ${OCTOWINDOW_ROOT}`,
+      `bash ${updateScriptPath} ${OCTOWINDOW_ROOT}`,
       (error, stdout, stderr) => {
         if (error) {
           console.error("Update script execution error:", stderr);
