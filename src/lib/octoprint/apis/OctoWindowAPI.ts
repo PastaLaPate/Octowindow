@@ -3,6 +3,8 @@ NOTE: API Used to interact with the local backend server to shutdown the host an
 */
 
 import axios, { Axios } from "axios";
+import { gt } from "semver";
+import { toast } from "sonner";
 
 import { OctoprintAPI } from "./OctoprintAPI";
 
@@ -11,10 +13,13 @@ export type LocalBackendStatus = {
   message: string;
 };
 
-export class LocalAPI extends OctoprintAPI {
+export class OctoWindowAPI extends OctoprintAPI {
+  public version: string = "dev";
+
   constructor(httpClient: Axios) {
     // Use a custom base URL for the local API
     super(httpClient);
+    this.version = __APP_VERSION__ === "000.000.000" ? "dev" : __APP_VERSION__;
     this.httpClient = new Axios({
       baseURL: "http://localhost:3000/api/", // On dev vite will proxy this to the backend server
       transformRequest: axios.defaults.transformRequest,
@@ -28,10 +33,55 @@ export class LocalAPI extends OctoprintAPI {
       if (resp.data.message !== "pong") {
         throw new Error("Unexpected response from local API");
       }
+      if (resp.data.version !== this.version) {
+        toast.error(
+          "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
+        );
+      }
     } catch (error) {
       throw new Error(
         "Local API is not reachable. Please ensure the local server is running.",
       );
+    }
+  }
+
+  public async checkForUpdates(): Promise<void> {
+    const currentVersion = "0.0.0"; //this.version
+    const response = await fetch(
+      "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest",
+    );
+    const data = await response.json();
+    const latestVersion = data.tag_name;
+    if (gt(latestVersion, currentVersion)) {
+      toast.info(
+        `A new version of OctoWindow is available: ${latestVersion}. Current : ${currentVersion}`,
+        {
+          duration: 30000,
+          action: {
+            label: "Update",
+            onClick: () => {
+              this.update();
+            },
+          },
+        },
+      );
+    } else {
+      toast.success("You are using the latest version of OctoWindow.");
+    }
+  }
+
+  public async update(): Promise<void> {
+    try {
+      const response = await this.httpClient.post("/update");
+      if (response.status === 200) {
+        toast.success("OctoWindow is updating. Please wait...");
+      } else {
+        throw new Error("Failed to initiate update process.");
+      }
+    } catch (error) {
+      error instanceof Error
+        ? toast.error(`Update failed: ${error.message}`)
+        : toast.error("Update failed: An unknown error occurred.");
     }
   }
 

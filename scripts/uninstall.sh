@@ -23,21 +23,6 @@ fi
 echo "[+] Removing frontend and backend directories..."
 sudo rm -rf "$FRONTEND_DIR" "$BACKEND_DIR"
 
-# Check for optional systemd service
-SERVICE_FILE="/etc/systemd/system/octowindow.service"
-if [[ -f "$SERVICE_FILE" ]]; then
-  echo "[+] Found systemd service: octowindow.service"
-  read -rp "Do you want to stop and remove this systemd service? [y/N]: " rm_service
-  rm_service="${rm_service,,}"
-  if [[ "$rm_service" == "y" || "$rm_service" == "yes" ]]; then
-    sudo systemctl stop octowindow.service
-    sudo systemctl disable octowindow.service
-    sudo rm -f "$SERVICE_FILE"
-    sudo systemctl daemon-reload
-    echo "[✓] Service removed."
-  fi
-fi
-
 # Prompt to uninstall Node.js + npm
 read -rp "Do you want to uninstall Node.js and npm? [y/N]: " rm_node
 rm_node="${rm_node,,}"

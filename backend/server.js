@@ -1,16 +1,53 @@
 import bonjour, { Bonjour } from "bonjour-service"; // you must install this
+
+import cors from "cors";
 import express from "express";
+import fetch from "node-fetch";
 import { exec } from "child_process";
 import fs from "fs";
 import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const app = express();
-
 // Get absolute path to this script (because import.meta.url gives a file:// URL)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Read version.json using fs since require is not available in ES modules
+let version = "";
+let versionFilePath = path.join(__dirname, "version.json");
+if (fs.existsSync(versionFilePath)) {
+  try {
+    const versionFile = JSON.parse(fs.readFileSync(versionFilePath, "utf-8"));
+    version = versionFile && versionFile.version ? versionFile.version : "dev";
+  } catch (e) {
+    version = "dev";
+  }
+} else {
+  version = "dev";
+}
+
+const app = express();
+
+const allowedOrigins = [
+  "http://localhost",
+  "http://localhost:3000",
+  "http://127.0.0.1",
+  "http://127.0.0.1:3000",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (e.g., curl, same-origin)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+  }),
+);
 
 // Resolve the path to ../frontend relative to backend
 const frontendPath = path.resolve(__dirname, "../frontend");
@@ -32,7 +69,7 @@ if (isProd) {
 
 // Health check
 app.get("/api/ping", (req, res) => {
-  res.json({ message: "pong", hostname: os.hostname() });
+  res.json({ message: "pong", hostname: os.hostname(), version: version });
 });
 
 app.post("/api/shutdown", (req, res) => {
@@ -68,6 +105,43 @@ app.get("/api/bonjour", (req, res) => {
     bonjourService.destroy();
     res.json({ services });
   }, 1000);
+});
+
+const OCTOWINDOW_ROOT = path.resolve(__dirname, ".."); // one level up from backend
+const UPDATE_SCRIPT_URL =
+  "https://raw.githubusercontent.com/PastaLaPate/Octowindow/master/scripts/update.sh";
+
+app.post("/api/update", async (req, res) => {
+  try {
+    // 1. Download latest update.sh content
+    const response = await fetch(UPDATE_SCRIPT_URL);
+    if (!response.ok)
+      throw new Error(`Failed to fetch update script: ${response.statusText}`);
+
+    const scriptContent = await response.text();
+
+    // 2. Write it to octowindow/update.sh
+    const updateScriptPath = path.join(OCTOWINDOW_ROOT, "update.sh");
+    await fs.promises.writeFile(updateScriptPath, scriptContent, {
+      mode: 0o755,
+    });
+
+    // 3. Execute it with sudo (pass install path if needed)
+    exec(
+      `sudo ${updateScriptPath} ${OCTOWINDOW_ROOT}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("Update script execution error:", stderr);
+          return res.status(500).json({ error: stderr });
+        }
+        console.log("Update script output:", stdout);
+        res.json({ message: "Update script executed successfully" });
+      },
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.listen(port, () => {
