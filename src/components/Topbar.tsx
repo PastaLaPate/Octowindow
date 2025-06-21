@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { ClassNameValue } from "tailwind-merge";
 
-import type { LocalBackendStatus } from "@/lib/octoprint/apis/LocalAPI";
+import type { LocalBackendStatus } from "@/lib/octoprint/apis/OctoWindowAPI";
 import { cn } from "@/lib/utils";
 
 import type { OctoprintState } from "@/routes/app/Home";
@@ -104,7 +104,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
         )}
       </div>
       <h2 className="absolute left-1/2 w-max -translate-x-1/2 text-center">
-        OctoWindow
+        OctoWindow ({octoprintState.node.local.version})
       </h2>
       <div className="flex flex-row items-center gap-2">
         <div

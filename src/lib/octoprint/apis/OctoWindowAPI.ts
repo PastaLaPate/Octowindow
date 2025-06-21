@@ -3,6 +3,7 @@ NOTE: API Used to interact with the local backend server to shutdown the host an
 */
 
 import axios, { Axios } from "axios";
+import { toast } from "sonner";
 
 import { OctoprintAPI } from "./OctoprintAPI";
 
@@ -11,10 +12,13 @@ export type LocalBackendStatus = {
   message: string;
 };
 
-export class LocalAPI extends OctoprintAPI {
+export class OctoWindowAPI extends OctoprintAPI {
+  public version: string = "dev";
+
   constructor(httpClient: Axios) {
     // Use a custom base URL for the local API
     super(httpClient);
+    this.version = __APP_VERSION__ === "000.000.000" ? "dev" : __APP_VERSION__;
     this.httpClient = new Axios({
       baseURL: "http://localhost:3000/api/", // On dev vite will proxy this to the backend server
       transformRequest: axios.defaults.transformRequest,
@@ -27,6 +31,11 @@ export class LocalAPI extends OctoprintAPI {
       const resp = await this.httpClient.get("/ping");
       if (resp.data.message !== "pong") {
         throw new Error("Unexpected response from local API");
+      }
+      if (resp.data.version !== this.version) {
+        toast.error(
+          "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
+        );
       }
     } catch (error) {
       throw new Error(

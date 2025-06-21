@@ -35,18 +35,6 @@ jobs:
       - name: Build Vite app
         run: pnpm build
 
-      - name: Zip the build output
-        run: |
-          cd dist
-          zip -r ../frontend.zip ./
-          cd ..
-
-      - name: Zip backend folder to backend.zip
-        run: |
-          cd backend
-          zip -r ../backend.zip ./
-          cd ..
-
       - name: Get latest tag
         id: get_latest_tag
         run: |
@@ -58,6 +46,30 @@ jobs:
         run: |
           patch=$(echo "${{ steps.get_latest_tag.outputs.latest_tag }}" | awk -F. '{print $3 + 1}')
           echo "new_version=0.0.$patch" >> "$GITHUB_OUTPUT"
+
+      - name: Write version to .env
+        run: echo "VITE_APP_VERSION=${{ steps.version.outputs.new_version }}" > .env
+
+      - name: Generate version.json
+        run: 'echo "{\"version\": \"${{ steps.version.outputs.new_version }}\"}" > version.json'
+
+      - name: Copy version.json into frontend
+        run: cp version.json dist/
+
+      - name: Copy version.json into backend
+        run: cp version.json backend/
+
+      - name: Zip the build output
+        run: |
+          cd dist
+          zip -r ../frontend.zip ./
+          cd ..
+
+      - name: Zip backend folder to backend.zip
+        run: |
+          cd backend
+          zip -r ../backend.zip ./
+          cd ..
 
       - name: Get commits since last tag
         id: changelog
