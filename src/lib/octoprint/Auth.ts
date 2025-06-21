@@ -1,5 +1,5 @@
-import axios from "axios";
 import type { AxiosResponse } from "axios";
+import axios from "axios";
 
 export default class AuthorizationWorkflow {
   public baseUrl: string = "";

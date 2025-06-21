@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { Outlet, useLocation } from "react-router";
+import { useLocation } from "react-router";
 
 const pageVariants = {
   initial: {
