@@ -51,7 +51,7 @@ function TempViewer({
       </div>
       {temp && (
         <ControlledInput
-          placeholder={String(temp.current)}
+          placeholder={String(Math.round(temp.current))}
           value={tempInput}
           standAlonePlaceholder={true}
           onChange={setNumberInput}

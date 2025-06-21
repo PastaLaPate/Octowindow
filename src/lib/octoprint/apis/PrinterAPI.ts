@@ -165,7 +165,7 @@ export class PrinterAPI extends OctoprintAPI {
 
   public async setToolTemp(target: number) {
     const resp = await this.httpClient.post("/api/printer/tool", {
-      commmand: "target",
+      command: "target",
       targets: {
         tool: target,
       },
