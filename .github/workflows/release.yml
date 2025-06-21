@@ -32,9 +32,6 @@ jobs:
       - name: Install dependencies with pnpm
         run: pnpm install
 
-      - name: Build Vite app
-        run: pnpm build
-
       - name: Get latest tag
         id: get_latest_tag
         run: |
@@ -49,6 +46,9 @@ jobs:
 
       - name: Write version to .env
         run: echo "VITE_APP_VERSION=${{ steps.version.outputs.new_version }}" > .env
+
+      - name: Build Vite app
+        run: pnpm build
 
       - name: Generate version.json
         run: 'echo "{\"version\": \"${{ steps.version.outputs.new_version }}\"}" > version.json'

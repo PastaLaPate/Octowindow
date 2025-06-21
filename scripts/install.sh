@@ -56,14 +56,19 @@ echo "[5/7] Installing backend dependencies..."
 cd "$BACKEND_DIR"
 sudo npm install
 
-echo "[6/7] Adding update script"
 UPDATE_SCRIPT="$INSTALL_PATH/update.sh"
-# Dont actually create the script just make it executable without sudo password
+echo "[6/7] Creating update script placeholder..."
+
+# Create the file as root and change ownership to current user
 sudo touch "$UPDATE_SCRIPT"
-sudo chmod +x "$UPDATE_SCRIPT"
-sudo bash -c 'cat >> /etc/sudoers.d/update_octowindow' <<EOF
-$USER ALL=NOPASSWD: $UPDATE_SCRIPT
-EOF
+sudo chown "$USER":"$USER" "$UPDATE_SCRIPT"
+sudo chown "$USER":"$USER" "$INSTALL_PATH"
+
+chmod +x "$UPDATE_SCRIPT"
+
+echo "[+] Granting passwordless sudo access for update script..."
+echo "$USER ALL=(ALL) NOPASSWD: $UPDATE_SCRIPT" | sudo tee /etc/sudoers.d/update_octowindow > /dev/null
+sudo chmod 440 /etc/sudoers.d/update_octowindow
 
 echo "[7/7] ✅ Installed"
 echo "- Frontend is in: $FRONTEND_DIR"
