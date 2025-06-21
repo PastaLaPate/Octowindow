@@ -42,14 +42,14 @@ fi
 
 echo "[3/7] Downloading and extracting frontend..."
 sudo mkdir -p "$FRONTEND_DIR"
-sudo curl -L "$FRONTEND_URL" -o "$FRONTEND_DIR/frontend.zip"
-sudo unzip -o "$FRONTEND_DIR/frontend.zip" -d "$FRONTEND_DIR"
+sudo curl -sS -L "$FRONTEND_URL" -o "$FRONTEND_DIR/frontend.zip"
+sudo unzip -qq -o "$FRONTEND_DIR/frontend.zip" -d "$FRONTEND_DIR"
 sudo rm "$FRONTEND_DIR/frontend.zip"
 
 echo "[4/7] Downloading and extracting backend..."
 sudo mkdir -p "$BACKEND_DIR"
-sudo curl -L "$BACKEND_URL" -o "$BACKEND_DIR/backend.zip"
-sudo unzip -o "$BACKEND_DIR/backend.zip" -d "$BACKEND_DIR"
+sudo curl -sS -L "$BACKEND_URL" -o "$BACKEND_DIR/backend.zip"
+sudo unzip -qq -o "$BACKEND_DIR/backend.zip" -d "$BACKEND_DIR"
 sudo rm "$BACKEND_DIR/backend.zip"
 
 echo "[5/7] Installing backend dependencies..."
@@ -59,7 +59,7 @@ sudo npm install
 echo "[6/7] Adding update script"
 UPDATE_SCRIPT="$INSTALL_PATH/update.sh"
 # Dont actually create the script just make it executable without sudo password
-touch "$UPDATE_SCRIPT"
+sudo touch "$UPDATE_SCRIPT"
 sudo chmod +x "$UPDATE_SCRIPT"
 sudo bash -c 'cat >> /etc/sudoers.d/update_octowindow' <<EOF
 $USER ALL=NOPASSWD: $UPDATE_SCRIPT
