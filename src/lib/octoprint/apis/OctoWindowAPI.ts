@@ -46,7 +46,7 @@ export class OctoWindowAPI extends OctoprintAPI {
   }
 
   public async checkForUpdates(): Promise<void> {
-    const currentVersion = "0.0.0"; //this.version
+    const currentVersion = this.version;
     const response = await fetch(
       "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest",
     );
