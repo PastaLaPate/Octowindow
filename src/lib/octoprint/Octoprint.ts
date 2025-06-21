@@ -1,6 +1,7 @@
 import axios, { Axios } from "axios";
 
 import { FileAPI } from "./apis/FileAPI";
+import { LocalAPI } from "./apis/LocalAPI";
 import { PrinterAPI } from "./apis/PrinterAPI";
 import AuthorizationWorkflow from "./Auth";
 
@@ -29,6 +30,7 @@ export class OctoprintNode {
 
   public file: FileAPI;
   public printer: PrinterAPI;
+  public local: LocalAPI;
 
   public authWorflow: AuthorizationWorkflow;
 
@@ -60,6 +62,7 @@ export class OctoprintNode {
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
     this.file = new FileAPI(this.httpClient);
     this.printer = new PrinterAPI(this.httpClient);
+    this.local = new LocalAPI(this.httpClient);
   }
 
   public async getApiVersion() {

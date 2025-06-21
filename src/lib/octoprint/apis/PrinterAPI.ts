@@ -137,6 +137,18 @@ export class PrinterAPI extends OctoprintAPI {
     this.fetchProfiles();
   }
 
+  public async connectPrinter() {
+    const resp = await this.httpClient.post("/api/connection", {
+      command: "connect",
+    });
+    if (resp.status === 204) {
+      this.connectionInfos.connected = true;
+      await this.fetchProfiles();
+      this.connectionInfos.printerName = this.activeProfile.name;
+      this.callListeners("status", this.connectionInfos);
+    }
+  }
+
   public async setBedTemp(target: number) {
     const resp = await this.httpClient.post("/api/printer/bed", {
       command: "target",
@@ -264,7 +276,6 @@ export class PrinterAPI extends OctoprintAPI {
     if (resp.status !== 200) {
       return;
     }
-    resp.data = JSON.parse(resp.data);
     type ProfileData = {
       name: string;
       current: boolean;

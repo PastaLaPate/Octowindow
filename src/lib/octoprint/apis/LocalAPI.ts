@@ -6,6 +6,11 @@ import axios, { Axios } from "axios";
 
 import { OctoprintAPI } from "./OctoprintAPI";
 
+export type LocalBackendStatus = {
+  connected: boolean;
+  message: string;
+};
+
 export class LocalAPI extends OctoprintAPI {
   constructor(httpClient: Axios) {
     // Use a custom base URL for the local API
@@ -17,15 +22,43 @@ export class LocalAPI extends OctoprintAPI {
     });
   }
 
+  public async testAPI(): Promise<void> {
+    try {
+      const resp = await this.httpClient.get("/ping");
+      if (resp.data.message !== "pong") {
+        throw new Error("Unexpected response from local API");
+      }
+    } catch (error) {
+      throw new Error(
+        "Local API is not reachable. Please ensure the local server is running.",
+      );
+    }
+  }
+
+  public async getBackendStatus(): Promise<LocalBackendStatus> {
+    try {
+      await this.testAPI();
+      return {
+        connected: true,
+        message: "Local backend is Operational",
+      };
+    } catch (error) {
+      return {
+        connected: false,
+        message:
+          "Local backend is not reachable. Please ensure the local server is running.",
+      };
+    }
+  }
+
   public async shutdownHost(): Promise<void> {
-    await this.httpClient.post("/api/local/shutdown");
+    const resp = await this.httpClient.post("/shutdown");
+    if (resp.status === 500) {
+      throw new Error("Failed to shutdown the host. Please try again later.");
+    }
   }
 
-  public async restartHost(): Promise<void> {
-    await this.httpClient.post("/api/local/restart");
-  }
-
-  public async discoverOctoprintNodes(): Promise<string[]> {
+  private async discoverOctoprintNodes(): Promise<string[]> {
     const response = await this.httpClient.get<string[]>("/api/local/discover");
     return response.data;
   }
