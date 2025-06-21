@@ -8,7 +8,7 @@ import {
 } from "@/lib/octoprint/apis/PrinterAPI";
 import { OctoprintNode } from "@/lib/octoprint/Octoprint";
 import Actions from "@/components/home/Actions";
-import PrintStatus from "@/components/home/PrintStatus";
+import PrinterStatus from "@/components/home/PrinterStatus";
 
 export type OctoprintState = {
   node: OctoprintNode;
@@ -26,7 +26,7 @@ export default function Home() {
   }, []);
   return (
     <div className="flex min-h-0 flex-1 flex-row">
-      <PrintStatus />
+      <PrinterStatus />
       <Actions />
     </div>
   );

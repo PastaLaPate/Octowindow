@@ -93,7 +93,7 @@ function TempViewer({
     </div>
   );
 }
-export default function PrintStatus() {
+export default function PrinterStatus() {
   const octoprintState: OctoprintState = useOutletContext();
   return (
     <div className="flex h-full w-[50vw] items-center justify-center gap-3 p-5">
