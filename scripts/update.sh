@@ -50,6 +50,6 @@ npm install
 echo "[+] Restarting X server..."
 # Launch X server with your preferred options
 # Adjust display :0 if necessary
-xinit -- -nocursor > /dev/null 2>&1 &
+xinit -- -nocursor &
 
 echo "[+] Update and restart complete."
