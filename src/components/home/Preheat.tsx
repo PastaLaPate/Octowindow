@@ -35,7 +35,8 @@ class PresetsManager {
         preset.name &&
         preset.bedTemp &&
         preset.toolTemp &&
-        preset.id !== undefined,
+        preset.id !== undefined &&
+        preset.id >= 0,
     );
   }
 
@@ -144,12 +145,14 @@ function TempPreset({
   initName = "",
   initBedTemp = 0,
   initToolTemp = 0,
+  id = -1,
   create = false,
 }: {
   presetManager: PresetsManager;
   initName?: string;
   initBedTemp?: number;
   initToolTemp?: number;
+  id?: number;
   create?: boolean;
 }) {
   const [startingCreating, setStartingCreating] = useState<boolean>(true);
@@ -252,11 +255,7 @@ function TempPreset({
               <div className="flex h-15 w-full items-center justify-center">
                 <div
                   onClick={() => {
-                    presetManager.removeTempPreset(
-                      presetManager
-                        .getTempPresets()
-                        .find((p) => p.name === name)?.id || -1,
-                    );
+                    presetManager.removeTempPreset(id ?? -1);
                   }}
                   className="ml-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110 hover:border-2 hover:bg-red-600 hover:text-white"
                 >
@@ -347,6 +346,7 @@ export default function PreHeat({
                       initName={preset.name}
                       initBedTemp={preset.bedTemp}
                       initToolTemp={preset.toolTemp}
+                      id={preset.id}
                       presetManager={tempPresetManager}
                     />
                   </motion.div>
