@@ -3,6 +3,7 @@ NOTE: API Used to interact with the local backend server to shutdown the host an
 */
 
 import axios, { Axios } from "axios";
+import { gt } from "semver";
 import { toast } from "sonner";
 
 import { OctoprintAPI } from "./OctoprintAPI";
@@ -41,6 +42,29 @@ export class OctoWindowAPI extends OctoprintAPI {
       throw new Error(
         "Local API is not reachable. Please ensure the local server is running.",
       );
+    }
+  }
+
+  public async checkForUpdates(): Promise<void> {
+    const currentVersion = "0.0.0"; //this.version
+    const response = await fetch(
+      "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest",
+    );
+    const data = await response.json();
+    const latestVersion = data.tag_name;
+    if (gt(latestVersion, currentVersion)) {
+      toast.info(
+        `A new version of OctoWindow is available: ${latestVersion}. Current : ${currentVersion}`,
+        {
+          duration: 30000,
+          action: {
+            label: "Update",
+            onClick: () => {},
+          },
+        },
+      );
+    } else {
+      toast.success("You are using the latest version of OctoWindow.");
     }
   }
 

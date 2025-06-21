@@ -63,6 +63,9 @@ export class OctoprintNode {
     this.file = new FileAPI(this.httpClient);
     this.printer = new PrinterAPI(this.httpClient);
     this.local = new OctoWindowAPI(this.httpClient);
+    this.local.testAPI().then(() => {
+      this.local.checkForUpdates();
+    });
   }
 
   public async getApiVersion() {

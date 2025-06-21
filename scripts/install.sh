@@ -56,7 +56,17 @@ echo "[5/7] Installing backend dependencies..."
 cd "$BACKEND_DIR"
 sudo npm install
 
-echo "[6/6] ✅ Installed and running!"
+echo "[6/7] Adding update script"
+UPDATE_SCRIPT="$INSTALL_PATH/update.sh"
+# Dont actually create the script just make it executable without sudo password
+touch "$UPDATE_SCRIPT"
+sudo chmod +x "$UPDATE_SCRIPT"
+sudo bash -c 'cat >> /etc/sudoers.d/update_octowindow' <<EOF
+$USER ALL=NOPASSWD: $UPDATE_SCRIPT
+EOF
+
+echo "[7/7] ✅ Installed"
 echo "- Frontend is in: $FRONTEND_DIR"
 echo "- Backend is in: $BACKEND_DIR"
 echo "- Server log: $BACKEND_DIR/server.log"
+echo "You can now reboot"

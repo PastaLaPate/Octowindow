@@ -2,6 +2,7 @@ import bonjour, { Bonjour } from "bonjour-service"; // you must install this
 
 import cors from "cors";
 import express from "express";
+import fetch from "node-fetch";
 import { exec } from "child_process";
 import fs from "fs";
 import os from "os";
@@ -104,6 +105,43 @@ app.get("/api/bonjour", (req, res) => {
     bonjourService.destroy();
     res.json({ services });
   }, 1000);
+});
+
+const OCTOWINDOW_ROOT = path.resolve(__dirname, ".."); // one level up from backend
+const UPDATE_SCRIPT_URL =
+  "https://raw.githubusercontent.com/PastaLaPate/Octowindow/master/scripts/update.sh";
+
+app.post("/api/update", async (req, res) => {
+  try {
+    // 1. Download latest update.sh content
+    const response = await fetch(UPDATE_SCRIPT_URL);
+    if (!response.ok)
+      throw new Error(`Failed to fetch update script: ${response.statusText}`);
+
+    const scriptContent = await response.text();
+
+    // 2. Write it to octowindow/update.sh
+    const updateScriptPath = path.join(OCTOWINDOW_ROOT, "update.sh");
+    await fs.promises.writeFile(updateScriptPath, scriptContent, {
+      mode: 0o755,
+    });
+
+    // 3. Execute it with sudo (pass install path if needed)
+    exec(
+      `sudo ${updateScriptPath} ${OCTOWINDOW_ROOT}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("Update script execution error:", stderr);
+          return res.status(500).json({ error: stderr });
+        }
+        console.log("Update script output:", stdout);
+        res.json({ message: "Update script executed successfully" });
+      },
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.listen(port, () => {
