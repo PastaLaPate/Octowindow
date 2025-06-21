@@ -1,10 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import "./index.css";
 import "react-simple-keyboard/build/css/index.css";
+import "./index.css";
 
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 
 import App from "./routes/app/App.tsx";
 import Home from "./routes/app/Home.tsx";

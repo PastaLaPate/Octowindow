@@ -1,4 +1,3 @@
-import path from "path-browserify";
 import urlJoin from "url-join";
 
 import { OctoprintAPI } from "./OctoprintAPI";
