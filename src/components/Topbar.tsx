@@ -95,9 +95,9 @@ export default function TopBar({ octoprintState }: TopBarProps) {
               <HeatedPlate stroke="#FFFFFF" className="h-full w-full" />
             </div>
             <p className="text-lg">
-              {String(Math.round(octoprintState.toolTemp.current)) +
-                (octoprintState.toolTemp.target !== 0
-                  ? `/${octoprintState.toolTemp.target}`
+              {String(Math.round(octoprintState.bedTemp.current)) +
+                (octoprintState.bedTemp.target !== 0
+                  ? `/${octoprintState.bedTemp.target}`
                   : "")}
             </p>
           </>
