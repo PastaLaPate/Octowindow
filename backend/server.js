@@ -60,7 +60,7 @@ const port = isProd ? 3000 : 3001;
 if (isProd) {
   console.log(`Serving frontend from: ${frontendPath}`);
   app.use(express.static(frontendPath));
-  app.get(/(.*)/, (req, res) => {
+  app.get(/^\/(?!api\/).*/, (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
