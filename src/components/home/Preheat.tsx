@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Flame, Plus, Trash } from "lucide-react";
+import { Flame, Plus, Snowflake, Trash } from "lucide-react";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -147,6 +147,7 @@ function TempPreset({
   initToolTemp = 0,
   id = -1,
   create = false,
+  destroyable = true,
 }: {
   presetManager: PresetsManager;
   initName?: string;
@@ -154,6 +155,7 @@ function TempPreset({
   initToolTemp?: number;
   id?: number;
   create?: boolean;
+  destroyable?: boolean;
 }) {
   const [startingCreating, setStartingCreating] = useState<boolean>(true);
   const [name, setName] = useState<string>(initName);
@@ -253,23 +255,37 @@ function TempPreset({
               </span>
             ) : (
               <div className="flex h-15 w-full items-center justify-center">
-                <div
-                  onClick={() => {
-                    presetManager.removeTempPreset(id ?? -1);
-                  }}
-                  className="ml-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110 hover:border-2 hover:bg-red-600 hover:text-white"
-                >
-                  <Trash className="h-6 w-6" />
-                </div>
-                <div
-                  className="flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 px-4 py-1 text-sm font-bold shadow-lg transition sm:text-lg"
-                  onClick={handleClick}
-                >
-                  <div>
-                    <Flame className="h-full w-full" />
+                {destroyable && (
+                  <div
+                    onClick={() => {
+                      presetManager.removeTempPreset(id ?? -1);
+                    }}
+                    className="ml-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110 hover:border-2 hover:bg-red-600 hover:text-white"
+                  >
+                    <Trash className="h-6 w-6" />
                   </div>
-                  <span>Preheat</span>
-                </div>
+                )}
+                {initBedTemp !== 0 && initToolTemp !== 0 ? (
+                  <div
+                    className="flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 px-4 py-1 text-sm font-bold shadow-lg transition sm:text-lg"
+                    onClick={handleClick}
+                  >
+                    <div>
+                      <Flame className="h-full w-full" />
+                    </div>
+                    <span>Preheat</span>
+                  </div>
+                ) : (
+                  <div
+                    className="flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 px-4 py-1 text-sm font-bold shadow-lg transition sm:text-lg"
+                    onClick={handleClick}
+                  >
+                    <div>
+                      <Snowflake className="h-full w-full" />
+                    </div>
+                    <span>Cooldown</span>
+                  </div>
+                )}
               </div>
             )}
           </motion.div>
@@ -291,6 +307,8 @@ function TempPreset({
     </div>
   );
 }
+
+// TODO: Cannot create a preset with 0 as temp
 
 export default function PreHeat({
   opened,
@@ -331,6 +349,26 @@ export default function PreHeat({
               className="overflow flex w-full items-center justify-start gap-4 overflow-x-auto overflow-y-hidden px-10"
             >
               <AnimatePresence initial={false}>
+                <motion.div
+                  key={"cool-preset"}
+                  layout
+                  layoutId={`cool-preset`}
+                  initial={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
+                  animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
+                  exit={{ scale: 0.5, opacity: 0, x: 0, y: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="shrink-0"
+                >
+                  <TempPreset
+                    presetManager={tempPresetManager}
+                    initName="Cool Down"
+                    initBedTemp={0}
+                    initToolTemp={0}
+                    id={-1}
+                    create={false}
+                    destroyable={false}
+                  />
+                </motion.div>
                 {tempPresetManager.getTempPresets().map((preset, index) => (
                   <motion.div
                     key={preset.id}
