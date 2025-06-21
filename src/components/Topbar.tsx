@@ -108,7 +108,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
       </h2>
       <div className="flex flex-row items-center gap-2">
         <div
-          className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-700 hover:cursor-pointer"
+          className="flex items-center justify-center rounded-lg bg-slate-700 hover:cursor-pointer md:h-8 md:w-8 md:rounded-md lg:h-12 lg:w-12"
           onClick={async () => {
             setLoading(true);
             setGlobalStatus({
@@ -127,7 +127,12 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             }
           }}
         >
-          <RefreshCw className={cn("h-8 w-8", loading ? "animate-spin" : "")} />
+          <RefreshCw
+            className={cn(
+              "md:h-6 md:w-6 lg:h-8 lg:w-8",
+              loading ? "animate-spin" : "",
+            )}
+          />
         </div>
         <p>{globalStatus.message}</p>
         <div

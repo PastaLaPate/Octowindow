@@ -37,7 +37,7 @@ export type Temp = {
   targetDevice: "tool" | "bed";
   current: number;
   target: number;
-  setTemp: (newTemp: number) => void;
+  setTemp: (newTemp: number) => void | Promise<void>; // can throw error
   addTemp: (addCelsius: number) => void; // can be negative
 };
 

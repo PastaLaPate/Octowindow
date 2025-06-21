@@ -58,8 +58,16 @@ function TempViewer({
           label={target === "tool" ? "Tool" : "Bed"}
           numeric={true}
           validate={(input, setIsKeyboardVisible) => {
-            toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
-            temp.setTemp(Math.round(Number(input)));
+            const resp = temp.setTemp(Math.round(Number(input)));
+            Promise.resolve(resp)
+              .then(() => {
+                toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
+              })
+              .catch((e) => {
+                toast.error(
+                  `Failed to set ${target}'s temp to ${Number(input)}°C: ${e.message}`,
+                );
+              });
             setNumberInput("");
             setIsKeyboardVisible(false);
           }}
