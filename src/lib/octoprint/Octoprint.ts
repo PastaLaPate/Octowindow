@@ -1,6 +1,7 @@
 import axios, { Axios } from "axios";
 
 import { FileAPI } from "./apis/FileAPI";
+import { LocalAPI } from "./apis/LocalAPI";
 import { PrinterAPI } from "./apis/PrinterAPI";
 import AuthorizationWorkflow from "./Auth";
 
@@ -18,6 +19,9 @@ export class InvalidNode extends Error {
     Object.setPrototypeOf(this, InvalidNode.prototype);
   }
 }
+/*
+NOTE: Also serves as an interface for the backend custom API for shutting down the host and use the bonjour discovery service.
+*/
 
 export class OctoprintNode {
   private node: OctoprintNodeType;
@@ -26,6 +30,7 @@ export class OctoprintNode {
 
   public file: FileAPI;
   public printer: PrinterAPI;
+  public local: LocalAPI;
 
   public authWorflow: AuthorizationWorkflow;
 
@@ -48,6 +53,7 @@ export class OctoprintNode {
       this.httpClient = new Axios({
         baseURL: baseUrl,
         transformRequest: axios.defaults.transformRequest,
+        transformResponse: axios.defaults.transformResponse,
       });
     }
 
@@ -56,6 +62,7 @@ export class OctoprintNode {
     this.authWorflow = new AuthorizationWorkflow(baseUrl, "", "OctoWindow");
     this.file = new FileAPI(this.httpClient);
     this.printer = new PrinterAPI(this.httpClient);
+    this.local = new LocalAPI(this.httpClient);
   }
 
   public async getApiVersion() {
@@ -143,6 +150,7 @@ export class OctoprintNode {
         "X-Api-Key": this.apiKey || "",
       },
       transformRequest: axios.defaults.transformRequest,
+      transformResponse: axios.defaults.transformResponse,
     });
   }
 

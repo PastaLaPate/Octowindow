@@ -51,20 +51,28 @@ function TempViewer({
       </div>
       {temp && (
         <ControlledInput
-          placeholder={String(temp.current)}
+          placeholder={String(Math.round(temp.current))}
           value={tempInput}
           standAlonePlaceholder={true}
           onChange={setNumberInput}
           label={target === "tool" ? "Tool" : "Bed"}
           numeric={true}
           validate={(input, setIsKeyboardVisible) => {
-            toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
-            temp.setTemp(Math.round(Number(input)));
+            const resp = temp.setTemp(Math.round(Number(input)));
+            Promise.resolve(resp)
+              .then(() => {
+                toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
+              })
+              .catch((e) => {
+                toast.error(
+                  `Failed to set ${target}'s temp to ${Number(input)}°C: ${e.message}`,
+                );
+              });
             setNumberInput("");
             setIsKeyboardVisible(false);
           }}
           inputClassName={cn(
-            "text-center w-20 sm:w-24",
+            "text-center w-20 sm:w-28 sm:text-4xl lg:w-80 lg:text-5xl",
             target === "tool"
               ? "text-blue-200 font-bold"
               : "text-yellow-200 font-bold",

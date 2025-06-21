@@ -323,13 +323,13 @@ export default function PreHeat({
               Select a temp preset or create one.
             </DrawerTitle>
           </DrawerHeader>
-          <div className="relative mb-5 w-full overflow-hidden">
+          <div className="relative w-full overflow-hidden pb-10">
             <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-slate-950 from-40% to-transparent"></div>
             <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-slate-950 from-40% to-transparent"></div>
 
             <motion.div
               layout
-              className="flex w-full items-center justify-start gap-4 overflow-x-auto overflow-y-hidden px-10"
+              className="overflow flex w-full items-center justify-start gap-4 overflow-x-auto overflow-y-hidden px-10"
             >
               <AnimatePresence initial={false}>
                 {tempPresetManager.getTempPresets().map((preset, index) => (

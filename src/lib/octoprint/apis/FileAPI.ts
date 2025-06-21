@@ -117,11 +117,11 @@ export class FileAPI extends OctoprintAPI {
     });
     const sdFiles: (Node | Dir | Print)[] = this.processFiles(
       "sdcard",
-      JSON.parse(SDResp.data).files,
+      SDResp.data.files,
     );
     const localFiles: (Node | Dir | Print)[] = this.processFiles(
       "local",
-      JSON.parse(localResp.data).files,
+      localResp.data.files,
     );
     if (localResp.status !== 200 || SDResp.status !== 200) {
       return [];

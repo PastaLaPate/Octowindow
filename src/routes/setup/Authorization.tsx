@@ -46,6 +46,11 @@ export default function Authorization({ node, onSuccess }: AuthorizationProps) {
       <div className="mb-6 flex items-center gap-2">
         <h1 className="text-4xl font-bold sm:text-5xl">Authentication</h1>
       </div>
+      <p className="mb-4 text-center text-lg">
+        To authorize OctoWindow to access your OctoPrint instance, please open
+        your OctoPrint instance in a browser, then click the "Authenticate"
+        button and accept the authorization request.
+      </p>
       <Button onClick={handleAuthenticate} loading={loading}>
         Authenticate
       </Button>

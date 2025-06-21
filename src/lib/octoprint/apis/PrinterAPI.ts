@@ -37,7 +37,7 @@ export type Temp = {
   targetDevice: "tool" | "bed";
   current: number;
   target: number;
-  setTemp: (newTemp: number) => void;
+  setTemp: (newTemp: number) => void | Promise<void>; // can throw error
   addTemp: (addCelsius: number) => void; // can be negative
 };
 
@@ -101,7 +101,7 @@ export class PrinterAPI extends OctoprintAPI {
     };
     sessionInfos.then((resp) => {
       if (resp.status === 200) {
-        resp.data = JSON.parse(resp.data);
+        resp.data = resp.data;
         const usrName = resp.data.name;
         const sessionID = resp.data.session;
         this.socket = new WebSocket(socketUrl);
@@ -137,6 +137,18 @@ export class PrinterAPI extends OctoprintAPI {
     this.fetchProfiles();
   }
 
+  public async connectPrinter() {
+    const resp = await this.httpClient.post("/api/connection", {
+      command: "connect",
+    });
+    if (resp.status === 204) {
+      this.connectionInfos.connected = true;
+      await this.fetchProfiles();
+      this.connectionInfos.printerName = this.activeProfile.name;
+      this.callListeners("status", this.connectionInfos);
+    }
+  }
+
   public async setBedTemp(target: number) {
     const resp = await this.httpClient.post("/api/printer/bed", {
       command: "target",
@@ -153,7 +165,7 @@ export class PrinterAPI extends OctoprintAPI {
 
   public async setToolTemp(target: number) {
     const resp = await this.httpClient.post("/api/printer/tool", {
-      commmand: "target",
+      command: "target",
       targets: {
         tool: target,
       },
@@ -264,7 +276,6 @@ export class PrinterAPI extends OctoprintAPI {
     if (resp.status !== 200) {
       return;
     }
-    resp.data = JSON.parse(resp.data);
     type ProfileData = {
       name: string;
       current: boolean;
