@@ -18,6 +18,9 @@ export class InvalidNode extends Error {
     Object.setPrototypeOf(this, InvalidNode.prototype);
   }
 }
+/*
+NOTE: Also serves as an interface for the backend custom API for shutting down the host and use the bonjour discovery service.
+*/
 
 export class OctoprintNode {
   private node: OctoprintNodeType;
@@ -48,6 +51,7 @@ export class OctoprintNode {
       this.httpClient = new Axios({
         baseURL: baseUrl,
         transformRequest: axios.defaults.transformRequest,
+        transformResponse: axios.defaults.transformResponse,
       });
     }
 
@@ -143,6 +147,7 @@ export class OctoprintNode {
         "X-Api-Key": this.apiKey || "",
       },
       transformRequest: axios.defaults.transformRequest,
+      transformResponse: axios.defaults.transformResponse,
     });
   }
 

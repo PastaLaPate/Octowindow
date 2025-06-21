@@ -11,4 +11,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": "http://localhost:3001", // Redirect API calls to the backend server in development
+    },
+    port: 3000,
+  },
 });

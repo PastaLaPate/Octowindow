@@ -1,12 +1,12 @@
 import bonjour, { Bonjour } from "bonjour-service"; // you must install this
 import express from "express";
 import { exec } from "child_process";
+import fs from "fs";
 import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const app = express();
-const port = 3000;
 
 // Get absolute path to this script (because import.meta.url gives a file:// URL)
 const __filename = fileURLToPath(import.meta.url);
@@ -14,9 +14,19 @@ const __dirname = path.dirname(__filename);
 
 // Resolve the path to ../frontend relative to backend
 const frontendPath = path.resolve(__dirname, "../frontend");
+const isProd = fs.existsSync(path.join(frontendPath, "index.html"));
 
-console.log(`Serving frontend from: ${frontendPath}`);
-app.use(express.static(frontendPath));
+console.log(`[+] Running in ${isProd ? "PRODUCTION" : "DEVELOPMENT"} mode`);
+const port = isProd ? 3000 : 3001;
+
+// If prod serve the frontend
+if (isProd) {
+  console.log(`Serving frontend from: ${frontendPath}`);
+  app.use(express.static(frontendPath));
+  app.get(/(.*)/, (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
+}
 
 // API
 
@@ -58,11 +68,6 @@ app.get("/api/bonjour", (req, res) => {
     bonjourService.destroy();
     res.json({ services });
   }, 1000);
-});
-
-// Optional: fallback to index.html for SPA routing
-app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
 app.listen(port, () => {

@@ -16,6 +16,8 @@ install_test
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+# Recommended settings
+!.vscode/settings.json 
 .idea
 .DS_Store
 *.suo

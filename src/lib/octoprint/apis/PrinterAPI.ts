@@ -101,7 +101,7 @@ export class PrinterAPI extends OctoprintAPI {
     };
     sessionInfos.then((resp) => {
       if (resp.status === 200) {
-        resp.data = JSON.parse(resp.data);
+        resp.data = resp.data;
         const usrName = resp.data.name;
         const sessionID = resp.data.session;
         this.socket = new WebSocket(socketUrl);
