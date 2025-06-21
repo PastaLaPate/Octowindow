@@ -62,7 +62,7 @@ echo "[6/7] Creating update script placeholder..."
 # Create the file as root and change ownership to current user
 sudo touch "$UPDATE_SCRIPT"
 sudo chown "$USER":"$USER" "$UPDATE_SCRIPT"
-sudo chown "$USER":"$USER" "$INSTALL_PATH"
+sudo chown -R "$USER":"$USER" "$INSTALL_PATH"
 
 chmod +x "$UPDATE_SCRIPT"
 
