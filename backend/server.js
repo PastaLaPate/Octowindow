@@ -128,7 +128,7 @@ app.post("/api/update", async (req, res) => {
 
     // 3. Execute it with sudo (pass install path if needed)
     exec(
-      `bash ${updateScriptPath} ${OCTOWINDOW_ROOT}`,
+      `bash ${updateScriptPath} ${OCTOWINDOW_ROOT} > ~/octowindow-update.log 2>&1`,
       (error, stdout, stderr) => {
         if (error) {
           console.error("Update script execution error:", stderr);
