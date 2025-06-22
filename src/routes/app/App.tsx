@@ -2,20 +2,22 @@ import { useEffect, useState } from "react";
 
 import "./App.css";
 
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 
 import {
   allFalseFlags,
   type ConnectionInfos,
   type Temp,
 } from "@/lib/octoprint/apis/PrinterAPI";
-import { OctoprintNode } from "@/lib/octoprint/Octoprint";
+import { OctoprintNode, StoreManager } from "@/lib/octoprint/Octoprint";
 import TopBar from "@/components/Topbar";
 import { Toaster } from "@/components/ui/sonner";
 
 import { AnimationLayout } from "../PageAnimation";
 
 function App() {
+  const navigate = useNavigate();
+
   const [node, setNode] = useState<OctoprintNode>();
   const [bedTemp, setBedTemp] = useState<Temp>({
     current: 0,
@@ -37,6 +39,9 @@ function App() {
     flags: allFalseFlags,
   });
   useEffect(() => {
+    if (!new StoreManager().store.connected) {
+      navigate("/setup/");
+    }
     const node = new OctoprintNode();
     node?.printer.addListener("temp", (tool, bed) => {
       setBedTemp(bed);

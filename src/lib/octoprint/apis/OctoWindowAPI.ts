@@ -128,7 +128,7 @@ export class OctoWindowAPI extends OctoprintAPI {
   }
 
   private async discoverOctoprintNodes(): Promise<string[]> {
-    const response = await this.httpClient.get<string[]>("/api/local/discover");
+    const response = await this.httpClient.get<string[]>("/api/bonjour");
     return response.data;
   }
 }
