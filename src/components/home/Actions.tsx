@@ -18,7 +18,12 @@ export default function Actions() {
           color="bg-orange-600"
           onClick={() => setPreheatOpened(true)}
         />
-        <ActionBox label="Settings" icon={Settings} color="bg-slate-600" />
+        <ActionBox
+          label="Settings"
+          icon={Settings}
+          color="bg-slate-600"
+          to="/app/settings"
+        />
         <ActionBox
           label="Print"
           icon={Printer}

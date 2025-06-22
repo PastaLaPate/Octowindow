@@ -32,10 +32,9 @@ function CListNode({
 }) {
   return (
     <div
-      className={cn(
-        "flex items-center gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-lg transition hover:scale-[102%] hover:border-blue-500 active:scale-100",
-        "sm:gap-4 sm:p-2",
-      )}
+      className={
+        "flex items-center gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-lg transition hover:scale-[102%] hover:border-blue-500 active:scale-100 sm:gap-4 sm:p-2"
+      }
       style={{ marginLeft: depth * 20, minWidth: 0 }}
       onClick={onClick}
     >
@@ -101,10 +100,7 @@ function Directory({
   return viewType == "gallery" ? (
     <div></div>
   ) : (
-    <div
-      className={cn("flex flex-col gap-2")}
-      style={{ marginLeft: depth * 20 }}
-    >
+    <div className={"flex flex-col gap-2"} style={{ marginLeft: depth * 20 }}>
       <CListNode onClick={() => setOpened(!opened)}>
         <div className="flex h-10 items-center">
           <ArrowRight

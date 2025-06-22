@@ -120,9 +120,6 @@ export default function TopBar({ octoprintState }: TopBarProps) {
                 await octoprintState.node.local.getBackendStatus();
               setBackendStatus(response);
               await octoprintState.node.printer.connectPrinter();
-              // Also check for updates
-              // TODO: Remove this and add it to the settings page
-              await octoprintState.node.local.checkForUpdates();
             } catch (error) {
               toast.error("Failed to refresh status or connect to printer.");
             } finally {
