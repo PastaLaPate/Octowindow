@@ -8,10 +8,20 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
+import util from "util";
 
 // Get absolute path to this script (because import.meta.url gives a file:// URL)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+var log_file = fs.createWriteStream(__dirname + "/server.log", { flags: "w" });
+var log_stdout = process.stdout;
+
+console.log = function (d) {
+  //
+  log_file.write(util.format(d) + "\n");
+  log_stdout.write(util.format(d) + "\n");
+};
 
 // Read version.json using fs since require is not available in ES modules
 let version = "";
