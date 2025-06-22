@@ -2,13 +2,13 @@ import { useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { toast } from "sonner";
 
+import Actions from "@/components/home/Actions";
+import PrinterStatus from "@/components/home/PrinterStatus";
 import {
   type ConnectionInfos,
   type Temp,
 } from "@/lib/octoprint/apis/PrinterAPI";
 import { OctoprintNode } from "@/lib/octoprint/Octoprint";
-import Actions from "@/components/home/Actions";
-import PrinterStatus from "@/components/home/PrinterStatus";
 
 export type OctoprintState = {
   node: OctoprintNode;

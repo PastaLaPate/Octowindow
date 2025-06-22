@@ -4,6 +4,9 @@
     "source.fixAll.eslint": "always",
     "source.organizeImports": "always"
   },
+  "vite.autoStart": true,
+  "vite.devCommand": "npm run dev",
+  "editor.formatOnSave": true,
   "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
     "type": "text-and-comment",
@@ -16,14 +19,14 @@
   "todo-tree.highlights.customHighlight": {
     "TODO": {
       "icon": "check",
-      "foreground": "black",
-      "background": "white",
+      "foreground": "orange",
+      "background": "transparent",
       "iconColour": "white"
     },
     "NOTE": {
       "icon": "note",
       "foreground": "white",
-      "background": "gray",
+      "background": "blue",
       "iconColour": "gray"
     },
     "COMMENT": {
@@ -45,7 +48,7 @@
     "[ ]": {
       "icon": "check",
       "foreground": "black",
-      "background": "white",
+      "background": "yellow",
       "iconColour": "yellow"
     },
     "[x]": {
