@@ -3,7 +3,7 @@ name: Release on Merge from Dev to Main
 on:
   push:
     branches:
-      - master
+      - master # or 'main', whichever your default is
 
 jobs:
   release:
@@ -16,7 +16,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Needed to get commit history
+          fetch-depth: 0
+
+      - name: Determine PR labels & whether to skip or major-bump
+        id: check_run
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha
+            });
+            // pick the one that was merged in this push
+            const pr = pulls.find(p => p.merged_at);
+            if (!pr) {
+              core.setOutput('skip_release', 'true');
+              core.setOutput('major_bump', 'false');
+              return;
+            }
+            const labels = pr.labels.map(l => l.name);
+            core.setOutput('skip_release', labels.includes('Nightly').toString());
+            core.setOutput('major_bump', labels.includes('PR/ Major').toString());
+
+      - name: Cancel job if skipping release
+        if: steps.check_run.outputs.skip_release == 'true'
+        run: |
+          echo "Skipping release as instructed by PR labels."
+          exit 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -29,68 +56,72 @@ jobs:
           node-version: 20
           cache: "pnpm"
 
-      - name: Install dependencies with pnpm
+      - name: Install dependencies
         run: pnpm install
 
       - name: Get latest tag
         id: get_latest_tag
         run: |
-          latest=$(git tag --sort=-creatordate | grep '^0\.0\.' | head -n1 || echo "0.0.0")
+          latest=$(git tag --sort=-creatordate | grep '^0\.' | head -n1 || echo "0.0.0")
           echo "latest_tag=$latest" >> "$GITHUB_OUTPUT"
 
-      - name: Generate new version tag
-        id: version
+      - name: Compute new version
+        id: new_version
         run: |
-          patch=$(echo "${{ steps.get_latest_tag.outputs.latest_tag }}" | awk -F. '{print $3 + 1}')
-          echo "new_version=0.0.$patch" >> "$GITHUB_OUTPUT"
+          IFS='.' read -r major minor patch <<< "${{ steps.get_latest_tag.outputs.latest_tag }}"
+          if [ "${{ steps.check_run.outputs.major_bump }}" = "true" ]; then
+            minor=$((minor + 1))
+            patch=0
+          else
+            patch=$((patch + 1))
+          fi
+          # assuming your scheme is always 0.x.y
+          new="0.$minor.$patch"
+          echo "new_version=$new" >> "$GITHUB_OUTPUT"
 
       - name: Write version to .env
-        run: echo "VITE_APP_VERSION=${{ steps.version.outputs.new_version }}" > .env
+        run: echo "VITE_APP_VERSION=${{ steps.new_version.outputs.new_version }}" > .env
 
       - name: Build Vite app
         run: pnpm build
 
       - name: Generate version.json
-        run: 'echo "{\"version\": \"${{ steps.version.outputs.new_version }}\"}" > version.json'
+        run: |
+          jq -n --arg v "${{ steps.new_version.outputs.new_version }}" '{version: $v}' > version.json
 
-      - name: Copy version.json into frontend
+      - name: Copy version.json to frontend
         run: cp version.json dist/
 
-      - name: Copy version.json into backend
+      - name: Copy version.json to backend
         run: cp version.json backend/
 
-      - name: Zip the build output
+      - name: Zip frontend
         run: |
           cd dist
           zip -r ../frontend.zip ./
           cd ..
 
-      - name: Zip backend folder to backend.zip
+      - name: Zip backend
         run: |
           cd backend
           zip -r ../backend.zip ./
           cd ..
 
-      - name: Get commits since last tag
+      - name: Get changelog
         id: changelog
         run: |
           since="${{ steps.get_latest_tag.outputs.latest_tag }}"
-          if [ "$since" = "0.0.0" ]; then
-            range=""
-          else
-            range="$since..HEAD"
-          fi
-
-          log=$(git log $range --pretty=format:"%h: %s")
+          range=${since:+$since..HEAD}
+          git log $range --pretty=format:"%h: %s" > CHANGES.txt
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$log" >> $GITHUB_OUTPUT
+          cat CHANGES.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.new_version }}
-          name: Release ${{ steps.version.outputs.new_version }}
+          tag_name: ${{ steps.new_version.outputs.new_version }}
+          name: Release ${{ steps.new_version.outputs.new_version }}
           body: ${{ steps.changelog.outputs.changelog }}
           files: |
             frontend.zip

@@ -212,10 +212,14 @@ export class PrinterAPI extends OctoprintAPI {
       case SocketMessageType.current: {
         const currentData = data["current"];
         const state = currentData.state;
-
-        if (
-          this.connectionInfos.flags["operational"] !== state.flags.operational
-        ) {
+        const prevFlags = this.connectionInfos.flags;
+        const newFlags = state.flags;
+        const flagsChanged = Object.keys(prevFlags).some(
+          (key) =>
+            prevFlags[key as keyof typeof prevFlags] !==
+            newFlags[key as keyof typeof newFlags],
+        );
+        if (flagsChanged) {
           // Make sure we have the correct activate profile
           this.fetchProfiles().then(() => {
             this.connectionInfos = {
@@ -226,10 +230,14 @@ export class PrinterAPI extends OctoprintAPI {
             this.callListeners("status", this.connectionInfos);
           });
         }
-        if (currentData.temps && currentData.temps[0]) {
+        if (
+          currentData.temps !== undefined &&
+          currentData.temps[0] !== undefined &&
+          currentData.temps[0].tool0 !== undefined &&
+          currentData.temps[0].bed !== undefined
+        ) {
           const tool = currentData.temps[0].tool0;
           const bed = currentData.temps[0].bed;
-          console.log(tool, bed);
           this.callListeners(
             "temp",
             {
