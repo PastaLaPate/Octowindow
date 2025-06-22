@@ -48,4 +48,4 @@ cd "$BACKEND_DIR"
 npm install
 
 echo "[+] Rebooting to restart X server..."
-reboot now
+reboot
