@@ -3,7 +3,7 @@ import { Bonjour } from "bonjour-service"; // you must install this
 import cors from "cors";
 import express from "express";
 import fetch from "node-fetch";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -137,17 +137,17 @@ app.post("/api/update", async (req, res) => {
     });
 
     // 3. Execute it with sudo (pass install path if needed)
-    exec(
-      `bash ${updateScriptPath} ${OCTOWINDOW_ROOT} > ~/octowindow-update.log 2>&1`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error("Update script execution error:", stderr);
-          return res.status(500).json({ error: stderr });
-        }
-        console.log("Update script output:", stdout);
-        res.json({ message: "Update script executed successfully" });
+    spawn(
+      "bash",
+      [
+        "-c",
+        `${updateScriptPath} ${OCTOWINDOW_ROOT} > ~/octowindow-update.log 2>&1`,
+      ],
+      {
+        stdio: "ignore",
+        detached: true,
       },
-    );
+    ).unref();
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
