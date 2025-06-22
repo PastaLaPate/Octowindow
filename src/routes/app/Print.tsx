@@ -20,6 +20,7 @@ import type { OctoprintState } from "./Home";
 type ViewType = "list" | "gallery";
 
 // TODO: Add Gallery view type
+// NOTE: gallery view type will certainly not be implemented because I have no idea how to do it
 
 function CListNode({
   depth = 0,
@@ -256,7 +257,7 @@ export default function PrintPage() {
               }}
             />
           </div>
-          <p className="text-4xl font-bold">Select a file</p>
+          <p className="text-4xl font-bold">Print (File viewer)</p>
           <div
             className={cn(
               "ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-800",

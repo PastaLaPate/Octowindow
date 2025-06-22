@@ -106,10 +106,16 @@ export default function TopBar({ octoprintState }: TopBarProps) {
       <h2 className="absolute left-1/2 w-max -translate-x-1/2 text-center">
         OctoWindow ({octoprintState.node.local.version})
       </h2>
-      <div className="flex flex-row items-center gap-2">
+      <div className="mr-4 flex flex-row items-center gap-2">
+        <p>{globalStatus.message}</p>
+        <div className={`h-2.5 w-2.5 rounded-full ${globalStatus.color}`} />
         <div
-          className="flex items-center justify-center rounded-lg bg-slate-700 hover:cursor-pointer md:h-8 md:w-8 md:rounded-md lg:h-12 lg:w-12"
+          className={cn(
+            "flex items-center justify-center rounded-lg bg-slate-700 hover:cursor-pointer md:h-8 md:w-8 md:rounded-md lg:h-12 lg:w-12",
+            loading && "!cursor-not-allowed",
+          )}
           onClick={async () => {
+            if (loading) return;
             setLoading(true);
             setGlobalStatus({
               color: "bg-gray-500",
@@ -118,26 +124,24 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             try {
               const response =
                 await octoprintState.node.local.getBackendStatus();
-              setBackendStatus(response);
               await octoprintState.node.printer.connectPrinter();
+              setBackendStatus(response);
             } catch (error) {
               toast.error("Failed to refresh status or connect to printer.");
             } finally {
-              setLoading(false);
+              setTimeout(() => {
+                setLoading(false);
+              }, 1000); // To be safe against race conditions
             }
           }}
         >
           <RefreshCw
             className={cn(
               "md:h-6 md:w-6 lg:h-8 lg:w-8",
-              loading ? "animate-spin" : "",
+              loading && "animate-spin",
             )}
           />
         </div>
-        <p>{globalStatus.message}</p>
-        <div
-          className={`mr-4 h-2.5 w-2.5 rounded-full ${globalStatus.color}`}
-        />
       </div>
     </div>
   );
