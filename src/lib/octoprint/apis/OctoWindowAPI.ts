@@ -104,7 +104,9 @@ export class OctoWindowAPI extends OctoprintAPI {
   public async shutdownHost(): Promise<void> {
     const resp = await this.httpClient.post("/shutdown");
     if (resp.status === 500) {
-      throw new Error("Failed to shutdown the host. Please try again later.");
+      toast.error("Failed to shutdown the host. Please try again later.");
+    } else {
+      toast.info("Shutting down...");
     }
   }
 
