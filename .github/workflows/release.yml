@@ -111,10 +111,14 @@ jobs:
         id: changelog
         run: |
           since="${{ steps.get_latest_tag.outputs.latest_tag }}"
-          range=${since:+$since..HEAD}
-          git log $range --pretty=format:"%h: %s" > CHANGES.txt
+          if [ "$since" = "0.0.0" ]; then
+            range=""
+          else
+            range="$since..HEAD"
+          fi
+          log=$(git log $range --pretty=format:"%h: %s")
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          cat CHANGES.txt >> $GITHUB_OUTPUT
+          echo "$log" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
