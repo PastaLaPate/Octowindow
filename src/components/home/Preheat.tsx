@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Flame, Plus, Snowflake, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router";
 import { toast } from "sonner";
 
 import { StoreManager, type TTempPreset } from "@/lib/octoprint/Octoprint";
 
+import type { OctoprintState } from "@/routes/app/Home";
 import ControlledInput from "../ControlledInput";
 import HeatedPlate from "../svg/HeatedPlate";
 import Nozzle from "../svg/Nozzle";
@@ -148,6 +150,7 @@ function TempPreset({
   id = -1,
   create = false,
   destroyable = true,
+  onPreheat = () => {},
 }: {
   presetManager: PresetsManager;
   initName?: string;
@@ -156,6 +159,7 @@ function TempPreset({
   id?: number;
   create?: boolean;
   destroyable?: boolean;
+  onPreheat?: () => void;
 }) {
   const [startingCreating, setStartingCreating] = useState<boolean>(true);
   const [name, setName] = useState<string>(initName);
@@ -182,12 +186,7 @@ function TempPreset({
           setToolTemp(0);
           setStartingCreating(true);
         } else {
-          /*
-          presetManager.editTempPreset({
-            name: name,
-            bedTemp: bedTemp,
-            toolTemp: toolTemp,
-          });*/
+          onPreheat();
         }
       }
     }
@@ -309,7 +308,7 @@ function TempPreset({
 }
 
 // TODO: Cannot create a preset with 0 as temp
-
+// [ ] fix it
 export default function PreHeat({
   opened,
   setOpened,
@@ -317,6 +316,7 @@ export default function PreHeat({
   opened: boolean;
   setOpened: (x: boolean) => void;
 }) {
+  const octoprintState: OctoprintState = useOutletContext();
   const [tempPresetManager, setTempPresetManager] = useState<PresetsManager>(
     new PresetsManager(),
   );
@@ -330,6 +330,19 @@ export default function PreHeat({
       manager.addUpdateListener(() => {});
     };
   }, [tempPresetManager]);
+
+  const handlePreheat = async (bedTemp: number, toolTemp: number) => {
+    if (octoprintState.node) {
+      try {
+        octoprintState.node.printer.setBedTemp(bedTemp);
+        octoprintState.node.printer.setToolTemp(toolTemp);
+        toast.success(`Preheating to ${bedTemp}°C bed and ${toolTemp}°C tool.`);
+      } catch (error) {
+        toast.error("Failed to set temperatures. Is printer connected?");
+      }
+      setOpened(false);
+    }
+  };
 
   return (
     <Drawer open={opened} onClose={() => setOpened(false)}>
@@ -367,6 +380,9 @@ export default function PreHeat({
                     id={-1}
                     create={false}
                     destroyable={false}
+                    onPreheat={() => {
+                      handlePreheat(0, 0);
+                    }}
                   />
                 </motion.div>
                 {tempPresetManager.getTempPresets().map((preset, index) => (
@@ -386,6 +402,9 @@ export default function PreHeat({
                       initToolTemp={preset.toolTemp}
                       id={preset.id}
                       presetManager={tempPresetManager}
+                      onPreheat={() => {
+                        handlePreheat(preset.bedTemp, preset.toolTemp);
+                      }}
                     />
                   </motion.div>
                 ))}
