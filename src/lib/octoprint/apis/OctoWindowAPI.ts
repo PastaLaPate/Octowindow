@@ -54,13 +54,30 @@ export class OctoWindowAPI extends OctoprintAPI {
     const latestVersion = data.tag_name;
     if (gt(latestVersion, currentVersion)) {
       toast.info(
-        `A new version of OctoWindow is available: ${latestVersion}. Current : ${currentVersion}`,
+        `A new version of OctoWindow is available: ${latestVersion}. Current: ${currentVersion}`,
         {
-          duration: 30000,
+          duration: 10000,
           action: {
             label: "Update",
             onClick: () => {
-              this.update();
+              toast.warning(
+                "Are you sure you want to update? The UI will exit, the update will take about a minute, and the system will reboot.",
+                {
+                  duration: 15000,
+                  action: {
+                    label: "Continue",
+                    onClick: () => {
+                      this.update();
+                    },
+                  },
+                  cancel: {
+                    label: "Cancel",
+                    onClick: () => {
+                      toast.info("Update cancelled.");
+                    },
+                  },
+                },
+              );
             },
           },
         },
