@@ -99,7 +99,7 @@ export function PreheatTemp({
 }: PreheatTempProps) {
   return (
     <div
-      className={`flex items-center justify-between rounded-lg bg-slate-800 px-2 py-1 sm:px-4 sm:py-2 ${className}`}
+      className={`flex items-center justify-between gap-2 rounded-lg bg-slate-800 px-2 py-1 sm:px-4 sm:py-2 ${className}`}
     >
       <span className="flex items-center gap-1 sm:gap-2">
         {icon === "nozzle" ? (

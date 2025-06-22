@@ -60,12 +60,6 @@ export const allFalseFlags = Object.fromEntries(
 ) as { [K in keyof typeof ConnectionFlags]: boolean };
 
 export class PrinterAPI extends OctoprintAPI {
-  /* TODO: Remove this shit and use websockets (because this endpoints requires a wtf permisison never said how to
-  obtain) 
-  Finally done
-    https://docs.octoprint.org/en/master/api/push.html
-  */
-
   private socket?: WebSocket;
   private listeners: {
     temp: Array<(tool: Temp, bed: Temp) => void>;
