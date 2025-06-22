@@ -47,9 +47,5 @@ echo "[+] Installing backend dependencies..."
 cd "$BACKEND_DIR"
 npm install
 
-echo "[+] Restarting X server..."
-# Launch X server with your preferred options
-# Adjust display :0 if necessary
-xinit -- -nocursor &
-
-echo "[+] Update and restart complete."
+echo "[+] Rebooting to restart X server..."
+reboot now
