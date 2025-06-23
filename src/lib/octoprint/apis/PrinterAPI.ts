@@ -1,6 +1,8 @@
 import type { Axios } from "axios";
 
+import type { PrinterTarget } from "../Octoprint";
 import type { Print } from "./FileAPI";
+import MovementAPI from "./MovementAPI";
 import { OctoprintAPI } from "./OctoprintAPI";
 
 export const ConnectionFlags = {
@@ -34,7 +36,7 @@ export const SocketMessageType = {
 } as const;
 
 export type Temp = {
-  targetDevice: "tool" | "bed";
+  targetDevice: PrinterTarget;
   current: number;
   target: number;
   setTemp: (newTemp: number) => void | Promise<void>; // can throw error
@@ -67,10 +69,13 @@ export class PrinterAPI extends OctoprintAPI {
     jobStatus: Array<(newJobStatus: Print) => void>;
   };
   private activeProfile: PrinterProfile;
+
+  public move: MovementAPI;
   public connectionInfos: ConnectionInfos;
 
   constructor(httpClienta: Axios) {
     super(httpClienta);
+    this.move = new MovementAPI(httpClienta);
     const baseUrl = httpClienta.defaults.baseURL;
     const socketUrl = (
       baseUrl +
