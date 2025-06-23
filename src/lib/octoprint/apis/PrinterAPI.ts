@@ -101,10 +101,11 @@ export class PrinterAPI extends OctoprintAPI {
       command: "connect",
     });
     if (resp.status === 204) {
-      this.connectionInfos.connected = true;
+      //Doesn't actually mean that the printer successfully connected
+      /* this.connectionInfos.connected = true;
       await this.fetchProfiles();
       this.connectionInfos.printerName = this.activeProfile.name;
-      this.callListeners("status", this.connectionInfos);
+      this.callListeners("status", this.connectionInfos);*/
     }
   }
 
