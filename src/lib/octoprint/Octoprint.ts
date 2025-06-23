@@ -11,6 +11,8 @@ export type OctoprintNodeType = {
   version: string;
 };
 
+export type PrinterTarget = "tool" | "bed";
+
 export class InvalidNode extends Error {
   constructor(msg: string) {
     super(msg);

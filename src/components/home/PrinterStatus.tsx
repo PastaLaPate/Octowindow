@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router";
 import { toast } from "sonner";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
+import type { PrinterTarget } from "@/lib/octoprint/Octoprint";
 import { cn } from "@/lib/utils";
 
 import type { OctoprintState } from "@/routes/app/Home";
@@ -15,7 +16,7 @@ function TempViewer({
   target,
 }: {
   octoprintState: OctoprintState;
-  target: "tool" | "bed";
+  target: PrinterTarget;
 }) {
   const [tempInput, setNumberInput] = useState("");
   const [temp, setTemp] = useState<Temp | undefined>(undefined);
