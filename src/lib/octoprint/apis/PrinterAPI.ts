@@ -4,6 +4,7 @@ import type { PrinterTarget } from "../Octoprint";
 import type { Print } from "./FileAPI";
 import MovementAPI from "./MovementAPI";
 import { OctoprintAPI } from "./OctoprintAPI";
+import ToolAPI from "./ToolAPI";
 
 export const ConnectionFlags = {
   cancelling: "cancelling",
@@ -71,68 +72,27 @@ export class PrinterAPI extends OctoprintAPI {
   private activeProfile: PrinterProfile;
 
   public move: MovementAPI;
+  public tool: ToolAPI;
   public connectionInfos: ConnectionInfos;
 
-  constructor(httpClienta: Axios) {
-    super(httpClienta);
-    this.move = new MovementAPI(httpClienta);
-    const baseUrl = httpClienta.defaults.baseURL;
-    const socketUrl = (
-      baseUrl +
-      (baseUrl?.endsWith("/") ? "" : "/") +
-      "sockjs/websocket"
-    ).replace(/^http/, "ws");
-    const sessionInfos = httpClienta.post(
-      "/api/login",
-      {
-        passive: true,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    this.connectionInfos = {
-      connected: false,
-      flags: allFalseFlags,
-      printerName: "",
-    };
-    sessionInfos.then((resp) => {
-      if (resp.status === 200) {
-        resp.data = resp.data;
-        const usrName = resp.data.name;
-        const sessionID = resp.data.session;
-        this.socket = new WebSocket(socketUrl);
-        this.socket.onopen = function () {
-          console.log("[WebSocket] Successfully connected to " + socketUrl);
-          this.send(
-            JSON.stringify({
-              subscribe: {
-                state: {
-                  logs: true,
-                  messages: false,
-                },
-                event: true,
-                plugins: false,
-              },
-            }),
-          );
-          this.send(
-            JSON.stringify({
-              auth: `${usrName}:${sessionID}`,
-            }),
-          );
-        };
-        this.socket.onmessage = this.parseMSG;
-      }
-    });
+  constructor(httpClient: Axios) {
+    super(httpClient);
+
+    this.move = new MovementAPI(httpClient);
+    this.tool = new ToolAPI(httpClient);
+
     this.listeners = { temp: [], status: [], jobStatus: [] };
     this.activeProfile = {
       current: false,
       name: "",
       id: "",
     };
+    this.connectionInfos = {
+      connected: false,
+      flags: allFalseFlags,
+      printerName: "",
+    };
+    this.initWS();
     this.fetchProfiles();
   }
 
@@ -181,6 +141,53 @@ export class PrinterAPI extends OctoprintAPI {
     callback: ListenerTypes[T],
   ) {
     (this.listeners[type] as ListenerTypes[T][]).push(callback);
+  }
+
+  private async initWS() {
+    const baseUrl = this.httpClient.defaults.baseURL;
+    const socketUrl = (
+      baseUrl +
+      (baseUrl?.endsWith("/") ? "" : "/") +
+      "sockjs/websocket"
+    ).replace(/^http/, "ws");
+    const resp = await this.httpClient.post(
+      "/api/login",
+      {
+        passive: true,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    if (resp.status === 200) {
+      resp.data = resp.data;
+      const usrName = resp.data.name;
+      const sessionID = resp.data.session;
+      this.socket = new WebSocket(socketUrl);
+      this.socket.onopen = function () {
+        console.log("[WebSocket] Successfully connected to " + socketUrl);
+        this.send(
+          JSON.stringify({
+            subscribe: {
+              state: {
+                logs: true,
+                messages: false,
+              },
+              event: true,
+              plugins: false,
+            },
+          }),
+        );
+        this.send(
+          JSON.stringify({
+            auth: `${usrName}:${sessionID}`,
+          }),
+        );
+      };
+      this.socket.onmessage = this.parseMSG;
+    }
   }
 
   private parseMSG = (msg: MessageEvent) => {
