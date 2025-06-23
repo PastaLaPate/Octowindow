@@ -16,7 +16,7 @@ function JogPanel() {
   return (
     <div className="flex w-[50vw] items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-3">
-        <div className="relative h-60 w-60 md:h-52 md:w-52">
+        <div className="relative sm:h-40 sm:w-40 md:h-52 md:w-52 lg:h-60 lg:w-60">
           <ChevronUp
             size={50}
             className="absolute top-0 left-1/2 -translate-x-1/2"
