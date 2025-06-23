@@ -9,8 +9,14 @@ export default function Actions() {
 
   return (
     <div className="flex h-full w-[50vw] items-center justify-center px-9">
+      {/* Maybe add cool down action & filament manager via SpoolManager */}
       <div className="grid w-full grid-cols-2 items-center justify-items-center gap-4">
-        <ActionBox label="Control" icon={Move} color="bg-purple-600" />
+        <ActionBox
+          label="Control"
+          icon={Move}
+          color="bg-purple-600"
+          to="/app/control"
+        />
         <ActionBox label="Terminal" icon={Terminal} color="bg-cyan-600" />
         <ActionBox
           label="Preheat"

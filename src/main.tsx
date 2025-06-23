@@ -7,6 +7,7 @@ import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router";
 
 import App from "./routes/app/App.tsx";
+import Control from "./routes/app/Control.tsx";
 import Home from "./routes/app/Home.tsx";
 import PrintPage from "./routes/app/Print.tsx";
 import Settings from "./routes/app/Settings.tsx";
@@ -27,6 +28,7 @@ createRoot(document.getElementById("root")!).render(
           <Route index element={<Home />} />
           <Route path="/app/print" element={<PrintPage />} />
           <Route path="/app/settings" element={<Settings />} />
+          <Route path="/app/control" element={<Control />} />
         </Route>
         <Route path="/setup" element={<Setup />} />
       </Routes>
