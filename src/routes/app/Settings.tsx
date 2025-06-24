@@ -1,5 +1,5 @@
 import { ArrowLeft, Power } from "lucide-react";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 import type { OctoprintState } from "./Home";
 

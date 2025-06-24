@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
