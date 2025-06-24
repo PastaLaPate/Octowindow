@@ -44,10 +44,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
   useEffect(() => {
     let color = "bg-green-500";
     let message = "";
-    if (
-      !backendStatus.connected &&
-      octoprintState.connectionInfos.connected === false
-    ) {
+    if (!backendStatus.connected && octoprintState.connectionInfos.connected === false) {
       color = "bg-red-600";
       message = "Backend is not connected and printer is disconnected.";
       setGlobalStatus({
@@ -55,10 +52,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
         message,
       });
       return;
-    } else if (
-      !backendStatus.connected ||
-      octoprintState.connectionInfos.connected === false
-    ) {
+    } else if (!backendStatus.connected || octoprintState.connectionInfos.connected === false) {
       color = "bg-orange-400";
     }
     if (!backendStatus.connected) {
@@ -74,7 +68,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
     });
   }, [backendStatus, octoprintState.connectionInfos]);
   return (
-    <div className="relative flex items-center justify-between bg-slate-800 sm:h-10 md:h-20">
+    <div className="relative flex items-center justify-between bg-slate-800 sm:h-10 md:h-15 lg:h-20">
       <div className="flex flex-row items-center">
         {octoprintState.toolTemp.current !== 0 && (
           <>
@@ -83,9 +77,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             </div>
             <p className="text-lg">
               {String(Math.round(octoprintState.toolTemp.current)) +
-                (octoprintState.toolTemp.target !== 0
-                  ? `/${octoprintState.toolTemp.target}`
-                  : "")}
+                (octoprintState.toolTemp.target !== 0 ? `/${octoprintState.toolTemp.target}` : "")}
             </p>
           </>
         )}
@@ -96,9 +88,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             </div>
             <p className="text-lg">
               {String(Math.round(octoprintState.bedTemp.current)) +
-                (octoprintState.bedTemp.target !== 0
-                  ? `/${octoprintState.bedTemp.target}`
-                  : "")}
+                (octoprintState.bedTemp.target !== 0 ? `/${octoprintState.bedTemp.target}` : "")}
             </p>
           </>
         )}
@@ -112,7 +102,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
         <div
           className={cn(
             "flex items-center justify-center rounded-lg bg-slate-700 hover:cursor-pointer md:h-8 md:w-8 md:rounded-md lg:h-12 lg:w-12",
-            loading && "!cursor-not-allowed",
+            loading && "!cursor-not-allowed"
           )}
           onClick={async () => {
             if (loading) return;
@@ -122,8 +112,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
               message: "Refreshing status and trying to connect to printer...",
             });
             try {
-              const response =
-                await octoprintState.node.local.getBackendStatus();
+              const response = await octoprintState.node.local.getBackendStatus();
               await octoprintState.node.printer.connectPrinter();
               setBackendStatus(response);
             } catch (error) {
@@ -135,12 +124,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             }
           }}
         >
-          <RefreshCw
-            className={cn(
-              "md:h-6 md:w-6 lg:h-8 lg:w-8",
-              loading && "animate-spin",
-            )}
-          />
+          <RefreshCw className={cn("md:h-6 md:w-6 lg:h-8 lg:w-8", loading && "animate-spin")} />
         </div>
       </div>
     </div>

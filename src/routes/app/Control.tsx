@@ -111,23 +111,23 @@ function GeneralControlPanel() {
     printer && (
       <div className="flex w-[50vw] flex-row items-center justify-center gap-6">
         <div>
-          <div className="relative flex h-60 w-60 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg">
+          <div className="relative flex rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg md:h-30 md:w-60 lg:h-60 lg:w-60">
             <div
-              className="absolute top-4 left-1/2 flex -translate-x-1/2 flex-col items-center justify-center"
+              className="absolute flex flex-col items-center justify-center md:top-1/2 md:left-2 md:-translate-y-1/2 lg:top-4 lg:left-1/2 lg:-translate-x-1/2"
               onClick={() => printer.tool.extrude(-Number(step))}
             >
               <p className="text-base font-bold text-blue-400">Intrude</p>
-              <ChevronUp size={50} />
+              <ChevronUp size={50} className="md:-rotate-90 lg:rotate-0" />
             </div>
             <Nozzle
               className="absolute top-1/2 left-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2"
               stroke="var(--color-blue-400)"
             />
             <div
-              className="absolute bottom-4 left-1/2 flex -translate-x-1/2 flex-col items-center justify-center"
+              className="absolute flex items-center justify-center md:top-1/2 md:right-2 md:-translate-y-1/2 md:flex-col-reverse lg:bottom-4 lg:left-1/2 lg:flex-col"
               onClick={() => printer.tool.extrude(Number(step))}
             >
-              <ChevronDown size={50} />
+              <ChevronDown size={50} className="md:-rotate-90 lg:rotate-0" />
               <p className="text-base font-bold text-blue-400">Extrude</p>
             </div>
           </div>
@@ -157,13 +157,13 @@ function GeneralControlPanel() {
         </div>
         <div className="flex-col items-center justify-center">
           <TempViewer
-            className={"mb-6 w-60"}
+            className={"mb-6 md:w-30 xl:w-60"}
             inputClassName={"!w-25 !text-2xl"}
             octoprintState={OctoprintState}
             target="tool"
           />
           <TempViewer
-            className={"w-60"}
+            className={"md:w-30 xl:w-60"}
             inputClassName={"!w-25 !text-2xl"}
             octoprintState={OctoprintState}
             target="bed"
