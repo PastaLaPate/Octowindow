@@ -2,9 +2,15 @@
   "tabWidth": 2,
   "useTabs": false,
   "semi": true,
-  "printWidth": 80,
+  "printWidth": 120,
+  "trailingComma": "es5",
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "bracketSameLine": false,
+  
   "plugins": [
     "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-organize-attributes",
     "prettier-plugin-tailwindcss"
   ],
   "importOrder": [
