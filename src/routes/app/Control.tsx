@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -7,9 +6,10 @@ import {
   Home,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 import type { MovementAxis } from "@/lib/octoprint/apis/MovementAPI";
+import BackButton from "@/components/backButton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/animated-tabs";
 
 import type { OctoprintState } from "./Home";
@@ -114,16 +114,8 @@ export default function Control() {
   // Animated tabs required for choosing move amount (1mm, 5mm, 10mm)
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="mt-6 ml-6 flex flex-row items-center gap-3">
-        <div className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition hover:bg-slate-700">
-          <ArrowLeft
-            className="h-10 w-10"
-            onClick={() => {
-              navigate("/app/");
-            }}
-          />
-        </div>
-        <p className="text-4xl font-bold">Control</p>
+      <div className="mt-5 mr-auto ml-4">
+        <BackButton title="Control" />
       </div>
       <div className="flex h-full min-h-0 flex-1 flex-row">
         <JogPanel />

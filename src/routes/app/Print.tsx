@@ -1,18 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Image,
-  Printer,
-  RefreshCw,
-  Trash,
-} from "lucide-react";
+import { ArrowRight, Image, Printer, RefreshCw, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import { cn } from "@/lib/utils";
+import BackButton from "@/components/backButton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./Home";
@@ -248,16 +242,7 @@ export default function PrintPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
-        <div className="flex w-full flex-row items-center justify-center gap-4">
-          <div className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition hover:bg-slate-700">
-            <ArrowLeft
-              className="h-10 w-10"
-              onClick={() => {
-                navigate("/app/");
-              }}
-            />
-          </div>
-          <p className="text-4xl font-bold">Print (File viewer)</p>
+        <BackButton title="Print (File viewer)">
           <div
             className={cn(
               "ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-800",
@@ -271,7 +256,7 @@ export default function PrintPage() {
           >
             <RefreshCw className="h-8 w-8" />
           </div>
-        </div>
+        </BackButton>
         <FileViewer
           octoprintState={OctoprintState}
           files={files}
