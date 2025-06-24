@@ -113,7 +113,7 @@ function GeneralControlPanel() {
         <div>
           <div className="relative flex rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg md:h-30 md:w-60 lg:h-60 lg:w-60">
             <div
-              className="absolute flex flex-col items-center justify-center md:top-1/2 md:left-2 md:-translate-y-1/2 lg:top-4 lg:left-1/2 lg:-translate-x-1/2"
+              className="absolute flex flex-col items-center justify-center md:top-1/2 md:left-2 md:-translate-y-1/2 lg:top-4 lg:left-1/2 lg:-translate-x-1/2 lg:translate-y-0"
               onClick={() => printer.tool.extrude(-Number(step))}
             >
               <p className="text-base font-bold text-blue-400">Intrude</p>
@@ -124,7 +124,7 @@ function GeneralControlPanel() {
               stroke="var(--color-blue-400)"
             />
             <div
-              className="absolute flex items-center justify-center md:top-1/2 md:right-2 md:-translate-y-1/2 md:flex-col-reverse lg:bottom-4 lg:left-1/2 lg:flex-col"
+              className="absolute flex items-center justify-center md:top-1/2 md:right-2 md:-translate-y-1/2 md:flex-col-reverse lg:top-auto lg:right-0 lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2 lg:translate-y-0 lg:flex-col"
               onClick={() => printer.tool.extrude(Number(step))}
             >
               <ChevronDown size={50} className="md:-rotate-90 lg:rotate-0" />
