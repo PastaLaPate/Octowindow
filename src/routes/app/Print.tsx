@@ -98,12 +98,7 @@ function Directory({
     <div className={"flex flex-col gap-2"} style={{ marginLeft: depth * 20 }}>
       <CListNode onClick={() => setOpened(!opened)}>
         <div className="flex h-10 items-center">
-          <ArrowRight
-            className={cn(
-              "h-8 w-8 transition-transform",
-              opened ? "rotate-90" : "rotate-0",
-            )}
-          />
+          <ArrowRight className={cn("h-8 w-8 transition-transform", opened ? "rotate-90" : "rotate-0")} />
         </div>
         <p>{dir.name}</p>
       </CListNode>
@@ -120,14 +115,7 @@ function Directory({
           >
             {dir.children.map((node) => {
               if ("children" in node) {
-                return (
-                  <Directory
-                    key={node.path}
-                    dir={node as Dir}
-                    viewType={viewType}
-                    depth={depth + 1}
-                  />
-                );
+                return <Directory key={node.path} dir={node as Dir} viewType={viewType} depth={depth + 1} />;
               } else {
                 return (
                   <Print3D
@@ -161,7 +149,7 @@ function FileViewer({
     <div
       className={cn(
         "flex w-full gap-2 overflow-y-auto p-10",
-        viewType == "gallery" ? "flex-row flex-wrap" : "flex-col",
+        viewType == "gallery" ? "flex-row flex-wrap" : "flex-col"
       )}
     >
       {!loading
@@ -173,13 +161,11 @@ function FileViewer({
                 key={dir.name}
                 depth={0}
                 onPrint={(print) => {
-                  octoprintState.node.file
-                    .printFile(dir.origin, print.path)
-                    .catch((e) => {
-                      if (e instanceof Error) {
-                        toast.error(e.message);
-                      }
-                    });
+                  octoprintState.node.file.printFile(dir.origin, print.path).catch((e) => {
+                    if (e instanceof Error) {
+                      toast.error(e.message);
+                    }
+                  });
                 }}
               />
             );
@@ -245,8 +231,8 @@ export default function PrintPage() {
         <BackButton title="Print (File viewer)">
           <div
             className={cn(
-              "ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-800",
-              loading ? "animate-spin" : "",
+              "absolute right-1 flex h-14 w-14 items-center justify-center rounded-full bg-slate-800",
+              loading ? "animate-spin" : ""
             )}
             onClick={() => {
               if (!loading) {
@@ -257,12 +243,7 @@ export default function PrintPage() {
             <RefreshCw className="h-8 w-8" />
           </div>
         </BackButton>
-        <FileViewer
-          octoprintState={OctoprintState}
-          files={files}
-          viewType={viewType}
-          loading={loading}
-        />
+        <FileViewer octoprintState={OctoprintState} files={files} viewType={viewType} loading={loading} />
       </div>
     </div>
   );

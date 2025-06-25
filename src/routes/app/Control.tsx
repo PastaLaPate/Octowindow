@@ -163,7 +163,7 @@ export default function Control() {
   // Animated tabs required for choosing move amount (1mm, 5mm, 10mm)
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="mt-5 mr-auto ml-4">
+      <div className="mt-5 ml-4">
         <BackButton title="Control" />
       </div>
       <div className="flex h-full min-h-0 flex-1 flex-row">
