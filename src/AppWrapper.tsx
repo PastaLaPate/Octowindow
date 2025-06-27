@@ -2,6 +2,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 
 import App from "./routes/app/App";
 import Control from "./routes/app/Control";
+import FilamentPage from "./routes/app/Filament";
 import Home from "./routes/app/Home";
 import PrintPage from "./routes/app/Print";
 import Settings from "./routes/app/Settings";
@@ -19,6 +20,7 @@ export default function AppWrapper() {
         <Route path="/app/print" element={<PrintPage />} />
         <Route path="/app/settings" element={<Settings />} />
         <Route path="/app/control" element={<Control />} />
+        <Route path="/app/spools" element={<FilamentPage />} />
       </Route>
       <Route path="/setup" element={<Setup />} />
     </Routes>

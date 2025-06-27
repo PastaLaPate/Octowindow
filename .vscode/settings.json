@@ -4,6 +4,7 @@
     "source.fixAll.eslint": "always",
     "source.organizeImports": "always"
   },
+  "editor.indentSize": 2,
   "editor.wordWrap": "on",
   "vite.autoStart": true,
   "vite.devCommand": "pnpm run dev",

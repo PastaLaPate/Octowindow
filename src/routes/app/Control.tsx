@@ -140,14 +140,14 @@ function GeneralControlPanel() {
         <div className="flex flex-row items-center justify-center gap-4">
           <TempViewer
             className={"md:h-46 md:w-34 lg:h-60 lg:w-60"}
-            inputClassName={"w-25 md:w-20 md:text-lg lg:text-2xl"}
+            inputClassName={"w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"}
             iconClassName={"md:w-10 md:h-10"}
             octoprintState={OctoprintState}
             target="tool"
           />
           <TempViewer
             className={"md:h-46 md:w-34 lg:h-60 lg:w-60"}
-            inputClassName={"w-25 md:w-20 md:text-lg lg:text-2xl "}
+            inputClassName={"w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl "}
             octoprintState={OctoprintState}
             iconClassName={"md:w-10 md:h-10 "}
             target="bed"
