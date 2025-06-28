@@ -24,6 +24,15 @@ export default class SpoolManager extends OctoprintAPI {
     super(httpClient);
   }
 
+  public async isInstalled(): Promise<boolean> {
+    try {
+      await this.getSpools();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   public async getSpools(): Promise<FilamentSpool[]> {
     const resp = await this.httpClient.get("plugin/SpoolManager/loadSpoolsByQuery", {
       params: {

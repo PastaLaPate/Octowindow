@@ -5,8 +5,10 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
+import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
+import StartPrintDialog from "@/components/StartPrintDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./Home";
@@ -214,6 +216,7 @@ export default function PrintPage() {
   const navigate = useNavigate();
   const [files, setFiles] = useState<Dir[]>([]);
   const [loading, setLoading] = useState(true);
+  const [spools, setSpools] = useState<FilamentSpool[]>([]);
   const refresh = async () => {
     setLoading(true);
     if (OctoprintState.node !== undefined) {
@@ -224,6 +227,9 @@ export default function PrintPage() {
 
   useEffect(() => {
     refresh();
+    (async () => {
+      setSpools(await OctoprintState.node.spools.getSpools());
+    })();
   }, [OctoprintState.node]);
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
@@ -244,6 +250,17 @@ export default function PrintPage() {
           </div>
         </BackButton>
         <FileViewer octoprintState={OctoprintState} files={files} viewType={viewType} loading={loading} />
+        <StartPrintDialog
+          file={{
+            display: "Random file",
+            name: "random_file.gcode",
+            origin: "local",
+            path: "/local/random_file.gcode",
+            size: "1000000",
+            thumbnail: "https://alexprojects.ovh/favicon.ico",
+          }}
+          spools={spools}
+        />
       </div>
     </div>
   );
