@@ -55,7 +55,7 @@ export default class SpoolManager extends OctoprintAPI {
     if (resp.status !== 200) {
       throw new Error("Error");
     }
-    return resp.data.selectedSpools[0];
+    return this.parseSpool(resp.data.selectedSpools[0]);
   }
 
   // TODO: Add select spool
@@ -67,7 +67,7 @@ export default class SpoolManager extends OctoprintAPI {
       density: spool.density,
       diameter: spool.diameter,
       displayName: `${spool.vendor} - ${spool.displayName}`,
-      id: spool.databaseId,
+      id: spool.databaseId ?? spool.id,
       material: spool.material,
       name: spool.displayName,
       temperatureOffset: spool.offsetTemperature ?? 0,

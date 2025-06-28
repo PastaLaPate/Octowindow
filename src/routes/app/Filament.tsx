@@ -1,19 +1,42 @@
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
+import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./Home";
 
-function Spool({ spool, current = false }: { spool: FilamentSpool; current?: boolean }) {
+function Spool({ spool, current = false, idx = 0 }: { spool: FilamentSpool; current?: boolean; idx: number }) {
   return (
-    <div className="relative h-14 w-full rounded-xl bg-slate-800">
-      <p className={`absolute top-1/2 left-6 -translate-y-1/2 rounded-lg border-2 border-[${spool.color}] p-1`}>
+    <motion.div
+      layout
+      initial={{ opacity: 0.4, y: -(idx * 56 + idx * 8) }} // Fancy calculations (56 equivalent to h-14 8 equivalent to gap-2)
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", bounce: 0.25 }}
+      className={cn("relative h-14 w-full rounded-xl bg-slate-800", current && "border-2 border-blue-600")}
+    >
+      <p
+        className={`absolute top-1/2 left-6 -translate-y-1/2 rounded-lg border-[3px] p-1`}
+        style={{ borderColor: spool.color }}
+      >
         {spool.material}
       </p>
       <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{spool.displayName}</p>
-    </div>
+      <button
+        disabled={current}
+        className={cn(
+          "absolute top-1/2 right-6 -translate-y-1/2 rounded-lg px-4 py-1 font-bold shadow-2xl transition-all duration-150",
+          current
+            ? "cursor-not-allowed bg-slate-700 text-slate-400"
+            : "bg-blue-600 text-white hover:scale-105 hover:bg-blue-700 active:bg-blue-800"
+        )}
+      >
+        {current ? "Current" : "Select"}
+      </button>
+    </motion.div>
   );
 }
 
@@ -39,9 +62,20 @@ export default function FilamentPage() {
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
         <BackButton title="Control" />
         <div className="flex w-full flex-col gap-2">
-          {filterByCurrentSpool().map((spool) => (
-            <Spool spool={spool} />
-          ))}
+          {spools && currentSpool ? (
+            <>
+              <Spool spool={currentSpool} current key={0} idx={0} />
+              {filterByCurrentSpool().map((spool, i) => (
+                <Spool spool={spool} key={i + 1} idx={i + 1} />
+              ))}
+            </>
+          ) : (
+            <>
+              {[...Array(5)].map((v, i) => {
+                return <Skeleton key={i} className="h-14 w-full" />;
+              })}
+            </>
+          )}
         </div>
       </div>
     </div>
