@@ -1,5 +1,5 @@
 import { defineStepper } from "@stepperize/react";
-import { CheckCircle, FileText, Printer, Spool } from "lucide-react";
+import { CheckCircle, CircleX, FileText, Printer, Spool } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 
@@ -28,16 +28,18 @@ const DemoSection = ({
   spools,
   onPrint,
   className,
+  setOpen,
 }: {
   file: Print;
   spools: FilamentSpool[];
   onPrint: (spool: FilamentSpool) => Promise<void>;
   className?: string;
+  setOpen: (open: boolean) => void;
 }) => {
   return (
     <stepper.Scoped>
       <section id="demo" className={cn("relative border-none bg-none px-4 sm:px-6 lg:px-8", className)}>
-        <DemoContent file={file} spools={spools} onPrint={onPrint} />
+        <DemoContent file={file} spools={spools} onPrint={onPrint} setOpen={setOpen} />
       </section>
     </stepper.Scoped>
   );
@@ -47,14 +49,17 @@ const DemoContent = ({
   file,
   spools,
   onPrint,
+  setOpen,
 }: {
   file: Print;
   spools: FilamentSpool[];
   onPrint: (spool: FilamentSpool) => Promise<void>;
+  setOpen: (open: boolean) => void;
 }) => {
   const methods = stepper.useStepper();
   const [selectedSpool, setSelectedSpool] = React.useState<FilamentSpool | null>(null);
   const [printing, setPrinting] = React.useState(false);
+  const [error, setError] = React.useState<Error>();
 
   // Step 1: File confirmation
   const FileStep = () => (
@@ -240,19 +245,25 @@ const DemoContent = ({
           className="rounded-md bg-green-600 px-4 py-2 text-sm font-bold text-white shadow transition-all hover:bg-green-700 active:bg-green-800 disabled:opacity-50 md:text-base"
           onClick={async () => {
             setPrinting(true);
-            await onPrint(selectedSpool!);
+            try {
+              await onPrint(selectedSpool!);
+            } catch (error) {
+              if (error instanceof Error) {
+                setError(error);
+              }
+            }
             setPrinting(false);
             methods.next();
           }}
           disabled={!selectedSpool || printing}
         >
-          {printing ? "Printing..." : "Print"}
+          {printing ? "Starting print..." : "Print"}
         </button>
       </div>
     </motion.div>
   );
   // Step 4: Success
-  const SuccessStep = () => (
+  const SuccessStep = ({ setOpen }: { setOpen: (open: boolean) => void }) => (
     <motion.div
       key="success"
       custom={methods.current.id}
@@ -272,7 +283,7 @@ const DemoContent = ({
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}
       >
-        <CheckCircle className="text-gray-1 size-10" />
+        {error ? <CircleX className="size-10 text-red-500" /> : <CheckCircle className="size-10 text-green-600" />}
       </motion.div>
       <motion.h3
         className="text-gray-12 mb-2 text-2xl font-bold"
@@ -280,7 +291,7 @@ const DemoContent = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        Success!
+        {error ? "An error has occured while starting print..." : "Success!"}
       </motion.h3>
       <motion.p
         className="text-gray-12 mb-6"
@@ -288,22 +299,28 @@ const DemoContent = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        Your print has started successfully.
+        {error ? error.message : "Your print has started successfully."}
       </motion.p>
       <motion.button
         type="button"
         onClick={() => {
           methods.reset();
           setSelectedSpool(null);
+          if (!error) {
+            setOpen(false);
+          }
         }}
-        className="bg-indigo-11 text-gray-1 hover:bg-indigo-12 rounded-md px-4 py-2 transition-colors"
+        className={cn(
+          "rounded-md px-4 py-2 transition-colors",
+          error ? "bg-red-800 hover:bg-red-600" : "bg-green-600 hover:bg-green-400"
+        )}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        Start Over
+        {error ? "Start Over" : "Finish"}
       </motion.button>
     </motion.div>
   );
@@ -328,10 +345,12 @@ const DemoContent = ({
             {methods.when("file-confirm", FileStep)}
             {methods.when("spool-select", SpoolStep)}
             {methods.when("print-confirm", PrintStep)}
-            {methods.when("success", SuccessStep)}
+            {methods.when("success", () => (
+              <SuccessStep setOpen={setOpen} />
+            ))}
           </AnimatePresence>
           <div className="flex justify-between md:mt-3 lg:mt-8">
-            {!methods.isFirst && (
+            {!methods.isFirst && !methods.isLast && (
               <motion.button
                 type="button"
                 onClick={methods.prev}
@@ -458,7 +477,7 @@ export default function StartPrintDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-2/3 max-w-none p-0 md:h-[80vh] lg:h-auto" style={{ width: "80vw", maxWidth: "none" }}>
-        <DemoSection file={file} spools={spools} onPrint={onPrint} />
+        <DemoSection file={file} spools={spools} onPrint={onPrint} setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   );

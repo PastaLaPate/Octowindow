@@ -172,7 +172,7 @@ function FileViewer({
               />
             );
           })
-        : Array.from({ length: 3 }, () => <Skeleton className="h-20" />)}
+        : Array.from({ length: 3 }, (x, k) => <Skeleton className="h-20" key={k} />)}
       {selectedFile && (
         <StartPrintDialog
           file={selectedFile}
