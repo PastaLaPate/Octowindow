@@ -5,7 +5,7 @@ import * as React from "react";
 
 import type { Print } from "@/lib/octoprint/apis/FileAPI";
 import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
-import { cn } from "@/lib/utils";
+import { cn, truncate } from "@/lib/utils";
 
 import { Dialog, DialogContent } from "./ui/dialog";
 
@@ -36,7 +36,7 @@ const DemoSection = ({
 }) => {
   return (
     <stepper.Scoped>
-      <section id="demo" className={cn("relative border-none px-4 sm:px-6 lg:px-8", className)}>
+      <section id="demo" className={cn("relative border-none bg-none px-4 sm:px-6 lg:px-8", className)}>
         <DemoContent file={file} spools={spools} onPrint={onPrint} />
       </section>
     </stepper.Scoped>
@@ -71,7 +71,7 @@ const DemoContent = ({
       }}
     >
       <h3 className="text-gray-12 mb-4 text-xl font-semibold">File Confirmation</h3>
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex items-center gap-4 md:flex-row lg:flex-col">
         {file.thumbnail && (
           <img
             src={file.thumbnail}
@@ -107,6 +107,7 @@ const DemoContent = ({
   const SpoolStep = () => (
     <motion.div
       key="spool-select"
+      className="flex max-h-2/4 flex-1 flex-col"
       custom={methods.current.id}
       variants={slideVariants}
       initial="enter"
@@ -117,8 +118,8 @@ const DemoContent = ({
         opacity: { duration: 0.2 },
       }}
     >
-      <h3 className="text-gray-12 mb-4 text-xl font-semibold">Select Filament Spool</h3>
-      <div className="flex flex-col gap-3">
+      <h3 className="text-gray-12 text-xl font-semibold md:mb-2 lg:mb-4">Select Filament Spool</h3>
+      <div className="flex flex-1 flex-col overflow-y-auto md:gap-1.5 lg:gap-3">
         {spools.length === 0 && <div className="text-slate-400">No spools available.</div>}
         {spools.map((spool) => (
           <button
@@ -142,7 +143,7 @@ const DemoContent = ({
         ))}
       </div>
       <button
-        className="mt-6 rounded-md bg-blue-600 px-6 py-2 font-bold text-white shadow transition-all hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50"
+        className="rounded-md bg-blue-600 px-6 py-2 font-bold text-white shadow transition-all hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 md:mt-2 lg:mt-6"
         onClick={methods.next}
         disabled={!selectedSpool}
       >
@@ -151,6 +152,58 @@ const DemoContent = ({
     </motion.div>
   );
 
+  const PrintThumbnail = ({ file }: { file: Print }) => {
+    return (
+      <img
+        src={file.thumbnail}
+        alt="thumbnail"
+        className="h-16 w-16 rounded-lg border border-gray-300 object-cover lg:h-32 lg:w-32"
+      />
+    );
+  };
+
+  const PrintInfos = ({ file }: { file: Print }) => {
+    return (
+      <div className="flex w-full flex-col gap-1 text-xs md:text-base">
+        <div>
+          <span className="font-bold">Name:</span> {file.display}
+        </div>
+        <div>
+          <span className="font-bold">Path:</span> {truncate(file.path, 50, false)}
+        </div>
+        <div>
+          <span className="font-bold">Size:</span> {file.size}
+        </div>
+        <div>
+          <span className="font-bold">Origin:</span> {file.origin}
+        </div>
+      </div>
+    );
+  };
+
+  const SpoolInfos = ({ selectedSpool }: { selectedSpool: FilamentSpool }) => {
+    return (
+      <div className="mt-2 flex w-full flex-col gap-1 rounded-lg border-2 border-blue-600 bg-blue-50 p-2 text-xs md:mt-0 md:p-3 md:text-base dark:bg-blue-900">
+        <div>
+          <span className="font-bold">Spool:</span> {selectedSpool.displayName}
+        </div>
+        <div>
+          <span className="font-bold">Material:</span> {selectedSpool.material}
+        </div>
+        <div>
+          <span className="font-bold">Color:</span>{" "}
+          <span
+            className="inline-block h-3 w-3 rounded-full border border-slate-400 align-middle md:h-4 md:w-4"
+            style={{ background: selectedSpool.color }}
+          />
+        </div>
+        <div>
+          <span className="font-bold">Vendor:</span> {selectedSpool.vendor}
+        </div>
+      </div>
+    );
+  };
+
   // Step 3: Print confirmation
   const PrintStep = () => (
     <motion.div
@@ -158,6 +211,7 @@ const DemoContent = ({
       custom={methods.current.id}
       variants={slideVariants}
       initial="enter"
+      className="flex flex-col md:gap-2 lg:gap-4"
       animate="center"
       exit="exit"
       transition={{
@@ -165,51 +219,25 @@ const DemoContent = ({
         opacity: { duration: 0.2 },
       }}
     >
-      <h3 className="text-gray-12 mb-4 text-xl font-semibold">Print Confirmation</h3>
-      <div className="flex flex-col items-center gap-4">
-        {file.thumbnail && (
-          <img
-            src={file.thumbnail}
-            alt="thumbnail"
-            className="h-32 w-32 rounded-lg border border-gray-300 object-cover"
-          />
-        )}
-        <div className="flex w-full flex-col gap-2">
-          <div>
-            <span className="font-bold">Name:</span> {file.display}
-          </div>
-          <div>
-            <span className="font-bold">Path:</span> {file.path}
-          </div>
-          <div>
-            <span className="font-bold">Size:</span> {file.size}
-          </div>
-          <div>
-            <span className="font-bold">Origin:</span> {file.origin}
-          </div>
-        </div>
-        {selectedSpool && (
-          <div className="mt-4 flex w-full flex-col gap-2 rounded-lg border-2 border-blue-600 bg-blue-50 p-3 dark:bg-blue-900">
-            <div>
-              <span className="font-bold">Spool:</span> {selectedSpool.displayName}
+      <h3 className="text-gray-12 text-base font-semibold md:text-xl">Print Confirmation</h3>
+      <div className="flex flex-col items-center gap-2">
+        {window.innerWidth > 1024 ? (
+          <>
+            {file.thumbnail && <PrintThumbnail file={file} />}
+            <div className="flex w-full flex-col gap-2">
+              <PrintInfos file={file} />
+              {selectedSpool && <SpoolInfos selectedSpool={selectedSpool} />}
             </div>
-            <div>
-              <span className="font-bold">Material:</span> {selectedSpool.material}
-            </div>
-            <div>
-              <span className="font-bold">Color:</span>{" "}
-              <span
-                className="inline-block h-4 w-4 rounded-full border border-slate-400 align-middle"
-                style={{ background: selectedSpool.color }}
-              />
-            </div>
-            <div>
-              <span className="font-bold">Vendor:</span> {selectedSpool.vendor}
-            </div>
+          </>
+        ) : (
+          <div className="flex w-full flex-row items-center justify-center gap-2">
+            <PrintInfos file={file} />
+            {file.thumbnail && <PrintThumbnail file={file} />}
+            {selectedSpool && <SpoolInfos selectedSpool={selectedSpool} />}
           </div>
         )}
         <button
-          className="mt-6 rounded-md bg-green-600 px-6 py-2 font-bold text-white shadow transition-all hover:bg-green-700 active:bg-green-800 disabled:opacity-50"
+          className="rounded-md bg-green-600 px-4 py-2 text-sm font-bold text-white shadow transition-all hover:bg-green-700 active:bg-green-800 disabled:opacity-50 md:text-base"
           onClick={async () => {
             setPrinting(true);
             await onPrint(selectedSpool!);
@@ -223,7 +251,6 @@ const DemoContent = ({
       </div>
     </motion.div>
   );
-
   // Step 4: Success
   const SuccessStep = () => (
     <motion.div
@@ -282,9 +309,9 @@ const DemoContent = ({
   );
 
   return (
-    <div className="relative z-10 mx-auto max-w-5xl border-none">
+    <div className="relative z-10 mx-auto h-full max-w-5xl border-none">
       <motion.div
-        className="overflow-hidden rounded-xl shadow-xl backdrop-blur-sm"
+        className="h-full overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{
@@ -296,14 +323,14 @@ const DemoContent = ({
         viewport={{ once: true, margin: "-100px" }}
       >
         <StepperHeader methods={methods} isComplete={methods.isLast} />
-        <div className="p-8">
+        <div className="flex h-full flex-col overflow-y-auto md:p-1.5 lg:p-8">
           <AnimatePresence mode="wait" custom={methods.current.id}>
             {methods.when("file-confirm", FileStep)}
             {methods.when("spool-select", SpoolStep)}
             {methods.when("print-confirm", PrintStep)}
             {methods.when("success", SuccessStep)}
           </AnimatePresence>
-          <div className="mt-8 flex justify-between">
+          <div className="flex justify-between md:mt-3 lg:mt-8">
             {!methods.isFirst && (
               <motion.button
                 type="button"
@@ -316,7 +343,7 @@ const DemoContent = ({
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.15 }}
               >
                 Back
               </motion.button>
@@ -337,9 +364,9 @@ const StepperHeader = ({
   const currentIndex = methods.all.findIndex((step: any) => step.id === methods.current.id);
 
   return (
-    <nav className="bg-gray-4/30 p-8">
+    <nav className="bg-gray-4/30 md:p-1.5 lg:p-8">
       <ol className="relative flex items-center justify-between">
-        <div className="absolute top-5 right-4 left-4 z-0 h-0.5 bg-gray-700 sm:left-12">
+        <div className="absolute top-5 right-4 left-4 z-0 h-0.5 bg-gray-700">
           <motion.div
             className="h-full bg-indigo-600"
             initial={{ width: "0%" }}
@@ -359,10 +386,7 @@ const StepperHeader = ({
           return (
             <motion.li
               key={step.id}
-              className={cn(
-                "relative z-10 flex flex-shrink-0 flex-col items-center",
-                !canGoTo && "cursor-not-allowed opacity-50"
-              )}
+              className={cn("relative z-10 flex flex-shrink-0 flex-col items-center", !canGoTo && "cursor-not-allowed")}
               onClick={() => {
                 if (canGoTo) methods.goTo(step.id);
               }}
@@ -372,11 +396,11 @@ const StepperHeader = ({
               <motion.div
                 className={cn(
                   "flex size-10 items-center justify-center rounded-full",
-                  index <= currentIndex
-                    ? "bg-indigo-11 text-indigo-1"
-                    : isActive || isComplete
-                      ? "bg-green-11 text-green-1"
-                      : "bg-gray-12 text-gray-1"
+                  isActive
+                    ? "bg-green-600 text-green-100"
+                    : index <= currentIndex
+                      ? "bg-indigo-600 text-indigo-100"
+                      : "bg-gray-800 text-gray-100"
                 )}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -421,15 +445,19 @@ const StepperHeader = ({
 export default function StartPrintDialog({
   file,
   spools,
+  open,
+  setOpen,
   onPrint,
 }: {
   file: Print;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   spools: FilamentSpool[];
   onPrint: (spool: FilamentSpool) => Promise<void>;
 }) {
   return (
-    <Dialog open={true}>
-      <DialogContent className="w-2/3 max-w-none p-0" style={{ width: "66.666vw", maxWidth: "none" }}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="w-2/3 max-w-none p-0 md:h-[80vh] lg:h-auto" style={{ width: "80vw", maxWidth: "none" }}>
         <DemoSection file={file} spools={spools} onPrint={onPrint} />
       </DialogContent>
     </Dialog>

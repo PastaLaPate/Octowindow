@@ -69,6 +69,20 @@ export default class SpoolManager extends OctoprintAPI {
 
   // TODO: Add select spool
 
+  /**
+   * SelectSpool
+   *
+   */
+  public async selectSpool(spool: FilamentSpool): Promise<void> {
+    const resp = await this.httpClient.put("plugin/SpoolManager/selectSpool", {
+      databaseId: spool.id,
+      toolIndex: 0, // Fuck multi tool printers
+    });
+    if (resp.status != 200 && resp.status != 204) {
+      throw new Error(resp.statusText);
+    }
+  }
+
   private parseSpool(spool: any): FilamentSpool {
     if (!spool) throw new Error("Invalid spool");
     return {

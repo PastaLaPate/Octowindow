@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Image, Printer, RefreshCw, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { toast } from "sonner";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
@@ -141,12 +140,16 @@ function FileViewer({
   files,
   viewType,
   loading,
+  spools,
 }: {
   octoprintState: OctoprintState;
   files: Dir[];
+  spools: FilamentSpool[];
   viewType: ViewType;
   loading: boolean;
 }) {
+  const [startDialogOpen, setStartDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<Print | undefined>();
   return (
     <div
       className={cn(
@@ -163,49 +166,27 @@ function FileViewer({
                 key={dir.name}
                 depth={0}
                 onPrint={(print) => {
-                  octoprintState.node.file.printFile(dir.origin, print.path).catch((e) => {
-                    if (e instanceof Error) {
-                      toast.error(e.message);
-                    }
-                  });
+                  setStartDialogOpen(true);
+                  setSelectedFile(print);
                 }}
               />
             );
           })
         : Array.from({ length: 3 }, () => <Skeleton className="h-20" />)}
-      {/*
-      {Array(3).fill(<Print3D viewType={viewType} />)}
-      
-      <Directory
-        dir={{
-          name: "some_shits",
-          display: "some_shits",
-          path: "/local/some_shits",
-          size: "10 MB",
-          children: [
-            {
-              display: "some_shits",
-              name: "some_shits",
-              path: "/local/some_shits",
-              size: "10 MB",
-              children: Array.from({ length: 3 }, () => ({
-                display: "Alex",
-                name: "aled.gcode",
-                path: "/local/some_shits/aled.gcode",
-                size: "10MB",
-              })),
-            },
-            ...Array.from({ length: 3 }, () => ({
-              display: "Aled",
-              name: "aled.gcode",
-              path: "/local/some_shits/aled.gcode",
-              size: "10MB",
-            })),
-          ],
-        }}
-        viewType={viewType}
-      />
-      {Array(3).fill(<Print3D viewType={viewType} />)}*/}
+      {selectedFile && (
+        <StartPrintDialog
+          file={selectedFile}
+          open={startDialogOpen}
+          setOpen={setStartDialogOpen}
+          spools={spools}
+          onPrint={async (spool) => {
+            if (selectedFile) {
+              await octoprintState.node.spools.setCurrentSpool();
+              await octoprintState.node.file.printFile(selectedFile.origin, selectedFile.path);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -228,7 +209,7 @@ export default function PrintPage() {
   useEffect(() => {
     refresh();
     (async () => {
-      setSpools(await OctoprintState.node.spools.getSpools());
+      if (OctoprintState.node) setSpools(await OctoprintState.node.spools.getSpools());
     })();
   }, [OctoprintState.node]);
   return (
@@ -249,17 +230,12 @@ export default function PrintPage() {
             <RefreshCw className="h-8 w-8" />
           </div>
         </BackButton>
-        <FileViewer octoprintState={OctoprintState} files={files} viewType={viewType} loading={loading} />
-        <StartPrintDialog
-          file={{
-            display: "Random file",
-            name: "random_file.gcode",
-            origin: "local",
-            path: "/local/random_file.gcode",
-            size: "1000000",
-            thumbnail: "https://alexprojects.ovh/favicon.ico",
-          }}
+        <FileViewer
+          octoprintState={OctoprintState}
+          files={files}
           spools={spools}
+          viewType={viewType}
+          loading={loading}
         />
       </div>
     </div>
