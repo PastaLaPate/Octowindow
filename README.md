@@ -4,10 +4,12 @@
 
 ## Features
 
-- 🪶**Lightweight**: Optimized for small devices like Raspberry Pi.
+- 📱**Responsive**: Optimized for small screens like a 5" one.
+- 🪶**Lightweight**: Optimized for limited performance devices like Raspberry Pi.
 - ✅**User-friendly**: Intuitive interface for easy navigation.
 - 📂**File explorer**: Start 3D prints directly from the file explorer.
 - 🔥**Preheat presets**: Quickly preheat your printer with custom presets.
+- 🧵**Filament Spool Selector**: Select if you have SpoolManager installed a filament spool to print with.
 
 ## Screenshots
 
