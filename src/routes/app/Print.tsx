@@ -181,7 +181,7 @@ function FileViewer({
           spools={spools}
           onPrint={async (spool) => {
             if (selectedFile) {
-              await octoprintState.node.spools.setCurrentSpool();
+              await octoprintState.node.spools.selectSpool(spool);
               await octoprintState.node.file.printFile(selectedFile.origin, selectedFile.path);
             }
           }}
