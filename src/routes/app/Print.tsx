@@ -86,11 +86,15 @@ function Directory({
   viewType,
   depth = 0,
   onPrint = () => {},
+  onTrash = () => {},
+  onShowThumbnail = () => {},
 }: {
   dir: Dir;
   viewType: ViewType;
   depth?: number;
   onPrint?: (print: Print) => void;
+  onTrash?: (print: Print) => void;
+  onShowThumbnail?: (print: Print) => void;
 }) {
   const [opened, setOpened] = useState(false);
   return viewType == "gallery" ? (
@@ -116,7 +120,17 @@ function Directory({
           >
             {dir.children.map((node) => {
               if ("children" in node) {
-                return <Directory key={node.path} dir={node as Dir} viewType={viewType} depth={depth + 1} />;
+                return (
+                  <Directory
+                    key={node.path}
+                    dir={node as Dir}
+                    viewType={viewType}
+                    depth={depth + 1}
+                    onPrint={onPrint}
+                    onShowThumbnail={onShowThumbnail}
+                    onTrash={onTrash}
+                  />
+                );
               } else {
                 return (
                   <Print3D
@@ -125,6 +139,8 @@ function Directory({
                     viewType={viewType}
                     depth={depth + 1}
                     onPrint={() => onPrint(node as Print)}
+                    onShowThumbnail={() => onShowThumbnail(node as Print)}
+                    onTrash={() => onTrash(node as Print)}
                   />
                 );
               }
@@ -141,12 +157,14 @@ function FileViewer({
   viewType,
   loading,
   spools,
+  refresh = () => {},
 }: {
   octoprintState: OctoprintState;
   files: Dir[];
   spools: FilamentSpool[];
   viewType: ViewType;
   loading: boolean;
+  refresh?: () => void;
 }) {
   const [startDialogOpen, setStartDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<Print | undefined>();
@@ -169,6 +187,9 @@ function FileViewer({
                   setStartDialogOpen(true);
                   setSelectedFile(print);
                 }}
+                onTrash={(print) => {
+                  octoprintState.node.file.loadFile;
+                }}
               />
             );
           })
@@ -181,8 +202,9 @@ function FileViewer({
           spools={spools}
           onPrint={async (spool) => {
             if (selectedFile) {
+              await octoprintState.node.file.loadFile(selectedFile.origin, selectedFile.path);
               await octoprintState.node.spools.selectSpool(spool);
-              await octoprintState.node.file.printFile(selectedFile.origin, selectedFile.path);
+              await octoprintState.node.job.startJob();
             }
           }}
         />

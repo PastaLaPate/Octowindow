@@ -9,6 +9,8 @@ import { cn, truncate } from "@/lib/utils";
 
 import { Dialog, DialogContent } from "./ui/dialog";
 
+//TODO: Make the currently selected spool selected by default before new release + select in spool page
+
 // Stepper definition
 const stepper = defineStepper(
   { id: "file-confirm", label: "File", icon: FileText },

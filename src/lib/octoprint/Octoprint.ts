@@ -1,6 +1,7 @@
 import axios, { Axios } from "axios";
 
 import { FileAPI } from "./apis/FileAPI";
+import JobAPI from "./apis/JobAPI";
 import { OctoWindowAPI } from "./apis/OctoWindowAPI";
 import { PrinterAPI } from "./apis/PrinterAPI";
 import SpoolManager from "./apis/SpoolManager";
@@ -35,6 +36,7 @@ export class OctoprintNode {
   public printer: PrinterAPI;
   public local: OctoWindowAPI;
   public spools: SpoolManager;
+  public job: JobAPI;
 
   public authWorflow: AuthorizationWorkflow;
 
@@ -71,6 +73,7 @@ export class OctoprintNode {
       this.local.checkForUpdates();
     });
     this.spools = new SpoolManager(this.httpClient);
+    this.job = new JobAPI(this.httpClient);
   }
 
   public async getApiVersion() {
