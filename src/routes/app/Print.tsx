@@ -2,12 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Image, Printer, RefreshCw, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { toast } from "sonner";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
 import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
-import StartPrintDialog from "@/components/StartPrintDialog";
+import StartPrintDialog from "@/components/print/StartPrintDialog";
+import ThumbnailPreviewer from "@/components/print/ThumbnailPreviewer";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./Home";
@@ -29,9 +31,9 @@ function CListNode({
   return (
     <div
       className={
-        "flex items-center gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-lg transition hover:scale-[102%] hover:border-blue-500 active:scale-100 sm:gap-4 sm:p-2"
+        "flex items-center gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-lg transition hover:scale-[102%] hover:border-blue-500 active:scale-100 sm:gap-2 sm:p-2 md:text-sm lg:gap-4 lg:text-base"
       }
-      style={{ marginLeft: depth * 20, minWidth: 0 }}
+      style={{ marginLeft: depth * 10, minWidth: 0 }}
       onClick={onClick}
     >
       {children}
@@ -67,12 +69,10 @@ function Print3D({
   ) : (
     <CListNode depth={depth}>
       <img alt="thumbnail" src={print.thumbnail} width={40} height={40} />
-      <p>{print.display}</p>
-      <p>·</p>
-      <p className="text-sm text-slate-400">{print.path}</p>
+      <p className="w-auto">{print.display}</p>
       <p>·</p>
       <p className="text-sm text-slate-400">{print.size}</p>
-      <div className="ml-auto flex h-10 flex-row items-center gap-6">
+      <div className="mr-2 ml-auto flex h-10 flex-row items-center md:gap-3 lg:gap-6">
         <Trash onClick={onTrash} className="h-8 w-8" />
         <Image onClick={onShowThumbnail} className="h-8 w-8" />
         <Printer onClick={onPrint} className="h-8 w-8" />
@@ -103,7 +103,12 @@ function Directory({
     <div className={"flex flex-col gap-2"} style={{ marginLeft: depth * 20 }}>
       <CListNode onClick={() => setOpened(!opened)}>
         <div className="flex h-10 items-center">
-          <ArrowRight className={cn("h-8 w-8 transition-transform", opened ? "rotate-90" : "rotate-0")} />
+          <ArrowRight
+            className={cn(
+              "h-8 w-8 transition-transform",
+              opened ? "rotate-90" : "rotate-0"
+            )}
+          />
         </div>
         <p>{dir.name}</p>
       </CListNode>
@@ -167,48 +172,83 @@ function FileViewer({
   refresh?: () => void;
 }) {
   const [startDialogOpen, setStartDialogOpen] = useState(false);
+  const [thumbnailPreviewerOpen, setThumbnailPreviewerOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<Print | undefined>();
   return (
     <div
       className={cn(
-        "flex w-full gap-2 overflow-y-auto p-10",
+        "relative h-full w-full",
         viewType == "gallery" ? "flex-row flex-wrap" : "flex-col"
       )}
     >
-      {!loading
-        ? files.map((dir) => {
-            return (
-              <Directory
-                dir={dir}
-                viewType={viewType}
-                key={dir.name}
-                depth={0}
-                onPrint={(print) => {
-                  setStartDialogOpen(true);
-                  setSelectedFile(print);
-                }}
-                onTrash={(print) => {
-                  octoprintState.node.file.loadFile;
-                }}
-              />
-            );
-          })
-        : Array.from({ length: 3 }, (x, k) => <Skeleton className="h-20" key={k} />)}
-      {selectedFile && (
-        <StartPrintDialog
-          file={selectedFile}
-          open={startDialogOpen}
-          setOpen={setStartDialogOpen}
-          spools={spools}
-          onPrint={async (spool) => {
-            if (selectedFile) {
-              await octoprintState.node.file.loadFile(selectedFile.origin, selectedFile.path);
-              await octoprintState.node.spools.selectSpool(spool);
-              await octoprintState.node.job.startJob();
-            }
-          }}
-        />
-      )}
+      <div
+        key={"gradient"}
+        className="absolute top-0 z-10 h-8 w-full bg-gradient-to-b from-slate-900 to-transparent to-90%"
+      />
+      <div className="flex h-4/5 w-full flex-col gap-2 overflow-y-auto p-3">
+        {!loading
+          ? files.map((dir) => {
+              return (
+                <Directory
+                  dir={dir}
+                  viewType={viewType}
+                  key={dir.name}
+                  depth={0}
+                  onPrint={(print) => {
+                    setStartDialogOpen(true);
+                    setSelectedFile(print);
+                  }}
+                  onShowThumbnail={(print) => {
+                    setThumbnailPreviewerOpen(true);
+                    setSelectedFile(print);
+                  }}
+                  onTrash={(print) => {
+                    (async () => {
+                      try {
+                        await octoprintState.node.file.deleteFile(print);
+                        refresh();
+                        toast.success(
+                          print.display + " was successfully deleted."
+                        );
+                      } catch (e) {
+                        if (e instanceof Error) {
+                          toast.error(e.message);
+                        }
+                      }
+                    })();
+                  }}
+                />
+              );
+            })
+          : Array.from({ length: 3 }, (x, k) => (
+              <Skeleton className="h-20" key={k} />
+            ))}
+        {selectedFile && (
+          <StartPrintDialog
+            file={selectedFile}
+            open={startDialogOpen}
+            setOpen={setStartDialogOpen}
+            spools={spools}
+            onPrint={async (spool) => {
+              if (selectedFile) {
+                await octoprintState.node.file.loadFile(
+                  selectedFile.origin,
+                  selectedFile.path
+                );
+                await octoprintState.node.spools.selectSpool(spool);
+                await octoprintState.node.job.startJob();
+              }
+            }}
+          />
+        )}
+        {selectedFile && (
+          <ThumbnailPreviewer
+            file={selectedFile}
+            open={thumbnailPreviewerOpen}
+            setOpen={setThumbnailPreviewerOpen}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -231,16 +271,17 @@ export default function PrintPage() {
   useEffect(() => {
     refresh();
     (async () => {
-      if (OctoprintState.node) setSpools(await OctoprintState.node.spools.getSpools());
+      if (OctoprintState.node)
+        setSpools(await OctoprintState.node.spools.getSpools());
     })();
   }, [OctoprintState.node]);
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
-      <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
+      <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start rounded-2xl bg-slate-900 md:gap-4 md:p-6 lg:gap-8 lg:p-10">
         <BackButton title="Print (File viewer)">
           <div
             className={cn(
-              "absolute right-1 flex h-14 w-14 items-center justify-center rounded-full bg-slate-800",
+              "absolute right-1 flex items-center justify-center rounded-full bg-slate-800 md:size-10 lg:size-14",
               loading ? "animate-spin" : ""
             )}
             onClick={() => {
@@ -249,7 +290,7 @@ export default function PrintPage() {
               }
             }}
           >
-            <RefreshCw className="h-8 w-8" />
+            <RefreshCw className="md:size-6 lg:size-10" />
           </div>
         </BackButton>
         <FileViewer
@@ -258,6 +299,7 @@ export default function PrintPage() {
           spools={spools}
           viewType={viewType}
           loading={loading}
+          refresh={refresh}
         />
       </div>
     </div>

@@ -80,7 +80,10 @@ function humanFileSize(bytes: number, si = false, dp = 1) {
   do {
     bytes /= thresh;
     ++u;
-  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
 
   return bytes.toFixed(dp) + " " + units[u];
 }
@@ -88,10 +91,13 @@ function humanFileSize(bytes: number, si = false, dp = 1) {
 // TODO: Create the whole FileAPI
 export class FileAPI extends OctoprintAPI {
   public async printFile(origin: string, filePath: string) {
-    const resp = await this.httpClient.post(urlJoin("/api/files", origin, filePath), {
-      command: "select",
-      print: true,
-    });
+    const resp = await this.httpClient.post(
+      urlJoin("/api/files", origin, filePath),
+      {
+        command: "select",
+        print: true,
+      }
+    );
     if (resp.status === 409) {
       throw Error("Printer already printing or isn't connected...");
     }
@@ -99,10 +105,13 @@ export class FileAPI extends OctoprintAPI {
 
   // Used when also selecting the filament spool
   public async loadFile(origin: string, filePath: string) {
-    const resp = await this.httpClient.post(urlJoin("/api/files", origin, filePath), {
-      command: "select",
-      print: false,
-    });
+    const resp = await this.httpClient.post(
+      urlJoin("/api/files", origin, filePath),
+      {
+        command: "select",
+        print: false,
+      }
+    );
     if (resp.status === 409) {
       throw Error("Printer already printing or isn't connected...");
     }
@@ -119,8 +128,14 @@ export class FileAPI extends OctoprintAPI {
         recursive: true,
       },
     });
-    const sdFiles: (Node | Dir | Print)[] = this.processFiles("sdcard", SDResp.data.files);
-    const localFiles: (Node | Dir | Print)[] = this.processFiles("local", localResp.data.files);
+    const sdFiles: (Node | Dir | Print)[] = this.processFiles(
+      "sdcard",
+      SDResp.data.files
+    );
+    const localFiles: (Node | Dir | Print)[] = this.processFiles(
+      "local",
+      localResp.data.files
+    );
     if (localResp.status !== 200 || SDResp.status !== 200) {
       return [];
     }
@@ -145,7 +160,18 @@ export class FileAPI extends OctoprintAPI {
     ];
   }
 
-  private processFiles(origin: "local" | "sdcard", files: FilesInformation[]): (Node | Dir | Print)[] {
+  public async deleteFile(file: Print): Promise<void> {
+    const resp = await this.httpClient.delete(
+      urlJoin("/api/files", file.origin, file.path)
+    );
+    if (resp.status === 404) throw new Error("File not found.");
+    if (resp.status === 409) throw new Error("File is being printed.");
+  }
+
+  private processFiles(
+    origin: "local" | "sdcard",
+    files: FilesInformation[]
+  ): (Node | Dir | Print)[] {
     const tree: (Node | Dir | Print)[] = [];
     files.forEach((file) => {
       if (file.type === "folder") {
@@ -167,7 +193,10 @@ export class FileAPI extends OctoprintAPI {
           size: humanFileSize(print.size, true, 2),
           origin: origin,
           thumbnail: print.thumbnail
-            ? new URL(print.thumbnail, this.httpClient.defaults.baseURL ?? undefined).toString()
+            ? new URL(
+                print.thumbnail,
+                this.httpClient.defaults.baseURL ?? undefined
+              ).toString()
             : "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png",
         });
       }

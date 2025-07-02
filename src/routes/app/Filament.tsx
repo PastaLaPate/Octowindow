@@ -9,14 +9,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./Home";
 
-function Spool({ spool, current = false, idx = 0 }: { spool: FilamentSpool; current?: boolean; idx: number }) {
+function Spool({
+  spool,
+  current = false,
+  idx = 0,
+}: {
+  spool: FilamentSpool;
+  current?: boolean;
+  idx: number;
+}) {
   return (
     <motion.div
       layout
       initial={{ opacity: 0.4, y: -(idx * 56 + idx * 8) }} // Fancy calculations (56 equivalent to h-14 8 equivalent to gap-2)
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", bounce: 0.25 }}
-      className={cn("relative h-14 w-full rounded-xl bg-slate-800", current && "border-2 border-blue-600")}
+      className={cn(
+        "relative h-14 w-full rounded-xl bg-slate-800",
+        current && "border-2 border-blue-600"
+      )}
     >
       <p
         className={`absolute top-1/2 left-6 -translate-y-1/2 rounded-lg border-[3px] p-1`}
@@ -24,7 +35,9 @@ function Spool({ spool, current = false, idx = 0 }: { spool: FilamentSpool; curr
       >
         {spool.material}
       </p>
-      <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{spool.displayName}</p>
+      <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        {spool.displayName}
+      </p>
       <button
         disabled={current}
         className={cn(
@@ -50,7 +63,8 @@ export default function FilamentPage() {
   const refreshCurrentSpool = async () => {
     setCurrentSpool(await octoprintState.node.spools.getCurrentSpool());
   };
-  const filterByCurrentSpool = () => spools.filter((v) => v.id !== currentSpool?.id);
+  const filterByCurrentSpool = () =>
+    spools.filter((v) => v.id !== currentSpool?.id);
   useEffect(() => {
     if (octoprintState.node) {
       refreshSpools();
@@ -60,8 +74,8 @@ export default function FilamentPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
-        <BackButton title="Control" />
-        <div className="flex w-full flex-col gap-2">
+        <BackButton title="Spools" />
+        <div className="flex h-full w-full flex-col gap-2 overflow-y-auto">
           {spools && currentSpool ? (
             <>
               <Spool spool={currentSpool} current key={0} idx={0} />

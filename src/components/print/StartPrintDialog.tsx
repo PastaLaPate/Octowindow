@@ -7,7 +7,7 @@ import type { Print } from "@/lib/octoprint/apis/FileAPI";
 import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
 import { cn, truncate } from "@/lib/utils";
 
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent } from "../ui/dialog";
 
 //TODO: Make the currently selected spool selected by default before new release + select in spool page
 
