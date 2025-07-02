@@ -17,11 +17,13 @@ export function TempViewer({
   target,
   className,
   inputClassName,
+  iconClassName,
 }: {
   octoprintState: OctoprintState;
   target: PrinterTarget;
   className?: ClassValue;
   inputClassName?: ClassValue;
+  iconClassName?: ClassValue;
 }) {
   const [tempInput, setNumberInput] = useState("");
   const [temp, setTemp] = useState<Temp | undefined>(undefined);
@@ -33,14 +35,14 @@ export function TempViewer({
   return (
     <div
       className={cn(
-        "sm:gap-3sm:p-2 relative flex min-w-0 flex-1 flex-col items-center justify-between gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-2 !px-0 shadow-lg transition hover:border-blue-500 active:scale-100 sm:p-2 md:p-5",
+        "relative flex min-w-0 flex-1 flex-col items-center justify-between gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-2 !px-0 shadow-lg transition hover:border-blue-500 active:scale-100 sm:gap-3 sm:p-2 md:p-5",
         className
       )}
       style={{
         minWidth: 0,
       }} // Responsive width
     >
-      <div className="flex h-14 w-14 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24">
+      <div className={cn("flex h-14 w-14 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24", iconClassName)}>
         {target === "tool" ? (
           <Nozzle stroke={"var(--nozzle-color)"} className="h-full w-full" />
         ) : (

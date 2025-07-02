@@ -4,9 +4,12 @@
     "source.fixAll.eslint": "always",
     "source.organizeImports": "always"
   },
+  "editor.indentSize": 2,
+  "editor.wordWrap": "on",
   "vite.autoStart": true,
-  "vite.devCommand": "npm run dev",
+  "vite.devCommand": "pnpm run dev",
   "editor.formatOnSave": true,
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list", "inputClassName", "iconClassName"],
   "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
     "type": "text-and-comment",
@@ -58,15 +61,6 @@
       "iconColour": "green"
     }
   },
-  "todo-tree.general.tags": [
-    "BUG",
-    "HACK",
-    "FIXME",
-    "TODO",
-    "NOTE",
-    "COMMENT",
-    "[ ]",
-    "[x]"
-  ],
+  "todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO", "NOTE", "COMMENT", "[ ]", "[x]"],
   "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS).*(\\n\\s*//\\s{2,}.*)*"
 }

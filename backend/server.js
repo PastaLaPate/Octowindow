@@ -2,26 +2,18 @@ import { Bonjour } from "bonjour-service"; // you must install this
 
 import cors from "cors";
 import express from "express";
+import morgan from "morgan";
 import fetch from "node-fetch";
+import * as rfs from "rotating-file-stream";
 import { exec, spawn } from "child_process";
 import fs from "fs";
 import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
-import util from "util";
 
 // Get absolute path to this script (because import.meta.url gives a file:// URL)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-var log_file = fs.createWriteStream(__dirname + "/server.log", { flags: "w" });
-var log_stdout = process.stdout;
-
-console.log = function (d) {
-  //
-  log_file.write(util.format(d) + "\n");
-  log_stdout.write(util.format(d) + "\n");
-};
 
 // Read version.json using fs since require is not available in ES modules
 let version = "";
@@ -38,6 +30,21 @@ if (fs.existsSync(versionFilePath)) {
 }
 
 const app = express();
+
+app.use(
+  morgan("combined", {
+    stream: rfs.createStream(
+      (date, index) =>
+        date
+          ? `${date.getFullYear()}/${date.getMonth()}-${date.getDate()}.log`
+          : "server.log",
+      {
+        interval: "1d",
+        path: path.join(__dirname, "log"),
+      }
+    ),
+  })
+);
 
 const allowedOrigins = [
   "http://localhost",
@@ -56,7 +63,7 @@ app.use(
       }
       return callback(new Error("Not allowed by CORS"));
     },
-  }),
+  })
 );
 
 // Resolve the path to ../frontend relative to backend
@@ -107,7 +114,7 @@ app.get("/api/bonjour", (req, res) => {
     },
     (service) => {
       services.push(service);
-    },
+    }
   );
 
   setTimeout(() => {
@@ -146,7 +153,7 @@ app.post("/api/update", async (req, res) => {
       {
         stdio: "ignore",
         detached: true,
-      },
+      }
     ).unref();
   } catch (err) {
     console.error(err);

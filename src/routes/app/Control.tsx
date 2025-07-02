@@ -21,11 +21,11 @@ function JogPanel() {
 
   return (
     move && (
-      <div className="flex w-[50vw] items-center justify-center gap-6">
-        <div className="flex flex-col items-center justify-center gap-3">
-          <div className="flex items-center justify-center gap-4">
+      <div className="flex w-[50vw] items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-3 lg:gap-6">
+          <div className="flex items-center justify-center sm:gap-2 md:gap-3 lg:gap-4">
             <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100">
-              <div className="relative sm:h-40 sm:w-40 md:h-52 md:w-52 lg:h-60 lg:w-60">
+              <div className="relative sm:h-40 sm:w-40 md:h-40 md:w-40 lg:h-60 lg:w-60">
                 <ChevronUp
                   size={50}
                   className="absolute top-0 left-1/2 -translate-x-1/2 transition hover:scale-115 active:scale-90"
@@ -55,7 +55,8 @@ function JogPanel() {
               <p className="mt-2 text-base font-bold text-blue-400">X/Y Axes</p>
             </div>
             <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100">
-              <div className="relative sm:h-40 sm:w-20 md:h-52 md:w-32 lg:h-60 lg:w-40">
+              <div className="relative sm:h-40 sm:w-20 md:h-40 md:w-20 lg:h-60 lg:w-40">
+
                 <ChevronUp
                   size={50}
                   className="absolute top-0 left-1/2 -translate-x-1/2 transition hover:scale-115 active:scale-90"
@@ -75,25 +76,17 @@ function JogPanel() {
               <p className="mt-2 text-base font-bold text-blue-400">Z Axis</p>
             </div>
           </div>
-          <div className="relative mt-6 flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg">
+          <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg">
             <h2 className="mb-2 text-base font-bold text-blue-400">Step in mm</h2>
             <Tabs defaultValue="10" value={step} onValueChange={setStep}>
               <TabsList>
-                <TabsTrigger className="w-10" value="1">
-                  1
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="5">
-                  5
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="10">
-                  10
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="50">
-                  50
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="100">
-                  100
-                </TabsTrigger>
+                {["1", "5", "10", "50", "100"].map((v) => {
+                  return (
+                    <TabsTrigger className="w-10" value={v}>
+                      {v}
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
             </Tabs>
           </div>
@@ -109,63 +102,55 @@ function GeneralControlPanel() {
   const printer = OctoprintState.node ? OctoprintState.node.printer : undefined;
   return (
     printer && (
-      <div className="flex w-[50vw] flex-row items-center justify-center gap-6">
-        <div>
-          <div className="relative flex rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg md:h-30 md:w-60 lg:h-60 lg:w-60">
+      <div className="flex w-[50vw] flex-col items-center justify-center gap-6 md:gap-3">
+        <div className="flex flex-row items-center justify-center gap-3">
+          <div className="flex items-center justify-between rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg md:h-24 md:w-46 md:flex-row lg:h-60 lg:w-60 lg:flex-col">
             <div
-              className="absolute flex flex-col items-center justify-center md:top-1/2 md:left-2 md:-translate-y-1/2 lg:top-4 lg:left-1/2 lg:-translate-x-1/2 lg:translate-y-0"
+              className="flex flex-col items-center justify-center"
               onClick={() => printer.tool.extrude(-Number(step))}
             >
-              <p className="text-base font-bold text-blue-400">Intrude</p>
-              <ChevronUp size={50} className="md:-rotate-90 lg:rotate-0" />
+              <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">Intrude</p>
+              <ChevronUp className="md:size-10 md:-rotate-90 lg:rotate-0" />
             </div>
-            <Nozzle
-              className="absolute top-1/2 left-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2"
-              stroke="var(--color-blue-400)"
-            />
+            <Nozzle className="md:h-14 md:w-14 lg:h-16 lg:w-16" stroke="var(--color-blue-400)" />
             <div
-              className="absolute flex items-center justify-center md:top-1/2 md:right-2 md:-translate-y-1/2 md:flex-col-reverse lg:top-auto lg:right-0 lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2 lg:translate-y-0 lg:flex-col"
+              className="flex items-center justify-center md:flex-col-reverse lg:flex-col"
               onClick={() => printer.tool.extrude(Number(step))}
             >
-              <ChevronDown size={50} className="md:-rotate-90 lg:rotate-0" />
-              <p className="text-base font-bold text-blue-400">Extrude</p>
+              <ChevronDown className="md:size-10 md:-rotate-90 lg:rotate-0" />
+              <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">Extrude</p>
             </div>
           </div>
 
-          <div className="relative mt-6 flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg">
+          <div className="relative flex h-24 flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg md:w-46 lg:w-full">
             <h2 className="mb-2 text-base font-bold text-blue-400">Amount</h2>
             <Tabs defaultValue="10" value={step} onValueChange={setStep}>
               <TabsList>
-                <TabsTrigger className="w-10" value="1">
-                  1
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="5">
-                  5
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="10">
-                  10
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="50">
-                  50
-                </TabsTrigger>
-                <TabsTrigger className="w-10" value="100">
-                  100
-                </TabsTrigger>
+                {["1", "5", "10", "50", "100"].map((v) => {
+                  return (
+                    <TabsTrigger className="w-10 md:w-7 lg:w-10" value={v}>
+                      {" "}
+                      {v}
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
             </Tabs>
           </div>
         </div>
-        <div className="flex-col items-center justify-center">
+        <div className="flex flex-row items-center justify-center gap-4">
           <TempViewer
-            className={"mb-6 md:w-30 xl:w-60"}
-            inputClassName={"!w-25 !text-2xl"}
+            className={"md:h-46 md:w-34 lg:h-60 lg:w-60"}
+            inputClassName={"w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"}
+            iconClassName={"md:w-10 md:h-10"}
             octoprintState={OctoprintState}
             target="tool"
           />
           <TempViewer
-            className={"md:w-30 xl:w-60"}
-            inputClassName={"!w-25 !text-2xl"}
+            className={"md:h-46 md:w-34 lg:h-60 lg:w-60"}
+            inputClassName={"w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl "}
             octoprintState={OctoprintState}
+            iconClassName={"md:w-10 md:h-10 "}
             target="bed"
           />
         </div>
@@ -179,7 +164,7 @@ export default function Control() {
   // Animated tabs required for choosing move amount (1mm, 5mm, 10mm)
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="mt-5 mr-auto ml-4">
+      <div className="mt-5 ml-4">
         <BackButton title="Control" />
       </div>
       <div className="flex h-full min-h-0 flex-1 flex-row">

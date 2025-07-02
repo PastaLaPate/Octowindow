@@ -1,9 +1,9 @@
 {
   "recommendations": [
-    "Gruntfuggly.todo-tree", 
-    "austenc.tailwind-docs", 
-    "bradlc.vscode-tailwindcss", 
-    "antfu.vite", 
+    "Gruntfuggly.todo-tree",
+    "austenc.tailwind-docs",
+    "bradlc.vscode-tailwindcss",
+    "antfu.vite",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "Tyriar.lorem-ipsum",

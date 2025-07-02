@@ -1,8 +1,10 @@
 import axios, { Axios } from "axios";
 
 import { FileAPI } from "./apis/FileAPI";
+import JobAPI from "./apis/JobAPI";
 import { OctoWindowAPI } from "./apis/OctoWindowAPI";
 import { PrinterAPI } from "./apis/PrinterAPI";
+import SpoolManager from "./apis/SpoolManager";
 import AuthorizationWorkflow from "./Auth";
 
 export type OctoprintNodeType = {
@@ -33,6 +35,8 @@ export class OctoprintNode {
   public file: FileAPI;
   public printer: PrinterAPI;
   public local: OctoWindowAPI;
+  public spools: SpoolManager;
+  public job: JobAPI;
 
   public authWorflow: AuthorizationWorkflow;
 
@@ -68,6 +72,8 @@ export class OctoprintNode {
     this.local.testAPI().then(() => {
       this.local.checkForUpdates();
     });
+    this.spools = new SpoolManager(this.httpClient);
+    this.job = new JobAPI(this.httpClient);
   }
 
   public async getApiVersion() {
@@ -80,11 +86,7 @@ export class OctoprintNode {
         headers: { "X-Api-Key": this.apiKey },
       });
       if (response.status === 200 && response.data) {
-        if (
-          this.node.version === "Unknown" ||
-          this.node.version === "" ||
-          this.node.version !== response.data.text
-        ) {
+        if (this.node.version === "Unknown" || this.node.version === "" || this.node.version !== response.data.text) {
           this.node.version = response.data.text;
           this.saveToStore(new StoreManager());
         }
@@ -105,9 +107,7 @@ export class OctoprintNode {
     // Check if the node supports the appkeys plugin
     const supportsAppKeys = await this.authWorflow.probeForWorkflow();
     if (!supportsAppKeys) {
-      throw new InvalidNode(
-        "The OctoPrint node does not support the appkeys plugin",
-      );
+      throw new InvalidNode("The OctoPrint node does not support the appkeys plugin");
     }
 
     // Request authorization
@@ -122,10 +122,7 @@ export class OctoprintNode {
     // Verify via /static/webassets/packed_client.js because /api/version needs authentication
     // and we want to ensure the node is reachable without authentication first.
     try {
-      const response = await this.httpClient.get(
-        "/static/webassets/packed_client.js",
-        { signal },
-      );
+      const response = await this.httpClient.get("/static/webassets/packed_client.js", { signal });
       if (response.status === 200) {
         return true;
       }
@@ -244,10 +241,7 @@ export class StoreManager {
     for (const key in this.store) {
       if (Object.prototype.hasOwnProperty.call(this.store, key)) {
         if (key === "tempPresets") {
-          localStorage.setItem(
-            key,
-            JSON.stringify(this.store.tempPresets || []),
-          );
+          localStorage.setItem(key, JSON.stringify(this.store.tempPresets || []));
           continue;
         }
         localStorage.setItem(key, String(this.store[key as keyof StoreType]));
