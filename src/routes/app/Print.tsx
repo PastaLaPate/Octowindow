@@ -280,6 +280,7 @@ export default function PrintPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start rounded-2xl bg-slate-900 md:gap-4 md:p-6 lg:gap-8 lg:p-10">
+
         <BackButton title="Print (File viewer)">
           <div
             className={cn(
@@ -295,7 +296,6 @@ export default function PrintPage() {
             <RefreshCw className="md:size-6 lg:size-10" />
           </div>
         </BackButton>
-
         <FileViewer
           octoprintState={OctoprintState}
           files={files}

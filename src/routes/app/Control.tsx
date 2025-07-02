@@ -56,6 +56,7 @@ function JogPanel() {
             </div>
             <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100">
               <div className="relative sm:h-40 sm:w-20 md:h-40 md:w-20 lg:h-60 lg:w-40">
+
                 <ChevronUp
                   size={50}
                   className="absolute top-0 left-1/2 -translate-x-1/2 transition hover:scale-115 active:scale-90"

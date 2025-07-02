@@ -16,7 +16,7 @@ export default function Actions() {
         <ActionBox label="Preheat" icon={Flame} color="bg-orange-600" onClick={() => setPreheatOpened(true)} />
         <ActionBox label="Settings" icon={Settings} color="bg-slate-600" to="/app/settings" />
         <ActionBox label="Print" icon={Printer} className="col-span-2" to="/app/print" />
-      </div>
+     </div>
       <PreHeat opened={preheatOpened} setOpened={setPreheatOpened} />
     </div>
   );
