@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
@@ -13,10 +14,12 @@ function Spool({
   spool,
   current = false,
   idx = 0,
+  onSelect = (spool: FilamentSpool) => {},
 }: {
   spool: FilamentSpool;
   current?: boolean;
   idx: number;
+  onSelect?: (spool: FilamentSpool) => void;
 }) {
   return (
     <motion.div
@@ -25,16 +28,19 @@ function Spool({
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", bounce: 0.25 }}
       className={cn(
-        "relative h-14 w-full rounded-xl bg-slate-800",
+        "relative min-h-14 w-full rounded-xl bg-slate-800",
         current && "border-2 border-blue-600"
       )}
     >
-      <p
-        className={`absolute top-1/2 left-6 -translate-y-1/2 rounded-lg border-[3px] p-1`}
-        style={{ borderColor: spool.color }}
+      <div
+        className={`absolute top-1/2 left-6 flex -translate-y-1/2 items-center justify-center gap-2`}
       >
-        {spool.material}
-      </p>
+        <span
+          className="size-6 rounded-full border-2 border-slate-400"
+          style={{ backgroundColor: spool.color }}
+        />
+        <p>{spool.material}</p>
+      </div>
       <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         {spool.displayName}
       </p>
@@ -46,6 +52,11 @@ function Spool({
             ? "cursor-not-allowed bg-slate-700 text-slate-400"
             : "bg-blue-600 text-white hover:scale-105 hover:bg-blue-700 active:bg-blue-800"
         )}
+        onClick={() => {
+          if (!current) {
+            onSelect(spool);
+          }
+        }}
       >
         {current ? "Current" : "Select"}
       </button>
@@ -57,6 +68,7 @@ export default function FilamentPage() {
   const octoprintState: OctoprintState = useOutletContext();
   const [spools, setSpools] = useState<FilamentSpool[]>([]);
   const [currentSpool, setCurrentSpool] = useState<FilamentSpool>();
+  const [loading, setLoading] = useState<boolean>(true);
   const refreshSpools = async () => {
     setSpools(await octoprintState.node.spools.getSpools());
   };
@@ -65,28 +77,55 @@ export default function FilamentPage() {
   };
   const filterByCurrentSpool = () =>
     spools.filter((v) => v.id !== currentSpool?.id);
-  useEffect(() => {
+  const refresh = async () => {
+    setLoading(true);
     if (octoprintState.node) {
-      refreshSpools();
-      refreshCurrentSpool();
+      await refreshSpools();
+      await refreshCurrentSpool();
     }
+    setLoading(false);
+  };
+  useEffect(() => {
+    refresh();
   }, [octoprintState.node]);
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
-        <BackButton title="Spools" />
-        <div className="flex h-full w-full flex-col gap-2 overflow-y-auto">
-          {spools && currentSpool ? (
+        <BackButton title="Spools">
+          <div
+            className={cn(
+              "absolute right-1 flex items-center justify-center rounded-full bg-slate-800 md:size-10 lg:size-14",
+              loading ? "animate-spin" : ""
+            )}
+            onClick={() => {
+              if (!loading) {
+                refresh();
+              }
+            }}
+          >
+            <RefreshCw className="md:size-6 lg:size-10" />
+          </div>
+        </BackButton>
+        <div className="flex h-full w-full flex-col gap-2 overflow-y-auto p-3">
+          {!loading && spools && currentSpool ? (
             <>
               <Spool spool={currentSpool} current key={0} idx={0} />
               {filterByCurrentSpool().map((spool, i) => (
-                <Spool spool={spool} key={i + 1} idx={i + 1} />
+                <Spool
+                  spool={spool}
+                  key={i + 1}
+                  idx={i + 1}
+                  onSelect={(spool) => {
+                    octoprintState.node.spools.selectSpool(spool);
+                    refresh();
+                  }}
+                />
               ))}
             </>
           ) : (
             <>
               {[...Array(5)].map((v, i) => {
-                return <Skeleton key={i} className="h-14 w-full" />;
+                return <Skeleton key={i} className="min-h-14 w-full" />;
               })}
             </>
           )}

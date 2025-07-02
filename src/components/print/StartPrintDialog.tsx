@@ -31,17 +31,31 @@ const DemoSection = ({
   onPrint,
   className,
   setOpen,
+  currentSpool,
 }: {
   file: Print;
   spools: FilamentSpool[];
+  currentSpool: FilamentSpool;
   onPrint: (spool: FilamentSpool) => Promise<void>;
   className?: string;
   setOpen: (open: boolean) => void;
 }) => {
   return (
     <stepper.Scoped>
-      <section id="demo" className={cn("relative border-none bg-none px-4 sm:px-6 lg:px-8", className)}>
-        <DemoContent file={file} spools={spools} onPrint={onPrint} setOpen={setOpen} />
+      <section
+        id="demo"
+        className={cn(
+          "relative border-none bg-none px-4 sm:px-6 lg:px-8",
+          className
+        )}
+      >
+        <DemoContent
+          file={file}
+          spools={spools}
+          onPrint={onPrint}
+          setOpen={setOpen}
+          currentSpool={currentSpool}
+        />
       </section>
     </stepper.Scoped>
   );
@@ -52,14 +66,17 @@ const DemoContent = ({
   spools,
   onPrint,
   setOpen,
+  currentSpool,
 }: {
   file: Print;
   spools: FilamentSpool[];
+  currentSpool: FilamentSpool;
   onPrint: (spool: FilamentSpool) => Promise<void>;
   setOpen: (open: boolean) => void;
 }) => {
   const methods = stepper.useStepper();
-  const [selectedSpool, setSelectedSpool] = React.useState<FilamentSpool | null>(null);
+  const [selectedSpool, setSelectedSpool] =
+    React.useState<FilamentSpool | null>(currentSpool);
   const [printing, setPrinting] = React.useState(false);
   const [error, setError] = React.useState<Error>();
 
@@ -77,7 +94,9 @@ const DemoContent = ({
         opacity: { duration: 0.2 },
       }}
     >
-      <h3 className="text-gray-12 mb-4 text-xl font-semibold">File Confirmation</h3>
+      <h3 className="text-gray-12 mb-4 text-xl font-semibold">
+        File Confirmation
+      </h3>
       <div className="flex items-center gap-4 md:flex-row lg:flex-col">
         {file.thumbnail && (
           <img
@@ -125,9 +144,13 @@ const DemoContent = ({
         opacity: { duration: 0.2 },
       }}
     >
-      <h3 className="text-gray-12 text-xl font-semibold md:mb-2 lg:mb-4">Select Filament Spool</h3>
+      <h3 className="text-gray-12 text-xl font-semibold md:mb-2 lg:mb-4">
+        Select Filament Spool
+      </h3>
       <div className="flex flex-1 flex-col overflow-y-auto md:gap-1.5 lg:gap-3">
-        {spools.length === 0 && <div className="text-slate-400">No spools available.</div>}
+        {spools.length === 0 && (
+          <div className="text-slate-400">No spools available.</div>
+        )}
         {spools.map((spool) => (
           <button
             key={spool.id}
@@ -144,7 +167,9 @@ const DemoContent = ({
               style={{ background: spool.color }}
             />
             <span className="font-bold">{spool.displayName}</span>
-            <span className="ml-auto text-xs text-slate-400">{spool.material}</span>
+            <span className="ml-auto text-xs text-slate-400">
+              {spool.material}
+            </span>
             <span className="ml-2 text-xs text-slate-400">{spool.vendor}</span>
           </button>
         ))}
@@ -176,7 +201,8 @@ const DemoContent = ({
           <span className="font-bold">Name:</span> {file.display}
         </div>
         <div>
-          <span className="font-bold">Path:</span> {truncate(file.path, 50, false)}
+          <span className="font-bold">Path:</span>{" "}
+          {truncate(file.path, 50, false)}
         </div>
         <div>
           <span className="font-bold">Size:</span> {file.size}
@@ -226,7 +252,9 @@ const DemoContent = ({
         opacity: { duration: 0.2 },
       }}
     >
-      <h3 className="text-gray-12 text-base font-semibold md:text-xl">Print Confirmation</h3>
+      <h3 className="text-gray-12 text-base font-semibold md:text-xl">
+        Print Confirmation
+      </h3>
       <div className="flex flex-col items-center gap-2">
         {window.innerWidth > 1024 ? (
           <>
@@ -285,7 +313,11 @@ const DemoContent = ({
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}
       >
-        {error ? <CircleX className="size-10 text-red-500" /> : <CheckCircle className="size-10 text-green-600" />}
+        {error ? (
+          <CircleX className="size-10 text-red-500" />
+        ) : (
+          <CheckCircle className="size-10 text-green-600" />
+        )}
       </motion.div>
       <motion.h3
         className="text-gray-12 mb-2 text-2xl font-bold"
@@ -314,7 +346,9 @@ const DemoContent = ({
         }}
         className={cn(
           "rounded-md px-4 py-2 transition-colors",
-          error ? "bg-red-800 hover:bg-red-600" : "bg-green-600 hover:bg-green-400"
+          error
+            ? "bg-red-800 hover:bg-red-600"
+            : "bg-green-600 hover:bg-green-400"
         )}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -382,7 +416,9 @@ const StepperHeader = ({
   methods: ReturnType<typeof stepper.useStepper>;
   isComplete: boolean;
 }) => {
-  const currentIndex = methods.all.findIndex((step: any) => step.id === methods.current.id);
+  const currentIndex = methods.all.findIndex(
+    (step: any) => step.id === methods.current.id
+  );
 
   return (
     <nav className="bg-gray-4/30 md:p-1.5 lg:p-8">
@@ -393,7 +429,8 @@ const StepperHeader = ({
             initial={{ width: "0%" }}
             animate={{
               width:
-                methods.current.id === methods.all[methods.all.length - 1].id || isComplete
+                methods.current.id === methods.all[methods.all.length - 1].id ||
+                isComplete
                   ? "100%"
                   : `${(currentIndex / (methods.all.length - 1)) * 100}%`,
             }}
@@ -407,7 +444,10 @@ const StepperHeader = ({
           return (
             <motion.li
               key={step.id}
-              className={cn("relative z-10 flex flex-shrink-0 flex-col items-center", !canGoTo && "cursor-not-allowed")}
+              className={cn(
+                "relative z-10 flex flex-shrink-0 flex-col items-center",
+                !canGoTo && "cursor-not-allowed"
+              )}
               onClick={() => {
                 if (canGoTo) methods.goTo(step.id);
               }}
@@ -447,7 +487,9 @@ const StepperHeader = ({
               <motion.span
                 className={cn(
                   "mt-2 hidden text-xs sm:block",
-                  isActive ? "text-indigo-11 font-medium" : !isComplete && "text-gray-11"
+                  isActive
+                    ? "text-indigo-11 font-medium"
+                    : !isComplete && "text-gray-11"
                 )}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -469,17 +511,28 @@ export default function StartPrintDialog({
   open,
   setOpen,
   onPrint,
+  currentSpool,
 }: {
   file: Print;
   open: boolean;
   setOpen: (open: boolean) => void;
   spools: FilamentSpool[];
   onPrint: (spool: FilamentSpool) => Promise<void>;
+  currentSpool: FilamentSpool;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="w-2/3 max-w-none p-0 md:h-[80vh] lg:h-auto" style={{ width: "80vw", maxWidth: "none" }}>
-        <DemoSection file={file} spools={spools} onPrint={onPrint} setOpen={setOpen} />
+      <DialogContent
+        className="w-2/3 max-w-none p-0 md:h-[80vh] lg:h-auto"
+        style={{ width: "80vw", maxWidth: "none" }}
+      >
+        <DemoSection
+          file={file}
+          spools={spools}
+          onPrint={onPrint}
+          setOpen={setOpen}
+          currentSpool={currentSpool}
+        />
       </DialogContent>
     </Dialog>
   );

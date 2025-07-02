@@ -162,11 +162,13 @@ function FileViewer({
   viewType,
   loading,
   spools,
+  currentSpool,
   refresh = () => {},
 }: {
   octoprintState: OctoprintState;
   files: Dir[];
   spools: FilamentSpool[];
+  currentSpool?: FilamentSpool;
   viewType: ViewType;
   loading: boolean;
   refresh?: () => void;
@@ -223,12 +225,13 @@ function FileViewer({
           : Array.from({ length: 3 }, (x, k) => (
               <Skeleton className="h-20" key={k} />
             ))}
-        {selectedFile && (
+        {selectedFile && currentSpool && (
           <StartPrintDialog
             file={selectedFile}
             open={startDialogOpen}
             setOpen={setStartDialogOpen}
             spools={spools}
+            currentSpool={currentSpool}
             onPrint={async (spool) => {
               if (selectedFile) {
                 await octoprintState.node.file.loadFile(
@@ -260,20 +263,19 @@ export default function PrintPage() {
   const [files, setFiles] = useState<Dir[]>([]);
   const [loading, setLoading] = useState(true);
   const [spools, setSpools] = useState<FilamentSpool[]>([]);
+  const [currentSpool, setCurrentSpool] = useState<FilamentSpool>();
   const refresh = async () => {
     setLoading(true);
     if (OctoprintState.node !== undefined) {
       setFiles(await OctoprintState.node.file.getAllFiles());
+      setSpools(await OctoprintState.node.spools.getSpools());
+      setCurrentSpool(await OctoprintState.node.spools.getCurrentSpool());
     }
     setLoading(false);
   };
 
   useEffect(() => {
     refresh();
-    (async () => {
-      if (OctoprintState.node)
-        setSpools(await OctoprintState.node.spools.getSpools());
-    })();
   }, [OctoprintState.node]);
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
@@ -293,6 +295,7 @@ export default function PrintPage() {
             <RefreshCw className="md:size-6 lg:size-10" />
           </div>
         </BackButton>
+
         <FileViewer
           octoprintState={OctoprintState}
           files={files}
@@ -300,6 +303,7 @@ export default function PrintPage() {
           viewType={viewType}
           loading={loading}
           refresh={refresh}
+          currentSpool={currentSpool}
         />
       </div>
     </div>
