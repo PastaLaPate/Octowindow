@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { StoreManager, type TTempPreset } from "@/lib/octoprint/Octoprint";
 
-import type { OctoprintState } from "@/routes/app/Home";
+import type { OctoprintState } from "@/routes/app/App";
 import ControlledInput from "../ControlledInput";
 import HeatedPlate from "../svg/HeatedPlate";
 import Nozzle from "../svg/Nozzle";
@@ -38,7 +38,7 @@ class PresetsManager {
         preset.bedTemp &&
         preset.toolTemp &&
         preset.id !== undefined &&
-        preset.id >= 0,
+        preset.id >= 0
     );
   }
 
@@ -318,7 +318,7 @@ export default function PreHeat({
 }) {
   const octoprintState: OctoprintState = useOutletContext();
   const [tempPresetManager, setTempPresetManager] = useState<PresetsManager>(
-    new PresetsManager(),
+    new PresetsManager()
   );
 
   // Rerender on every update to the presets

@@ -1,9 +1,12 @@
 import type { Axios } from "axios";
 
 import type { PrinterTarget } from "../Octoprint";
-import type { Print } from "./FileAPI";
+import type { FilesInformation } from "./FileAPI";
 import MovementAPI from "./MovementAPI";
 import { OctoprintAPI } from "./OctoprintAPI";
+import DisplayLayerProgressPlugin, {
+  type DisplayLayerProgressData,
+} from "./plugins/DisplayLayerProgress";
 import ToolAPI from "./ToolAPI";
 
 export const ConnectionFlags = {
@@ -47,7 +50,9 @@ export type Temp = {
 export type ListenerTypes = {
   temp: (tool: Temp, bed: Temp) => void;
   status: (newStatus: ConnectionInfos) => void;
-  jobStatus: (newJobStatus: Print) => void;
+  jobStatus: (newJobStatus: JobInfos) => void;
+  progress: (newProgress: Progress) => void;
+  layerProgress: (newProgress: DisplayLayerProgressData) => void;
 };
 
 export type PrinterProfile = {
@@ -56,10 +61,44 @@ export type PrinterProfile = {
   name: string;
 };
 
+export type JobInfos = {
+  file: FilesInformation;
+  estimatedPrintTime: number; // The estimated print time for the file, in seconds.
+  lastPrintTime: number; // In seconds
+  filament: {
+    // Information regarding the estimated filament usage of the print job
+    length: number; // Length of filament used, in mm
+    volume: number; // Volume of filament used, in cm³
+  };
+};
+
+//TODO: Add integration with PrinttimeGenius
+export type Progress = {
+  completion: number; // In %
+  filepos: number; //Current position in the file being printed, in bytes from the beginning
+  printTime: number; // Time already spent in seconds
+  printTimeLeft: number; // Estimate of time left to print in seconds
+  printTimeLeftOrigin: string /*
+  Origin of the current time left estimate. Can currently be either of:
+
+        linear: based on an linear approximation of the progress in file in bytes vs time
+
+        analysis: based on an analysis of the file
+
+        estimate: calculated estimate after stabilization of linear estimation
+
+        average: based on the average total from past prints of the same model against the same printer profile
+
+        mixed-analysis: mixture of estimate and analysis
+
+        mixed-average: mixture of estimate and average
+  */;
+};
+
 export type SocketMessageType = keyof typeof SocketMessageType;
 
 export const allFalseFlags = Object.fromEntries(
-  Object.keys(ConnectionFlags).map((k) => [k, false]),
+  Object.keys(ConnectionFlags).map((k) => [k, false])
 ) as { [K in keyof typeof ConnectionFlags]: boolean };
 
 export class PrinterAPI extends OctoprintAPI {
@@ -67,21 +106,33 @@ export class PrinterAPI extends OctoprintAPI {
   private listeners: {
     temp: Array<(tool: Temp, bed: Temp) => void>;
     status: Array<(newStatus: ConnectionInfos) => void>;
-    jobStatus: Array<(newJobStatus: Print) => void>;
+    jobStatus: Array<(newJobStatus: JobInfos) => void>;
+    progress: Array<(newProgress: Progress) => void>;
+    layerProgress: Array<(newProgress: DisplayLayerProgressData) => void>;
   };
   private activeProfile: PrinterProfile;
+  private displayLayerProgress: DisplayLayerProgressPlugin;
 
   public move: MovementAPI;
   public tool: ToolAPI;
+
   public connectionInfos: ConnectionInfos;
+  public jobInfos?: JobInfos;
 
   constructor(httpClient: Axios) {
     super(httpClient);
 
     this.move = new MovementAPI(httpClient);
     this.tool = new ToolAPI(httpClient);
+    this.displayLayerProgress = new DisplayLayerProgressPlugin(httpClient);
 
-    this.listeners = { temp: [], status: [], jobStatus: [] };
+    this.listeners = {
+      temp: [],
+      status: [],
+      jobStatus: [],
+      progress: [],
+      layerProgress: [],
+    };
     this.activeProfile = {
       current: false,
       name: "",
@@ -116,7 +167,7 @@ export class PrinterAPI extends OctoprintAPI {
     });
     if (resp.status === 400) {
       throw Error(
-        "Target outside of the supported range, or the request is invalid.",
+        "Target outside of the supported range, or the request is invalid."
       );
     } else if (resp.status === 409) {
       throw Error("Printer isn't operational or doesn't have bed");
@@ -139,7 +190,7 @@ export class PrinterAPI extends OctoprintAPI {
 
   public addListener<T extends keyof ListenerTypes>(
     type: T,
-    callback: ListenerTypes[T],
+    callback: ListenerTypes[T]
   ) {
     (this.listeners[type] as ListenerTypes[T][]).push(callback);
   }
@@ -160,7 +211,7 @@ export class PrinterAPI extends OctoprintAPI {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     if (resp.status === 200) {
       resp.data = resp.data;
@@ -177,14 +228,14 @@ export class PrinterAPI extends OctoprintAPI {
                 messages: false,
               },
               event: true,
-              plugins: false,
+              plugins: true,
             },
-          }),
+          })
         );
         this.send(
           JSON.stringify({
             auth: `${usrName}:${sessionID}`,
-          }),
+          })
         );
       };
       this.socket.onmessage = this.parseMSG;
@@ -224,7 +275,7 @@ export class PrinterAPI extends OctoprintAPI {
         const flagsChanged = Object.keys(prevFlags).some(
           (key) =>
             prevFlags[key as keyof typeof prevFlags] !==
-            newFlags[key as keyof typeof newFlags],
+            newFlags[key as keyof typeof newFlags]
         );
         if (flagsChanged) {
           // Make sure we have the correct activate profile
@@ -264,8 +315,27 @@ export class PrinterAPI extends OctoprintAPI {
               addTemp(addCelsius) {
                 this.setTemp(this.current + addCelsius);
               },
-            },
+            }
           );
+        }
+        if (currentData.job) {
+          const job = currentData.job as JobInfos;
+          if (job != this.jobInfos) {
+            this.jobInfos = job;
+            this.callListeners("jobStatus", this.jobInfos);
+          }
+        }
+        if (currentData.progress) {
+          const progress = currentData.progress as Progress;
+          this.callListeners("progress", progress);
+        }
+        break;
+      }
+      case SocketMessageType.plugin: {
+        const pluginData = data["plugin"];
+        const DLPData = this.displayLayerProgress.parseMSG(pluginData);
+        if (DLPData) {
+          this.callListeners("layerProgress", DLPData);
         }
         break;
       }
@@ -296,7 +366,7 @@ export class PrinterAPI extends OctoprintAPI {
       current: boolean;
     };
     for (const [index, profile] of Object.entries(
-      resp.data.profiles as Record<string, ProfileData>,
+      resp.data.profiles as Record<string, ProfileData>
     )) {
       if (profile.current) {
         this.activeProfile = {

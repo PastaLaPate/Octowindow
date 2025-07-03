@@ -5,14 +5,14 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
-import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
+import type { FilamentSpool } from "@/lib/octoprint/apis/plugins/SpoolManager";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
 import StartPrintDialog from "@/components/print/StartPrintDialog";
 import ThumbnailPreviewer from "@/components/print/ThumbnailPreviewer";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { OctoprintState } from "./Home";
+import type { OctoprintState } from "./App";
 
 type ViewType = "list" | "gallery";
 
@@ -280,7 +280,6 @@ export default function PrintPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start rounded-2xl bg-slate-900 md:gap-4 md:p-6 lg:gap-8 lg:p-10">
-
         <BackButton title="Print (File viewer)">
           <div
             className={cn(

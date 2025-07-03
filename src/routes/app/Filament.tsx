@@ -3,12 +3,12 @@ import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
-import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
+import type { FilamentSpool } from "@/lib/octoprint/apis/plugins/SpoolManager";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { OctoprintState } from "./Home";
+import type { OctoprintState } from "./App";
 
 function Spool({
   spool,

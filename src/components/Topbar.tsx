@@ -6,7 +6,7 @@ import type { ClassNameValue } from "tailwind-merge";
 import type { LocalBackendStatus } from "@/lib/octoprint/apis/OctoWindowAPI";
 import { cn } from "@/lib/utils";
 
-import type { OctoprintState } from "@/routes/app/Home";
+import type { OctoprintState } from "@/routes/app/App";
 import HeatedPlate from "./svg/HeatedPlate";
 import Nozzle from "./svg/Nozzle";
 
@@ -44,7 +44,10 @@ export default function TopBar({ octoprintState }: TopBarProps) {
   useEffect(() => {
     let color = "bg-green-500";
     let message = "";
-    if (!backendStatus.connected && octoprintState.connectionInfos.connected === false) {
+    if (
+      !backendStatus.connected &&
+      octoprintState.connectionInfos.connected === false
+    ) {
       color = "bg-red-600";
       message = "Backend is not connected and printer is disconnected.";
       setGlobalStatus({
@@ -52,7 +55,10 @@ export default function TopBar({ octoprintState }: TopBarProps) {
         message,
       });
       return;
-    } else if (!backendStatus.connected || octoprintState.connectionInfos.connected === false) {
+    } else if (
+      !backendStatus.connected ||
+      octoprintState.connectionInfos.connected === false
+    ) {
       color = "bg-orange-400";
     }
     if (!backendStatus.connected) {
@@ -77,7 +83,9 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             </div>
             <p className="text-lg">
               {String(Math.round(octoprintState.toolTemp.current)) +
-                (octoprintState.toolTemp.target !== 0 ? `/${octoprintState.toolTemp.target}` : "")}
+                (octoprintState.toolTemp.target !== 0
+                  ? `/${octoprintState.toolTemp.target}`
+                  : "")}
             </p>
           </>
         )}
@@ -88,7 +96,9 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             </div>
             <p className="text-lg">
               {String(Math.round(octoprintState.bedTemp.current)) +
-                (octoprintState.bedTemp.target !== 0 ? `/${octoprintState.bedTemp.target}` : "")}
+                (octoprintState.bedTemp.target !== 0
+                  ? `/${octoprintState.bedTemp.target}`
+                  : "")}
             </p>
           </>
         )}
@@ -112,7 +122,8 @@ export default function TopBar({ octoprintState }: TopBarProps) {
               message: "Refreshing status and trying to connect to printer...",
             });
             try {
-              const response = await octoprintState.node.local.getBackendStatus();
+              const response =
+                await octoprintState.node.local.getBackendStatus();
               await octoprintState.node.printer.connectPrinter();
               setBackendStatus(response);
             } catch (error) {
@@ -124,7 +135,12 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             }
           }}
         >
-          <RefreshCw className={cn("md:h-6 md:w-6 lg:h-8 lg:w-8", loading && "animate-spin")} />
+          <RefreshCw
+            className={cn(
+              "md:h-6 md:w-6 lg:h-8 lg:w-8",
+              loading && "animate-spin"
+            )}
+          />
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 
 import BackButton from "@/components/backButton";
 
-import type { OctoprintState } from "./Home";
+import type { OctoprintState } from "./App";
 
 export default function Settings() {
   const navigate = useNavigate();

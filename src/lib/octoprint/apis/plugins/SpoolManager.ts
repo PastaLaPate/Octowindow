@@ -1,6 +1,6 @@
 import type { Axios } from "axios";
 
-import { OctoprintAPI } from "./OctoprintAPI";
+import { OctoprintAPI } from "../OctoprintAPI";
 
 // Definitly not from OctoDash (https://github.com/UnchartedBull/OctoDash/blob/main/src/services/filament/spool-manager.octoprint.service.ts)
 // also https://github.com/UnchartedBull/OctoDash/blob/main/src/model/octoprint/plugins/spool-manager.model.ts#L1
@@ -18,6 +18,8 @@ export type FilamentSpool = {
   diameter: number;
   density: number;
 };
+
+// TODO: Make it child of OctoprintPluginAPI
 export default class SpoolManager extends OctoprintAPI {
   // /plugin/SpoolManager
   constructor(httpClient: Axios) {
@@ -34,15 +36,18 @@ export default class SpoolManager extends OctoprintAPI {
   }
 
   public async getSpools(): Promise<FilamentSpool[]> {
-    const resp = await this.httpClient.get("plugin/SpoolManager/loadSpoolsByQuery", {
-      params: {
-        filterName: "hideInactiveSpool",
-        from: 0,
-        to: 1000,
-        sortColumn: "lastUse",
-        sortOrder: "desc",
-      },
-    });
+    const resp = await this.httpClient.get(
+      "plugin/SpoolManager/loadSpoolsByQuery",
+      {
+        params: {
+          filterName: "hideInactiveSpool",
+          from: 0,
+          to: 1000,
+          sortColumn: "lastUse",
+          sortOrder: "desc",
+        },
+      }
+    );
     if (resp.status !== 200) {
       throw new Error("Error");
     }
@@ -52,15 +57,18 @@ export default class SpoolManager extends OctoprintAPI {
   }
 
   public async getCurrentSpool(): Promise<FilamentSpool> {
-    const resp = await this.httpClient.get("plugin/SpoolManager/loadSpoolsByQuery", {
-      params: {
-        filterName: "hideInactiveSpool",
-        from: 0,
-        to: 1000,
-        sortColumn: "lastUse",
-        sortOrder: "desc",
-      },
-    });
+    const resp = await this.httpClient.get(
+      "plugin/SpoolManager/loadSpoolsByQuery",
+      {
+        params: {
+          filterName: "hideInactiveSpool",
+          from: 0,
+          to: 1000,
+          sortColumn: "lastUse",
+          sortOrder: "desc",
+        },
+      }
+    );
     if (resp.status !== 200) {
       throw new Error("Error");
     }

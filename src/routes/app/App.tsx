@@ -4,9 +4,12 @@ import "./App.css";
 
 import { Outlet, useNavigate } from "react-router-dom";
 
+import type { DisplayLayerProgressData } from "@/lib/octoprint/apis/plugins/DisplayLayerProgress";
 import {
   allFalseFlags,
   type ConnectionInfos,
+  type JobInfos,
+  type Progress,
   type Temp,
 } from "@/lib/octoprint/apis/PrinterAPI";
 import { OctoprintNode, StoreManager } from "@/lib/octoprint/Octoprint";
@@ -15,10 +18,20 @@ import { Toaster } from "@/components/ui/sonner";
 
 import { AnimationLayout } from "../PageAnimation";
 
+export type OctoprintState = {
+  node: OctoprintNode;
+  bedTemp: Temp;
+  toolTemp: Temp;
+  connectionInfos: ConnectionInfos;
+  job?: JobInfos;
+  progress?: Progress;
+  layerProgress?: DisplayLayerProgressData;
+};
+
 function App() {
   const navigate = useNavigate();
 
-  const [node, setNode] = useState<OctoprintNode>();
+  const [node, setNode] = useState<OctoprintNode>(new OctoprintNode());
   const [bedTemp, setBedTemp] = useState<Temp>({
     current: 0,
     target: 0,
@@ -38,11 +51,14 @@ function App() {
     printerName: "",
     flags: allFalseFlags,
   });
+  const [progress, setProgress] = useState<Progress>();
+  const [jobStatus, setJobStatus] = useState<JobInfos>();
+  const [layerProgress, setLayerProgress] =
+    useState<DisplayLayerProgressData>();
   useEffect(() => {
     if (!new StoreManager().store.connected) {
       navigate("/setup/");
     }
-    const node = new OctoprintNode();
     node?.printer.addListener("temp", (tool, bed) => {
       setBedTemp(bed);
       setToolTemp(tool);
@@ -50,32 +66,38 @@ function App() {
     node?.printer.addListener("status", (infos) => {
       setConnectionInfos(infos);
     });
+    node?.printer.addListener("jobStatus", (newJobStatus) => {
+      setJobStatus(newJobStatus);
+    });
+    node?.printer.addListener("progress", (newProgress) => {
+      setProgress(newProgress);
+    });
+    node?.printer.addListener("layerProgress", (newLayerProgress) => {
+      setLayerProgress(newLayerProgress);
+    });
     setNode(node);
   }, []);
+  let octoprintState: OctoprintState = {
+    bedTemp: bedTemp,
+    toolTemp: toolTemp,
+    connectionInfos: connectionInfos,
+    progress: progress,
+    job: jobStatus,
+    layerProgress: layerProgress,
+    node: node,
+  };
   return (
     <AnimationLayout>
       <div className="flex h-screen w-screen flex-col bg-slate-950">
         <Toaster position="bottom-left" richColors />
-        {node && (
-          <TopBar
-            octoprintState={{
-              node: node,
-              bedTemp: bedTemp,
-              toolTemp: toolTemp,
-              connectionInfos: connectionInfos,
-            }}
-          />
+        {octoprintState && (
+          <>
+            <TopBar octoprintState={octoprintState} />
+            <div className="flex h-full min-h-0 w-screen flex-1">
+              <Outlet context={octoprintState} />
+            </div>
+          </>
         )}
-        <div className="flex h-full min-h-0 w-screen flex-1">
-          <Outlet
-            context={{
-              node: node,
-              bedTemp: bedTemp,
-              toolTemp: toolTemp,
-              connectionInfos: connectionInfos,
-            }}
-          />
-        </div>
       </div>
     </AnimationLayout>
   );

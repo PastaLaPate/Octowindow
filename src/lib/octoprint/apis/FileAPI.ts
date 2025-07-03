@@ -18,7 +18,7 @@ export type Print = Node & {
   thumbnail: string; // Thumbnail URL
 };
 
-type FilesInformation = {
+export type FilesInformation = {
   name: string;
   display: string;
   path: string;

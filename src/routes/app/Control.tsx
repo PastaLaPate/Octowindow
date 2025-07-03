@@ -1,4 +1,10 @@
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Home } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Home,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -8,12 +14,14 @@ import { TempViewer } from "@/components/home/PrinterStatus";
 import Nozzle from "@/components/svg/Nozzle";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/animated-tabs";
 
-import type { OctoprintState } from "./Home";
+import type { OctoprintState } from "./App";
 
 function JogPanel() {
   const OctoprintState: OctoprintState = useOutletContext();
   const [step, setStep] = useState("10");
-  const move = OctoprintState.node ? OctoprintState.node.printer.move : undefined;
+  const move = OctoprintState.node
+    ? OctoprintState.node.printer.move
+    : undefined;
 
   const handleMove = (axis: MovementAxis, reverse = false) => {
     move?.jogPrintHead(axis, reverse ? -Number(step) : Number(step));
@@ -56,7 +64,6 @@ function JogPanel() {
             </div>
             <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100">
               <div className="relative sm:h-40 sm:w-20 md:h-40 md:w-20 lg:h-60 lg:w-40">
-
                 <ChevronUp
                   size={50}
                   className="absolute top-0 left-1/2 -translate-x-1/2 transition hover:scale-115 active:scale-90"
@@ -77,7 +84,9 @@ function JogPanel() {
             </div>
           </div>
           <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg">
-            <h2 className="mb-2 text-base font-bold text-blue-400">Step in mm</h2>
+            <h2 className="mb-2 text-base font-bold text-blue-400">
+              Step in mm
+            </h2>
             <Tabs defaultValue="10" value={step} onValueChange={setStep}>
               <TabsList>
                 {["1", "5", "10", "50", "100"].map((v) => {
@@ -109,16 +118,23 @@ function GeneralControlPanel() {
               className="flex flex-col items-center justify-center"
               onClick={() => printer.tool.extrude(-Number(step))}
             >
-              <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">Intrude</p>
+              <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">
+                Intrude
+              </p>
               <ChevronUp className="md:size-10 md:-rotate-90 lg:rotate-0" />
             </div>
-            <Nozzle className="md:h-14 md:w-14 lg:h-16 lg:w-16" stroke="var(--color-blue-400)" />
+            <Nozzle
+              className="md:h-14 md:w-14 lg:h-16 lg:w-16"
+              stroke="var(--color-blue-400)"
+            />
             <div
               className="flex items-center justify-center md:flex-col-reverse lg:flex-col"
               onClick={() => printer.tool.extrude(Number(step))}
             >
               <ChevronDown className="md:size-10 md:-rotate-90 lg:rotate-0" />
-              <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">Extrude</p>
+              <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">
+                Extrude
+              </p>
             </div>
           </div>
 
@@ -141,14 +157,18 @@ function GeneralControlPanel() {
         <div className="flex flex-row items-center justify-center gap-4">
           <TempViewer
             className={"md:h-46 md:w-34 lg:h-60 lg:w-60"}
-            inputClassName={"w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"}
+            inputClassName={
+              "w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"
+            }
             iconClassName={"md:w-10 md:h-10"}
             octoprintState={OctoprintState}
             target="tool"
           />
           <TempViewer
             className={"md:h-46 md:w-34 lg:h-60 lg:w-60"}
-            inputClassName={"w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl "}
+            inputClassName={
+              "w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl "
+            }
             octoprintState={OctoprintState}
             iconClassName={"md:w-10 md:h-10 "}
             target="bed"
