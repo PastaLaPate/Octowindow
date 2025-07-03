@@ -1,8 +1,9 @@
-import { Fan } from "lucide-react";
+import { CirclePause, CircleStop, Fan } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
+import ActionBox from "@/components/home/ActionBox";
 import { TempViewer } from "@/components/home/PrinterStatus";
 
 import type { OctoprintState } from "./App";
@@ -171,6 +172,10 @@ export default function JobPage() {
             iconClassName={"md:w-10 md:h-10"}
           />
           <FanViewer octoprintState={octoprintState} />
+        </div>
+        <div className="flex w-full flex-row items-center justify-center gap-3">
+          <ActionBox color="bg-red-500" icon={CircleStop} label="Stop" />
+          <ActionBox color="bg-yellow-500" icon={CirclePause} label="Pause" />
         </div>
       </div>
     </div>
