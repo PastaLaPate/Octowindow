@@ -65,6 +65,9 @@ function App() {
     });
     node?.printer.addListener("status", (infos) => {
       setConnectionInfos(infos);
+      if (infos.flags.printing) {
+        navigate("/app/job");
+      }
     });
     node?.printer.addListener("jobStatus", (newJobStatus) => {
       setJobStatus(newJobStatus);

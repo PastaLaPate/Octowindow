@@ -1,6 +1,7 @@
-import { CirclePause, CircleStop, Fan } from "lucide-react";
+import { CirclePause, CirclePlay, CircleStop, Fan } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import ActionBox from "@/components/home/ActionBox";
@@ -46,6 +47,8 @@ function FanViewer({ octoprintState }: { octoprintState: OctoprintState }) {
 export default function JobPage() {
   const octoprintState: OctoprintState = useOutletContext();
 
+  const navigate = useNavigate();
+
   const [percent, setPercent] = useState(0);
   const elapsed = "00:42:15";
   const timeLeft = "01:17:45";
@@ -63,11 +66,20 @@ export default function JobPage() {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (circumference * percent) / 100;
   useEffect(() => {
+    if (
+      octoprintState.connectionInfos &&
+      !octoprintState.connectionInfos.flags.printing
+    ) {
+      navigate("/app/", {
+        replace: true,
+      });
+    }
+
     const inter = setInterval(() => {
       setPercent((prev) => (prev + Math.round(Math.random() * 10)) % 100);
     }, 200);
     return () => clearInterval(inter);
-  }, []);
+  }, [octoprintState.connectionInfos]);
 
   return (
     <div className="flex flex-row items-center justify-center">
@@ -136,7 +148,9 @@ export default function JobPage() {
           </svg>
         </div>
         <div className="mt-4 flex flex-col items-center gap-1 text-center">
-          <span className="text-3xl font-bold text-white">{percent}%</span>
+          <span className="text-3xl font-bold text-white">
+            {percent}% - {Math.round((percent / 100) * 56)}/56 Layers
+          </span>
           <span className="text-base font-semibold text-blue-300">
             Time left: {timeLeft}
           </span>
@@ -174,8 +188,60 @@ export default function JobPage() {
           <FanViewer octoprintState={octoprintState} />
         </div>
         <div className="flex w-full flex-row items-center justify-center gap-3">
-          <ActionBox color="bg-red-500" icon={CircleStop} label="Stop" />
-          <ActionBox color="bg-yellow-500" icon={CirclePause} label="Pause" />
+          <ActionBox
+            color="bg-red-500"
+            icon={CircleStop}
+            label="Stop"
+            onClick={() => {
+              octoprintState.node.job
+                .cancelJob()
+                .then(() => {
+                  toast.success("Successfully stopped the job.");
+                })
+                .catch((e) => {
+                  if (e instanceof Error) {
+                    toast.error(e.message);
+                  }
+                });
+            }}
+          />
+          {!octoprintState.connectionInfos.flags.paused ? (
+            <ActionBox
+              color={"bg-yellow-500"}
+              icon={CirclePause}
+              label="Pause"
+              onClick={() => {
+                octoprintState.node.job
+                  .pauseJob()
+                  .then(() => {
+                    toast.success("Successfully paused the job.");
+                  })
+                  .catch((e) => {
+                    if (e instanceof Error) {
+                      toast.error(e.message);
+                    }
+                  });
+              }}
+            />
+          ) : (
+            <ActionBox
+              color={"bg-green-500"}
+              icon={CirclePlay}
+              label="Resume"
+              onClick={() => {
+                octoprintState.node.job
+                  .resumeJob()
+                  .then(() => {
+                    toast.success("Successfully resumed the job");
+                  })
+                  .catch((e) => {
+                    if (e instanceof Error) {
+                      toast.error(e.message);
+                    }
+                  });
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
