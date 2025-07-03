@@ -24,6 +24,7 @@ export type FilesInformation = {
   path: string;
   type: "model" | "machinecode" | "folder";
   typePath: string[];
+  origin: "local" | "sdcard";
   user: string;
 };
 
@@ -57,7 +58,6 @@ type FileInfo = FilesInformation & {
   hash: string;
   size: number;
   date: number;
-  origin: "local" | "sdcard";
   refs: References;
   prints: PrintHistory;
   statistics: PrintStatistics;
@@ -115,6 +115,18 @@ export class FileAPI extends OctoprintAPI {
     if (resp.status === 409) {
       throw Error("Printer already printing or isn't connected...");
     }
+  }
+
+  public async getFileThumbnail(file: Node): Promise<string> {
+    const resp = await this.httpClient.get(
+      `/api/files/${file.origin}/${file.path}`
+    );
+
+    if (resp.status === 404) {
+      throw new Error("File not found.");
+    }
+
+    return resp.data.thumbnail;
   }
 
   public async getAllFiles(): Promise<Dir[]> {

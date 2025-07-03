@@ -1,8 +1,10 @@
 import { CirclePause, CirclePlay, CircleStop, Fan } from "lucide-react";
+import { DateTime, Duration } from "luxon";
 import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
+import type { FilesInformation } from "@/lib/octoprint/apis/FileAPI";
 import { cn } from "@/lib/utils";
 import ActionBox from "@/components/home/ActionBox";
 import { TempViewer } from "@/components/home/PrinterStatus";
@@ -46,16 +48,31 @@ function FanViewer({ octoprintState }: { octoprintState: OctoprintState }) {
 
 export default function JobPage() {
   const octoprintState: OctoprintState = useOutletContext();
-
   const navigate = useNavigate();
-
   const [percent, setPercent] = useState(0);
-  const elapsed = "00:42:15";
-  const timeLeft = "01:17:45";
-  const estimatedFinish = "15:30";
-  const filamentUsed = "5.2g / 1.7m";
-  const thumbnail =
-    "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png";
+  const [thumbnail, setThumbnail] = useState(
+    "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png"
+  );
+  const dummy = true;
+
+  const elapsed = !dummy
+    ? Duration.fromObject({
+        seconds: octoprintState.progress?.printTime,
+      }).toFormat("hh:mm:ss")
+    : "00:42:15";
+  const timeLeft = !dummy
+    ? Duration.fromObject({
+        seconds: octoprintState.progress?.printTimeLeft,
+      }).toFormat("hh:mm:ss")
+    : "01:13:32";
+  const estimatedFinish = !dummy
+    ? DateTime.local()
+        .plus({ seconds: octoprintState.progress?.printTimeLeft })
+        .toFormat("HH:mm")
+    : "15:30";
+  const filamentUsed = !dummy
+    ? `${octoprintState.job?.filament.length ?? 0 / 1000}m`
+    : "1.7m";
 
   const nozzleTemp = octoprintState.toolTemp.current;
   const nozzleTarget = octoprintState.toolTemp.target;
@@ -68,11 +85,25 @@ export default function JobPage() {
   useEffect(() => {
     if (
       octoprintState.connectionInfos &&
-      !octoprintState.connectionInfos.flags.printing
+      !octoprintState.connectionInfos.flags.printing &&
+      !dummy
     ) {
       navigate("/app/", {
         replace: true,
       });
+    }
+
+    if (octoprintState.node && octoprintState.job) {
+      const file: FilesInformation = octoprintState.job?.file!;
+      octoprintState.node.file
+        .getFileThumbnail({
+          display: file.display,
+          name: file.name,
+          origin: file.origin,
+          path: file.path,
+          size: "",
+        })
+        .then((thumb) => setThumbnail(thumb));
     }
 
     const inter = setInterval(() => {
