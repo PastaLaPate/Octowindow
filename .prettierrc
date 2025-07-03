@@ -7,7 +7,7 @@
   "bracketSpacing": true,
   "arrowParens": "always",
   "bracketSameLine": false,
-  
+
   "plugins": [
     "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-organize-attributes",
@@ -23,5 +23,7 @@
     "@/(.*)$",
     "^(?!.*[.]css$)[./].*$",
     ".css$"
-  ]
+  ],
+  "attributeGroups": ["$CODE_GUIDE"],
+  "attributeSort": "ASC"
 }

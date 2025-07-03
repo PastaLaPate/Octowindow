@@ -29,7 +29,7 @@ export function Button({
           : variant === "text"
             ? "max-w-none rounded-none bg-transparent px-0 py-0 text-xl text-slate-300 underline shadow-none hover:bg-transparent hover:text-white active:bg-transparent active:text-slate-400"
             : "bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900",
-        className,
+        className
       )}
       type="button"
       style={{ touchAction: "manipulation" }}

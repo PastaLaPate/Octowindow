@@ -14,7 +14,7 @@ export default class MovementAPI extends OctoprintAPI {
   public async jogPrintHead(
     movementAxis: MovementAxis,
     amount: number,
-    absolute = false,
+    absolute = false
   ): Promise<void> {
     const resp = await this.httpClient.post("/api/printer/printhead", {
       command: "jog",

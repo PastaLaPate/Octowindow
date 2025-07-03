@@ -29,7 +29,7 @@ export default function ActionBox({
       className={cn(
         // Preheat-like style:
         "relative flex w-full flex-[1_0_20%] cursor-pointer flex-col items-center justify-between gap-2 rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100 sm:gap-2 sm:p-5",
-        className,
+        className
       )}
       onClick={() => (onClick ? onClick() : navigate(to))}
       tabIndex={0}

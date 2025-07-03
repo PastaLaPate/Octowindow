@@ -59,7 +59,7 @@ export default class AuthorizationWorkflow {
   public async getApiKey(signal?: AbortSignal): Promise<string> {
     if (!this.appToken) {
       throw new Error(
-        "App token is not set. Please request authorization first.",
+        "App token is not set. Please request authorization first."
       );
     }
     return new Promise<string>((resolve, reject) => {
@@ -71,7 +71,7 @@ export default class AuthorizationWorkflow {
           return;
         }
         const response = await this.httpClient.get(
-          "/plugin/appkeys/request/" + this.appToken,
+          "/plugin/appkeys/request/" + this.appToken
         );
         if (response.status === 202) {
           // Still waiting for user confirmation

@@ -35,12 +35,12 @@ export class OctoWindowAPI extends OctoprintAPI {
       }
       if (resp.data.version !== this.version) {
         toast.error(
-          "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
+          "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version."
         );
       }
     } catch (error) {
       throw new Error(
-        "Local API is not reachable. Please ensure the local server is running.",
+        "Local API is not reachable. Please ensure the local server is running."
       );
     }
   }
@@ -48,7 +48,7 @@ export class OctoWindowAPI extends OctoprintAPI {
   public async checkForUpdates(): Promise<void> {
     const currentVersion = this.version;
     const response = await fetch(
-      "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest",
+      "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest"
     );
     const data = await response.json();
     const latestVersion = data.tag_name;
@@ -76,11 +76,11 @@ export class OctoWindowAPI extends OctoprintAPI {
                       toast.info("Update cancelled.");
                     },
                   },
-                },
+                }
               );
             },
           },
-        },
+        }
       );
     } else {
       toast.success("You are using the latest version of OctoWindow.");

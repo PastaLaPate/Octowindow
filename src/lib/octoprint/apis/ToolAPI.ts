@@ -55,7 +55,7 @@ export default class ToolAPI extends OctoprintAPI {
 
   private async toolCommand(
     command: "target" | "offset" | "select" | "extrude" | "flowrate",
-    data: Object,
+    data: Object
   ) {
     const resp = await this.httpClient.post("/api/printer/tool", {
       command: command,
