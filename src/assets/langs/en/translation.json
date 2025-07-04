@@ -1,4 +1,13 @@
 {
+  "home": {
+    "actions": {
+      "control": "Control",
+      "spools": "Spools",
+      "preheat": "Preheat",
+      "settings": "Settings",
+      "print": "Print"
+    }
+  },
   "errors": {
     "E0001": "Printer isn't connected!"
   },

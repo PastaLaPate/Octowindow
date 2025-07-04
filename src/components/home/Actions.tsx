@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { Flame, Move, Printer, Settings, Spool } from "lucide-react";
 import { useState } from "react";
 
@@ -12,31 +13,31 @@ export default function Actions() {
       {/* Maybe add cool down action & filament manager via SpoolManager */}
       <div className="grid w-full grid-cols-2 items-center justify-items-center gap-4">
         <ActionBox
-          label="Control"
+          label={t("home.actions.control")}
           icon={Move}
           color="bg-purple-600"
           to="/app/control"
         />
         <ActionBox
-          label="Spools"
+          label={t("home.actions.spools")}
           icon={Spool}
           color="bg-cyan-600"
           to="/app/spools"
         />
         <ActionBox
-          label="Preheat"
+          label={t("home.actions.preheat")}
           icon={Flame}
           color="bg-orange-600"
           onClick={() => setPreheatOpened(true)}
         />
         <ActionBox
-          label="Settings"
+          label={t("home.actions.settings")}
           icon={Settings}
           color="bg-slate-600"
           to="/app/settings"
         />
         <ActionBox
-          label="Print"
+          label={t("home.actions.print")}
           icon={Printer}
           className="col-span-2"
           to="/app/print"
