@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,7 +12,7 @@ export default function Home() {
   const octoprintState: OctoprintState = useOutletContext();
   useEffect(() => {
     if (!octoprintState.connectionInfos.connected) {
-      toast.error("Printer isn't connected !");
+      toast.error(t("errors.E0001"));
     }
   }, []);
   return (

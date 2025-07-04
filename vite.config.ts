@@ -12,7 +12,10 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      i18nextLoader({ paths: ["./src/assets/langs"] }),
+      i18nextLoader({
+        paths: ["./src/assets/langs"],
+        namespaceResolution: "basename",
+      }),
     ],
     define: {
       __APP_VERSION__: JSON.stringify(env.VITE_APP_VERSION || "000.000.000"),

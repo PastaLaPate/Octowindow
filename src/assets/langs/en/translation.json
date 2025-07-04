@@ -1,0 +1,15 @@
+{
+  "errors": {
+    "E0001": "Printer isn't connected!"
+  },
+  "printer_targets": {
+    "tool": "Nozzle",
+    "bed": "Bed"
+  },
+  "toast_messages": {
+    "temp_set": {
+      "success": "Successfully set {{target}}'s temp to {{temp}}°C",
+      "failure": "Failed to set {{target}}'s temp to {{temp}}°C"
+    }
+  }
+}

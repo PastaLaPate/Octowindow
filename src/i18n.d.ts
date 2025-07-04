@@ -1,27 +1,14 @@
-// https://vitejs.dev/guide/api-hmr.html
-interface ViteHotContext {
-  readonly data: any;
+import "i18next"; // before v13.0.0 -> import 'react-i18next';
 
-  // accept(): void
-  accept(cb?: (mod: ModuleNamespace | undefined) => void): void;
-  accept(dep: string, cb: (mod: ModuleNamespace | undefined) => void): void;
-  accept(
-    deps: readonly string[],
-    cb: (mods: Array<ModuleNamespace | undefined>) => void
-  ): void;
+import type translation from "./assets/langs/en/translation.json";
 
-  dispose(cb: (data: any) => void): void;
-  decline(): void;
-  invalidate(): void;
-
-  // `InferCustomEventPayload` provides types for built-in Vite events
-  on<T extends string>(
-    event: T,
-    cb: (payload: InferCustomEventPayload<T>) => void
-  ): void;
-  send<T extends string>(event: T, data?: InferCustomEventPayload<T>): void;
+interface I18nNamespaces {
+  translation: typeof translation;
 }
-
-// Allow for virtual module imports
-// https://vitejs.dev/guide/api-plugin.html#virtual-modules-convention
-declare module "virtual:*";
+// before v13.0.0 -> declare module 'react-i18next'
+declare module "i18next" {
+  interface CustomTypeOptions {
+    defaultNS: "translation";
+    resources: I18nNamespaces;
+  }
+}
