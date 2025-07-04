@@ -92,7 +92,28 @@
     }
   },
   "errors": {
-    "E0001": "L'imprimante n'est pas connectée."
+    "E0001": "L'imprimante n'est pas connectée.",
+    "E0002": "Fichier non trouvé",
+    "E0003": "Le fichier est en train d'être imprimé!",
+    "E0004": "L'imprimante n'est pas connectée ou est en train d'imprimer.",
+    "E0005": "L'imprimante n'est pas connectée ou n'est pas opérationelle",
+    "E0006": "Les versions du frontend et du backend ne sont pas les mêmes. Ceci peut casser l'application. Veuillez les mettre à la même version.",
+    "E0007": "Échec de la MAJ: {{error}}.",
+    "E0008": "Échec de l'éxtinction de l'host. Veuillez réessayer plus tard...",
+    "E0009": "Érreur de data, veuillez réessayer ou créer une issue."
+  },
+  "infos": {
+    "latest_release": "Vous utilisez la dernière version d'Octowindow.",
+    "update": "OctoWindow se met à jour. Veuillez patienter...",
+    "update_available": "Une nouvelle version d'OctoWindow est disponible: {{latestVersion}}. Actuelle: {{currentVersion}}",
+    "update_cancel": "MAJ annulée.",
+    "update_confirmation": "Êtes-vous sur de vouloir mettre à jour? L'UI va s'éteindre, la MAJ va s'opérer pendant plusieurs minutes puis le système va redémarrer.",
+    "shutdown": "Extinction.",
+    "job": {
+      "stopped": "Arrêt de l'impression avec succès.",
+      "pause": "Pause de l'impression avec succès.",
+      "resume": "Redémarrage de l'impression avec succès."
+    }
   },
   "printer_targets": {
     "tool": "Buse",
