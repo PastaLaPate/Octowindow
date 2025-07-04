@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -24,11 +25,11 @@ export default function TopBar({ octoprintState }: TopBarProps) {
   const [loading, setLoading] = useState(true);
   const [backendStatus, setBackendStatus] = useState<LocalBackendStatus>({
     connected: false,
-    message: "Checking backend status...",
+    message: t("topbar.status.updating.backend"),
   });
   const [globalStatus, setGlobalStatus] = useState<GlobalStatus>({
     color: "bg-gray-500",
-    message: "Checking global status...",
+    message: t("topbar.status.updating.global"),
   });
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
       octoprintState.connectionInfos.connected === false
     ) {
       color = "bg-red-600";
-      message = "Backend is not connected and printer is disconnected.";
+      message = t("topbar.status.both_disconnected");
       setGlobalStatus({
         color,
         message,
@@ -64,9 +65,11 @@ export default function TopBar({ octoprintState }: TopBarProps) {
     if (!backendStatus.connected) {
       message = backendStatus.message;
     } else if (octoprintState.connectionInfos.connected === false) {
-      message = "No printer connected.";
+      message = t("topbar.status.printer_disconnected");
     } else {
-      message = `Connected to ${octoprintState.connectionInfos.printerName}`;
+      message = t("topbar.status.printer_operational", {
+        printer_name: octoprintState.connectionInfos.printerName,
+      });
     }
     setGlobalStatus({
       color,
@@ -119,7 +122,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
             setLoading(true);
             setGlobalStatus({
               color: "bg-gray-500",
-              message: "Refreshing status and trying to connect to printer...",
+              message: t("topbar.status.updating.refresh"),
             });
             try {
               const response =
@@ -127,7 +130,7 @@ export default function TopBar({ octoprintState }: TopBarProps) {
               await octoprintState.node.printer.connectPrinter();
               setBackendStatus(response);
             } catch (error) {
-              toast.error("Failed to refresh status or connect to printer.");
+              toast.error(t("topbar.status.refresh.fail"));
             } finally {
               setTimeout(() => {
                 setLoading(false);
