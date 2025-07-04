@@ -1,20 +1,37 @@
-import { t } from "i18next";
 import { Power } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import Flag from "react-world-flags";
 
 import BackButton from "@/components/backButton";
 
+import { languageToFlag } from "@/TranslationManager";
 import type { OctoprintState } from "./App";
 
-// TODO: Add language selection
 export default function Settings() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
   const octoprintState: OctoprintState = useOutletContext();
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
         <BackButton title={t("home.actions.settings")} />
         <div className="flex h-full w-full flex-col gap-3 overflow-y-auto">
+          <h1 className="text-3xl">{t("settings.languages")}</h1>
+          <div className="flex w-full flex-row flex-wrap gap-2">
+            {Object.keys(i18n.services.resourceStore.data).map((lang) => {
+              return (
+                <button
+                  key={lang}
+                  className="h-10 w-10 cursor-pointer"
+                  onClick={() => i18n.changeLanguage(lang)}
+                >
+                  <Flag code={languageToFlag[lang]} />
+                </button>
+              );
+            })}
+          </div>
           <h1 className="text-3xl">{t("settings.actions")}</h1>
           <div className="flex w-full flex-wrap gap-3">
             <div
