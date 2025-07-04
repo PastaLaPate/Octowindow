@@ -11,6 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import type { OctoprintState } from "./App";
 
+// TODO: Add filament spools
+
 function Spool({
   spool,
   current = false,
