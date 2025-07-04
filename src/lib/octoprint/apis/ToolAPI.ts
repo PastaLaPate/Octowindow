@@ -1,6 +1,7 @@
 // same as movement API
 
 import type { Axios } from "axios";
+import { t } from "i18next";
 import { toast } from "sonner";
 
 import { OctoprintAPI } from "./OctoprintAPI";
@@ -62,9 +63,9 @@ export default class ToolAPI extends OctoprintAPI {
       ...data,
     });
     if (resp.status === 409) {
-      toast.error("Printing or printer isn't connected.");
+      toast.error(t("errors.E0004"));
     } else if (resp.status === 400) {
-      toast.error("Data error, retry or create issue.");
+      toast.error(t("errors.E0009"));
     }
   }
 }

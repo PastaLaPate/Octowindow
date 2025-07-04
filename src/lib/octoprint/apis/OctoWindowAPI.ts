@@ -35,9 +35,7 @@ export class OctoWindowAPI extends OctoprintAPI {
         throw new Error("Unexpected response from local API");
       }
       if (resp.data.version !== this.version) {
-        toast.error(
-          "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version."
-        );
+        toast.error(t("errors.E0006"));
       }
     } catch (error) {
       throw new Error(
@@ -55,36 +53,36 @@ export class OctoWindowAPI extends OctoprintAPI {
     const latestVersion = data.tag_name;
     if (gt(latestVersion, currentVersion)) {
       toast.info(
-        `A new version of OctoWindow is available: ${latestVersion}. Current: ${currentVersion}`,
+        t("infos.update_available", {
+          latestVersion: latestVersion,
+          currentVersion: currentVersion,
+        }),
         {
           duration: 10000,
           action: {
             label: "Update",
             onClick: () => {
-              toast.warning(
-                "Are you sure you want to update? The UI will exit, the update will take about a minute, and the system will reboot.",
-                {
-                  duration: 15000,
-                  action: {
-                    label: "Continue",
-                    onClick: () => {
-                      this.update();
-                    },
+              toast.warning(t("infos.update_confirmation"), {
+                duration: 15000,
+                action: {
+                  label: "Continue",
+                  onClick: () => {
+                    this.update();
                   },
-                  cancel: {
-                    label: "Cancel",
-                    onClick: () => {
-                      toast.info("Update cancelled.");
-                    },
+                },
+                cancel: {
+                  label: "Cancel",
+                  onClick: () => {
+                    toast.info(t("infos.update_cancel"));
                   },
-                }
-              );
+                },
+              });
             },
           },
         }
       );
     } else {
-      toast.success("You are using the latest version of OctoWindow.");
+      toast.success(t("infos.latest_release"));
     }
   }
 
@@ -92,14 +90,16 @@ export class OctoWindowAPI extends OctoprintAPI {
     try {
       const response = await this.httpClient.post("/update");
       if (response.status === 200) {
-        toast.success("OctoWindow is updating. Please wait...");
+        toast.success(t("infos.update"));
       } else {
         throw new Error("Failed to initiate update process.");
       }
     } catch (error) {
       error instanceof Error
-        ? toast.error(`Update failed: ${error.message}`)
-        : toast.error("Update failed: An unknown error occurred.");
+        ? toast.error(t("errors.E0007", { error: error.message }))
+        : toast.error(
+            t("errors.E0007", { error: "An unknown error occurred" })
+          );
     }
   }
 
@@ -121,9 +121,9 @@ export class OctoWindowAPI extends OctoprintAPI {
   public async shutdownHost(): Promise<void> {
     const resp = await this.httpClient.post("/shutdown");
     if (resp.status === 500) {
-      toast.error("Failed to shutdown the host. Please try again later.");
+      toast.error(t("errors.E0008"));
     } else {
-      toast.info("Shutting down...");
+      toast.info(t("infos.shutdown"));
     }
   }
 
