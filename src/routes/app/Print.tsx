@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { t } from "i18next";
 import { ArrowRight, Image, Printer, RefreshCw, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -210,7 +211,9 @@ function FileViewer({
                         await octoprintState.node.file.deleteFile(print);
                         refresh();
                         toast.success(
-                          print.display + " was successfully deleted."
+                          t("file.delete", {
+                            file_name: print.display,
+                          })
                         );
                       } catch (e) {
                         if (e instanceof Error) {
@@ -280,7 +283,7 @@ export default function PrintPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start rounded-2xl bg-slate-900 md:gap-4 md:p-6 lg:gap-8 lg:p-10">
-        <BackButton title="Print (File viewer)">
+        <BackButton title={t("file.name")}>
           <div
             className={cn(
               "absolute right-1 flex items-center justify-center rounded-full bg-slate-800 md:size-10 lg:size-14",

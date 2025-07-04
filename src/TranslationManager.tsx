@@ -18,3 +18,8 @@ i18n
   });
 
 export default i18n;
+
+const languageToFlag = {
+  en: "us",
+  fr: "fr",
+};

@@ -1,4 +1,5 @@
 import { defineStepper } from "@stepperize/react";
+import { t } from "i18next";
 import { CheckCircle, CircleX, FileText, Printer, Spool } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
@@ -9,14 +10,12 @@ import { cn, truncate } from "@/lib/utils";
 
 import { Dialog, DialogContent } from "../ui/dialog";
 
-//TODO: Make the currently selected spool selected by default before new release + select in spool page
-
 // Stepper definition
 const stepper = defineStepper(
-  { id: "file-confirm", label: "File", icon: FileText },
-  { id: "spool-select", label: "Spool", icon: Spool },
-  { id: "print-confirm", label: "Confirm", icon: Printer },
-  { id: "success", label: "Success", icon: CheckCircle }
+  { id: "file-confirm", label: t("file.dialog.file-confirm"), icon: FileText },
+  { id: "spool-select", label: t("file.dialog.spool-select"), icon: Spool },
+  { id: "print-confirm", label: t("file.dialog.print-confirm"), icon: Printer },
+  { id: "success", label: t("file.dialog.success"), icon: CheckCircle }
 );
 
 const slideVariants = {
@@ -95,7 +94,7 @@ const DemoContent = ({
       }}
     >
       <h3 className="text-gray-12 mb-4 text-xl font-semibold">
-        File Confirmation
+        {t("file.dialog.file-confirm.title")}
       </h3>
       <div className="flex items-center gap-4 md:flex-row lg:flex-col">
         {file.thumbnail && (
@@ -107,23 +106,25 @@ const DemoContent = ({
         )}
         <div className="flex w-full flex-col gap-2">
           <div>
-            <span className="font-bold">Name:</span> {file.display}
+            <span className="font-bold">{t("general.name")} :</span>{" "}
+            {file.display}
           </div>
           <div>
-            <span className="font-bold">Path:</span> {file.path}
+            <span className="font-bold">{t("general.path")} :</span> {file.path}
           </div>
           <div>
-            <span className="font-bold">Size:</span> {file.size}
+            <span className="font-bold">{t("general.size")} :</span> {file.size}
           </div>
           <div>
-            <span className="font-bold">Origin:</span> {file.origin}
+            <span className="font-bold">{t("general.origin")} :</span>{" "}
+            {file.origin}
           </div>
         </div>
         <button
           className="mt-4 rounded-md bg-blue-600 px-6 py-2 font-bold text-white shadow transition-all hover:bg-blue-700 active:bg-blue-800"
           onClick={methods.next}
         >
-          Confirm
+          {t("general.confirm")}
         </button>
       </div>
     </motion.div>
@@ -145,11 +146,13 @@ const DemoContent = ({
       }}
     >
       <h3 className="text-gray-12 text-xl font-semibold md:mb-2 lg:mb-4">
-        Select Filament Spool
+        {t("file.dialog.spool-select.title")}
       </h3>
       <div className="flex flex-1 flex-col overflow-y-auto md:gap-1.5 lg:gap-3">
         {spools.length === 0 && (
-          <div className="text-slate-400">No spools available.</div>
+          <div className="text-slate-400">
+            {t("file.dialog.spool-select.no-spool")}
+          </div>
         )}
         {spools.map((spool) => (
           <button
@@ -179,7 +182,7 @@ const DemoContent = ({
         onClick={methods.next}
         disabled={!selectedSpool}
       >
-        Confirm Spool
+        {t("file.dialog.spool-select.confirm-spool")}
       </button>
     </motion.div>
   );
@@ -198,17 +201,19 @@ const DemoContent = ({
     return (
       <div className="flex w-full flex-col gap-1 text-xs md:text-base">
         <div>
-          <span className="font-bold">Name:</span> {file.display}
+          <span className="font-bold">{t("general.name")} :</span>
+          {file.display}
         </div>
         <div>
-          <span className="font-bold">Path:</span>{" "}
+          <span className="font-bold">{t("general.path")} :</span>
           {truncate(file.path, 50, false)}
         </div>
         <div>
-          <span className="font-bold">Size:</span> {file.size}
+          <span className="font-bold">{t("general.size")} :</span> {file.size}
         </div>
         <div>
-          <span className="font-bold">Origin:</span> {file.origin}
+          <span className="font-bold">{t("general.origin")} :</span>
+          {file.origin}
         </div>
       </div>
     );
@@ -218,20 +223,23 @@ const DemoContent = ({
     return (
       <div className="mt-2 flex w-full flex-col gap-1 rounded-lg border-2 border-blue-600 bg-blue-50 p-2 text-xs md:mt-0 md:p-3 md:text-base dark:bg-blue-900">
         <div>
-          <span className="font-bold">Spool:</span> {selectedSpool.displayName}
+          <span className="font-bold">{t("general.spool.spool")} :</span>
+          {selectedSpool.displayName}
         </div>
         <div>
-          <span className="font-bold">Material:</span> {selectedSpool.material}
+          <span className="font-bold">{t("general.spool.material")} :</span>
+          {selectedSpool.material}
         </div>
         <div>
-          <span className="font-bold">Color:</span>{" "}
+          <span className="font-bold">{t("general.spool.color")} :</span>
           <span
             className="inline-block h-3 w-3 rounded-full border border-slate-400 align-middle md:h-4 md:w-4"
             style={{ background: selectedSpool.color }}
           />
         </div>
         <div>
-          <span className="font-bold">Vendor:</span> {selectedSpool.vendor}
+          <span className="font-bold">{t("general.spool.vendor")} :</span>
+          {selectedSpool.vendor}
         </div>
       </div>
     );
@@ -253,7 +261,7 @@ const DemoContent = ({
       }}
     >
       <h3 className="text-gray-12 text-base font-semibold md:text-xl">
-        Print Confirmation
+        {t("file.dialog.print-confirm.title")}
       </h3>
       <div className="flex flex-col items-center gap-2">
         {window.innerWidth > 1024 ? (
@@ -287,7 +295,7 @@ const DemoContent = ({
           }}
           disabled={!selectedSpool || printing}
         >
-          {printing ? "Starting print..." : "Print"}
+          {printing ? t("file.dialog.print-started") : t("file.dialog.print")}
         </button>
       </div>
     </motion.div>
@@ -325,7 +333,9 @@ const DemoContent = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        {error ? "An error has occured while starting print..." : "Success!"}
+        {error
+          ? t("file.dialog.success.error")
+          : t("file.dialog.success.success-message")}
       </motion.h3>
       <motion.p
         className="text-gray-12 mb-6"
@@ -333,7 +343,7 @@ const DemoContent = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        {error ? error.message : "Your print has started successfully."}
+        {error ? error.message : t("file.dialog.success.success-desc")}
       </motion.p>
       <motion.button
         type="button"
@@ -356,7 +366,9 @@ const DemoContent = ({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        {error ? "Start Over" : "Finish"}
+        {error
+          ? t("file.dialog.success.restart")
+          : t("file.dialog.success.finish")}
       </motion.button>
     </motion.div>
   );
@@ -400,7 +412,7 @@ const DemoContent = ({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                Back
+                {t("back_button")}
               </motion.button>
             )}
           </div>

@@ -2,7 +2,18 @@
   "general": {
     "select": "Select",
     "name": "Name",
-    "create": "Create"
+    "path": "Path",
+    "size": "Size",
+    "create": "Create",
+    "close": "Close",
+    "origin": "Origin",
+    "confirm": "Confirm",
+    "spool": {
+      "color": "Color",
+      "material": "Material",
+      "vendor": "Vendor",
+      "spool": "Spool"
+    }
   },
   "home": {
     "actions": {
@@ -33,6 +44,36 @@
     "cooldown": "Cooldown",
     "preheating": "Preheating bed to {{bedTemp}}°C and tool to {{toolTemp}}°C.",
     "preheat_fail": "Failed to preheat. Is the printer connected?"
+  },
+  "settings": {
+    "actions": "Actions",
+    "actions.shutdown": "Shutdown",
+    "manage": "Manage OctoWindow",
+    "manage.check_for_updates": "Check for updates",
+    "manage.restart_setup": "Restart Setup"
+  },
+  "file": {
+    "name": "Print (File viewer)",
+    "thumbnail_name": "{{file_name}}'s thumbnail",
+    "delete": "{{file_name}} was successfully deleted.",
+    "dialog": {
+      "file-confirm": "Confirm File",
+      "file-confirm.title": "File Confirmation",
+      "spool-select": "Spool",
+      "spool-select.title": "Select a filament spool",
+      "spool-select.no-spool": "No filament spool available",
+      "spool-select.confirm-spool": "Confirm Spool",
+      "print-confirm": "Confirm Print",
+      "print-confirm.title": "Print Confirmation",
+      "print-started": "Printing...",
+      "print": "Print",
+      "success": "Success",
+      "success.success-message": "Success!",
+      "success.success-desc": "Your print has started successfully.",
+      "success.error": "An error has occured while starting print...",
+      "success.restart": "Start over",
+      "success.finish": "Finish"
+    }
   },
   "topbar": {
     "status": {
