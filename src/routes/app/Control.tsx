@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import {
   ChevronDown,
   ChevronLeft,
@@ -60,7 +61,9 @@ function JogPanel() {
                   onClick={() => move.homeAxis(["x", "y"])}
                 />
               </div>
-              <p className="mt-2 text-base font-bold text-blue-400">X/Y Axes</p>
+              <p className="mt-2 text-base font-bold text-blue-400">
+                {t("control.xy_axes")}
+              </p>
             </div>
             <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg transition hover:scale-105 hover:border-blue-500 focus:outline-none active:scale-100">
               <div className="relative sm:h-40 sm:w-20 md:h-40 md:w-20 lg:h-60 lg:w-40">
@@ -80,12 +83,14 @@ function JogPanel() {
                   onClick={() => handleMove("z", true)}
                 />
               </div>
-              <p className="mt-2 text-base font-bold text-blue-400">Z Axis</p>
+              <p className="mt-2 text-base font-bold text-blue-400">
+                {t("control.z_axis")}
+              </p>
             </div>
           </div>
           <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg">
             <h2 className="mb-2 text-base font-bold text-blue-400">
-              Step in mm
+              {t("control.step_mm")}
             </h2>
             <Tabs defaultValue="10" value={step} onValueChange={setStep}>
               <TabsList>
@@ -119,7 +124,7 @@ function GeneralControlPanel() {
               onClick={() => printer.tool.extrude(-Number(step))}
             >
               <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">
-                Intrude
+                {t("control.intrude")}
               </p>
               <ChevronUp className="md:size-10 md:-rotate-90 lg:rotate-0" />
             </div>
@@ -133,13 +138,15 @@ function GeneralControlPanel() {
             >
               <ChevronDown className="md:size-10 md:-rotate-90 lg:rotate-0" />
               <p className="text-base font-bold text-blue-400 md:text-sm lg:text-base">
-                Extrude
+                {t("control.extrude")}
               </p>
             </div>
           </div>
 
           <div className="relative flex h-24 flex-col items-center justify-center rounded-2xl border-2 border-transparent bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-lg md:w-46 lg:w-full">
-            <h2 className="mb-2 text-base font-bold text-blue-400">Amount</h2>
+            <h2 className="mb-2 text-base font-bold text-blue-400">
+              {t("control.amount")}
+            </h2>
             <Tabs defaultValue="10" value={step} onValueChange={setStep}>
               <TabsList>
                 {["1", "5", "10", "50", "100"].map((v) => {
@@ -185,7 +192,7 @@ export default function Control() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="mt-5 ml-4">
-        <BackButton title="Control" />
+        <BackButton title={t("home.actions.control")} />
       </div>
       <div className="flex h-full min-h-0 flex-1 flex-row">
         <JogPanel />

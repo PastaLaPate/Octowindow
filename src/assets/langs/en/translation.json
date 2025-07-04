@@ -8,6 +8,15 @@
       "print": "Print"
     }
   },
+  "back_button": "Back",
+  "control": {
+    "xy_axes": "X/Y Axes",
+    "z_axis": "Z Axis",
+    "step_mm": "Step in mm",
+    "intrude": "Intrude",
+    "extrude": "Extrude",
+    "amount": "Amount"
+  },
   "topbar": {
     "status": {
       "updating": {
