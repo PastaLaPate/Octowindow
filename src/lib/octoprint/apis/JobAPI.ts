@@ -1,4 +1,5 @@
 import type { Axios } from "axios";
+import { t } from "i18next";
 
 import { OctoprintAPI } from "./OctoprintAPI";
 
@@ -12,7 +13,7 @@ export default class JobAPI extends OctoprintAPI {
       command: "start",
     });
     if (resp.status === 409) {
-      throw new Error("Printer isn't connected or is already printing.");
+      throw new Error(t("errors.E0004"));
     }
   }
 

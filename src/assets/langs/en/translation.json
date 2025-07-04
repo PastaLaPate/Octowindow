@@ -92,7 +92,28 @@
     }
   },
   "errors": {
-    "E0001": "Printer isn't connected!"
+    "E0001": "Printer isn't connected!",
+    "E0002": "File not found!",
+    "E0003": "The file is being printed!",
+    "E0004": "Printer isn't connected or is already printing.",
+    "E0005": "Printer isn't connected or operational.",
+    "E0006": "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
+    "E0007": "Update failed: {{error}}.",
+    "E0008": "Failed to shutdown the host. Please try again later.",
+    "E0009": "Data error, retry or create issue."
+  },
+  "infos": {
+    "latest_release": "You are using the latest version of OctoWindow.",
+    "update": "OctoWindow is updating. Please wait...",
+    "update_available": "A new version of OctoWindow is available: {{latestVersion}}. Current: {{currentVersion}}",
+    "update_cancel": "Update cancelled.",
+    "update_confirmation": "Are you sure you want to update? The UI will exit, the update will take about a minute, and the system will reboot.",
+    "shutdown": "Shutting down...",
+    "job": {
+      "stopped": "Successfully stopped the job.",
+      "pause": "Successfully paused the job.",
+      "resume": "Successfully resumed the job."
+    }
   },
   "printer_targets": {
     "tool": "Nozzle",

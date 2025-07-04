@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { CirclePause, CirclePlay, CircleStop, Fan } from "lucide-react";
 import { DateTime, Duration } from "luxon";
 import { useEffect, useState } from "react";
@@ -227,7 +228,7 @@ export default function JobPage() {
               octoprintState.node.job
                 .cancelJob()
                 .then(() => {
-                  toast.success("Successfully stopped the job.");
+                  toast.success(t("infos.job.stopped"));
                 })
                 .catch((e) => {
                   if (e instanceof Error) {
@@ -245,7 +246,7 @@ export default function JobPage() {
                 octoprintState.node.job
                   .pauseJob()
                   .then(() => {
-                    toast.success("Successfully paused the job.");
+                    toast.success(t("infos.job.pause"));
                   })
                   .catch((e) => {
                     if (e instanceof Error) {
@@ -263,7 +264,7 @@ export default function JobPage() {
                 octoprintState.node.job
                   .resumeJob()
                   .then(() => {
-                    toast.success("Successfully resumed the job");
+                    toast.success(t("infos.job.resume"));
                   })
                   .catch((e) => {
                     if (e instanceof Error) {

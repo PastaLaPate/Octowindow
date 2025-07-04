@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import urlJoin from "url-join";
 
 import { OctoprintAPI } from "./OctoprintAPI";
@@ -176,8 +177,8 @@ export class FileAPI extends OctoprintAPI {
     const resp = await this.httpClient.delete(
       urlJoin("/api/files", file.origin, file.path)
     );
-    if (resp.status === 404) throw new Error("File not found.");
-    if (resp.status === 409) throw new Error("File is being printed.");
+    if (resp.status === 404) throw new Error(t("errors.E0002"));
+    if (resp.status === 409) throw new Error(t("errors.E0003"));
   }
 
   private processFiles(
