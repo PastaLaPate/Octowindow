@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { t } from "i18next";
 import { Flame, Plus, Snowflake, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import { StoreManager, type TTempPreset } from "@/lib/octoprint/Octoprint";
+import { getTargetLabel } from "@/lib/utils";
 
 import type { OctoprintState } from "@/routes/app/App";
 import ControlledInput from "../ControlledInput";
@@ -60,7 +62,12 @@ class PresetsManager {
       this.storeManager.store.tempPresets = presets;
       this.storeManager.saveStore();
     } else {
-      console.warn(`Preset with name ${preset.name} does not exist.`);
+      toast.warning(
+        t("preheat.preset_no_exist", {
+          selector: "name",
+          preset_name: preset.name,
+        })
+      );
     }
     this.updateListeners.forEach((listener) => listener());
   }
@@ -74,7 +81,12 @@ class PresetsManager {
       this.storeManager.saveStore();
       this.updateListeners.forEach((listener) => listener());
     } else {
-      toast.warning(`Preset with ID ${presetId} does not exist.`);
+      toast.warning(
+        t("preheat.preset_no_exist", {
+          selector: "ID",
+          preset_name: presetId,
+        })
+      );
     }
   }
 }
@@ -173,7 +185,7 @@ function TempPreset({
       if (presetManager) {
         if (create) {
           if (!name || bedTemp <= 0 || toolTemp <= 0) {
-            toast.error("Please fill in all fields before creating a preset.");
+            toast.error(t("preheat.fields_not_completed"));
             return;
           }
           presetManager.addTempPreset({
@@ -220,7 +232,7 @@ function TempPreset({
             ) : (
               <ControlledInput
                 value={name}
-                placeholder="Name"
+                placeholder={t("general.name")}
                 onChange={(v) => setName(v)}
                 validate={(v, setIsKeyboardVisible) => {
                   setIsKeyboardVisible(false);
@@ -231,14 +243,14 @@ function TempPreset({
             )}
             <div className="flex w-full flex-col gap-1 sm:gap-2">
               <PreheatTemp
-                label="Nozzle"
+                label={getTargetLabel("tool")}
                 icon="nozzle"
                 value={!startingCreating && toolTemp === 0 ? "" : toolTemp}
                 editable={!startingCreating}
                 onChange={(v) => setToolTemp(Number(v))}
               />
               <PreheatTemp
-                label="Bed"
+                label={getTargetLabel("bed")}
                 icon="bed"
                 value={!startingCreating && bedTemp === 0 ? "" : bedTemp}
                 editable={!startingCreating}
@@ -250,7 +262,7 @@ function TempPreset({
                 className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-1 text-sm font-bold text-white shadow transition group-hover:bg-blue-700 hover:scale-105 hover:bg-blue-500 active:scale-95 sm:mt-4 sm:text-lg"
                 onClick={handleClick}
               >
-                Create
+                {t("general.create")}
               </span>
             ) : (
               <div className="flex h-15 w-full items-center justify-center">
@@ -272,7 +284,7 @@ function TempPreset({
                     <div>
                       <Flame className="h-full w-full" />
                     </div>
-                    <span>Preheat</span>
+                    <span>{t("preheat.preheat")}</span>
                   </div>
                 ) : (
                   <div
@@ -282,7 +294,7 @@ function TempPreset({
                     <div>
                       <Snowflake className="h-full w-full" />
                     </div>
-                    <span>Cooldown</span>
+                    <span>{t("preheat.cooldown")}</span>
                   </div>
                 )}
               </div>
@@ -333,14 +345,19 @@ export default function PreHeat({
 
   const handlePreheat = async (bedTemp: number, toolTemp: number) => {
     if (octoprintState.node) {
-      try {
-        octoprintState.node.printer.setBedTemp(bedTemp);
-        octoprintState.node.printer.setToolTemp(toolTemp);
-        toast.success(`Preheating to ${bedTemp}°C bed and ${toolTemp}°C tool.`);
-      } catch (error) {
-        toast.error("Failed to set temperatures. Is printer connected?");
-      }
       setOpened(false);
+      try {
+        await octoprintState.node.printer.setBedTemp(bedTemp);
+        await octoprintState.node.printer.setToolTemp(toolTemp);
+        toast.success(
+          t("preheat.preheating", {
+            bedTemp: bedTemp,
+            toolTemp: toolTemp,
+          })
+        );
+      } catch (error) {
+        toast.error(t("preheat.preheat_fail"));
+      }
     }
   };
 
@@ -350,7 +367,7 @@ export default function PreHeat({
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle className="text-2xl">
-              Select a temp preset or create one.
+              {t("preheat.drawer_title")}
             </DrawerTitle>
           </DrawerHeader>
           <div className="relative w-full overflow-hidden pb-10">
@@ -374,7 +391,7 @@ export default function PreHeat({
                 >
                   <TempPreset
                     presetManager={tempPresetManager}
-                    initName="Cool Down"
+                    initName={t("preheat.cooldown")}
                     initBedTemp={0}
                     initToolTemp={0}
                     id={-1}

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { t } from "i18next";
 import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
@@ -58,7 +59,7 @@ function Spool({
           }
         }}
       >
-        {current ? "Current" : "Select"}
+        {current ? t("spools.current") : t("general.select")}
       </button>
     </motion.div>
   );
@@ -91,7 +92,7 @@ export default function FilamentPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
-        <BackButton title="Spools">
+        <BackButton title={t("home.actions.spools")}>
           <div
             className={cn(
               "absolute right-1 flex items-center justify-center rounded-full bg-slate-800 md:size-10 lg:size-14",
