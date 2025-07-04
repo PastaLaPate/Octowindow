@@ -8,6 +8,21 @@
       "print": "Print"
     }
   },
+  "topbar": {
+    "status": {
+      "updating": {
+        "backend": "Checking backend's status...",
+        "global": "Checking global status...",
+        "refresh": "Refreshing status and trying to connect to printer..."
+      },
+      "refresh.fail": "Failed to refresh status or connect to printer.",
+      "both_disconnected": "Backend and printer are disconnected.",
+      "printer_disconnected": "No printer's connected.",
+      "backend_disconnected": "Local backend isn't reachable. Please ensure the local server is running.",
+      "printer_operational": "Connected to {{printer_name}}",
+      "backend_operational": "Local backend is Operational"
+    }
+  },
   "errors": {
     "E0001": "Printer isn't connected!"
   },

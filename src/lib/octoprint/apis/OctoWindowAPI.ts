@@ -3,6 +3,7 @@ NOTE: API Used to interact with the local backend server to shutdown the host an
 */
 
 import axios, { Axios } from "axios";
+import { t } from "i18next";
 import { gt } from "semver";
 import { toast } from "sonner";
 
@@ -107,13 +108,12 @@ export class OctoWindowAPI extends OctoprintAPI {
       await this.testAPI();
       return {
         connected: true,
-        message: "Local backend is Operational",
+        message: t("topbar.status.backend_operational"),
       };
     } catch (error) {
       return {
         connected: false,
-        message:
-          "Local backend is not reachable. Please ensure the local server is running.",
+        message: t("topbar.status.backend_disconnected"),
       };
     }
   }
