@@ -100,7 +100,9 @@
     "E0006": "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
     "E0007": "Update failed: {{error}}.",
     "E0008": "Failed to shutdown the host. Please try again later.",
-    "E0009": "Data error, retry or create issue."
+    "E0009": "Data error, retry or create issue.",
+    "E0010": "No job to be restarted",
+    "E0011": "No active job..."
   },
   "infos": {
     "latest_release": "You are using the latest version of OctoWindow.",
