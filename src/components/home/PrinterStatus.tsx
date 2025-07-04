@@ -1,11 +1,12 @@
 import type { ClassValue } from "clsx";
+import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
 import type { PrinterTarget } from "@/lib/octoprint/Octoprint";
-import { cn } from "@/lib/utils";
+import { cn, getTargetLabel } from "@/lib/utils";
 
 import type { OctoprintState } from "@/routes/app/App";
 import ControlledInput from "../ControlledInput";
@@ -65,17 +66,25 @@ export function TempViewer({
           value={tempInput}
           standAlonePlaceholder={true}
           onChange={setNumberInput}
-          label={target === "tool" ? "Tool" : "Bed"}
+          label={getTargetLabel(target)}
           numeric={true}
           validate={(input, setIsKeyboardVisible) => {
             const resp = temp.setTemp(Math.round(Number(input)));
             Promise.resolve(resp)
               .then(() => {
-                toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
+                toast.success(
+                  t("toast_messages.temp_set.success", {
+                    target: getTargetLabel(target),
+                    temp: Number(input),
+                  })
+                );
               })
               .catch((e) => {
                 toast.error(
-                  `Failed to set ${target}'s temp to ${Number(input)}°C: ${e.message}`
+                  t("toast_messages.temp_set.failure", {
+                    target: getTargetLabel(target),
+                    temp: Number(input),
+                  })
                 );
               });
             setNumberInput("");

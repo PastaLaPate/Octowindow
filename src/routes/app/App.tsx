@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import "./App.css";
 
+import { t } from "i18next";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import type { DisplayLayerProgressData } from "@/lib/octoprint/apis/plugins/DisplayLayerProgress";
@@ -36,15 +37,23 @@ function App() {
     current: 0,
     target: 0,
     targetDevice: "bed",
-    addTemp(addCelsius) {},
-    setTemp(newTemp) {},
+    async addTemp(addCelsius) {
+      throw Error(t("errors.E0001"));
+    },
+    async setTemp(newTemp) {
+      throw Error(t("errors.E0001"));
+    },
   });
   const [toolTemp, setToolTemp] = useState<Temp>({
     current: 0,
     target: 0,
     targetDevice: "tool",
-    addTemp(addCelsius) {},
-    setTemp(newTemp) {},
+    async addTemp(addCelsius) {
+      throw Error(t("errors.E0001"));
+    },
+    async setTemp(newTemp) {
+      throw Error(t("errors.E0001"));
+    },
   });
   const [connectionInfos, setConnectionInfos] = useState<ConnectionInfos>({
     connected: false,

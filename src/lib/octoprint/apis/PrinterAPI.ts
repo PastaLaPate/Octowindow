@@ -44,7 +44,7 @@ export type Temp = {
   current: number;
   target: number;
   setTemp: (newTemp: number) => void | Promise<void>; // can throw error
-  addTemp: (addCelsius: number) => void; // can be negative
+  addTemp: (addCelsius: number) => void | Promise<void>; // can be negative
 };
 
 export type ListenerTypes = {
