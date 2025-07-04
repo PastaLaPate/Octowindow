@@ -100,7 +100,9 @@
     "E0006": "Les versions du frontend et du backend ne sont pas les mêmes. Ceci peut casser l'application. Veuillez les mettre à la même version.",
     "E0007": "Échec de la MAJ: {{error}}.",
     "E0008": "Échec de l'éxtinction de l'host. Veuillez réessayer plus tard...",
-    "E0009": "Érreur de data, veuillez réessayer ou créer une issue."
+    "E0009": "Érreur de data, veuillez réessayer ou créer une issue.",
+    "E0010": "Aucune impression à redémarrer",
+    "E0011": "Aucune impression en cours"
   },
   "infos": {
     "latest_release": "Vous utilisez la dernière version d'Octowindow.",

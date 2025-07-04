@@ -22,7 +22,7 @@ export default class JobAPI extends OctoprintAPI {
       command: "cancel",
     });
     if (resp.status === 409) {
-      throw new Error("Printer isn't connected or printing.");
+      throw new Error(t("errors.E0001"));
     }
   }
 
@@ -31,7 +31,7 @@ export default class JobAPI extends OctoprintAPI {
       command: "restart",
     });
     if (resp.status === 409) {
-      throw new Error("No job to be restarted.");
+      throw new Error(t("errors.E0010"));
     }
   }
 
@@ -54,7 +54,7 @@ export default class JobAPI extends OctoprintAPI {
     });
 
     if (resp.status === 409) {
-      throw new Error("No active job...");
+      throw new Error(t("errors.E0011"));
     }
   }
 }
