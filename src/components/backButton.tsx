@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ export default function BackButton({
             }}
           />
         </div>
-        <p className="md:text-xl lg:text-2xl">Back</p>
+        <p className="md:text-xl lg:text-2xl">{t("back_button")}</p>
       </div>
       <p className="font-bold md:text-2xl lg:text-4xl">{title}</p>
       {children}
