@@ -1,4 +1,9 @@
 {
+  "general": {
+    "select": "Select",
+    "name": "Name",
+    "create": "Create"
+  },
   "home": {
     "actions": {
       "control": "Control",
@@ -16,6 +21,18 @@
     "intrude": "Intrude",
     "extrude": "Extrude",
     "amount": "Amount"
+  },
+  "spools": {
+    "current": "Current"
+  },
+  "preheat": {
+    "drawer_title": "Select a temp preset or create one.",
+    "preset_no_exist": "Preset with {{selector}} {{preset_name}} does not exist.",
+    "fields_not_completed": "Please fill in all fields before creating a preset.",
+    "preheat": "Preheat",
+    "cooldown": "Cooldown",
+    "preheating": "Preheating bed to {{bedTemp}}°C and tool to {{toolTemp}}°C.",
+    "preheat_fail": "Failed to preheat. Is the printer connected?"
   },
   "topbar": {
     "status": {
