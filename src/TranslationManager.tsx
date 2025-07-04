@@ -19,7 +19,7 @@ i18n
 
 export default i18n;
 
-const languageToFlag = {
+export const languageToFlag: Record<string, string> = {
   en: "us",
   fr: "fr",
 };

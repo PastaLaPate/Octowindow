@@ -1,1 +1,107 @@
-{}
+{
+  "general": {
+    "select": "Selectionner",
+    "name": "Nom",
+    "path": "Chemin",
+    "size": "Taille",
+    "create": "Créer",
+    "close": "Fermet",
+    "origin": "Origine",
+    "confirm": "Confirmer",
+    "spool": {
+      "color": "Couleur",
+      "material": "Materiaux",
+      "vendor": "Vendeur",
+      "spool": "Bobine"
+    }
+  },
+  "home": {
+    "actions": {
+      "control": "Controler",
+      "spools": "Bobines",
+      "preheat": "Préchauffer",
+      "settings": "Paramêtres",
+      "print": "Imprimer"
+    }
+  },
+  "back_button": "Retour",
+  "control": {
+    "xy_axes": "Axes X/Y",
+    "z_axis": "Axe Z",
+    "step_mm": "Pas en mm",
+    "intrude": "Intruder",
+    "extrude": "Extruder",
+    "amount": "Montant"
+  },
+  "spools": {
+    "current": "Actuel"
+  },
+  "preheat": {
+    "drawer_title": "Sélectionnez un preset de préchauffage ou créez en un.",
+    "preset_no_exist": "Le preset avec comme {{selector}} {{preset_name}} n'existe.",
+    "fields_not_completed": "Veuillez remplir tout les champs avant de créer le preset.",
+    "preheat": "Prechauffer",
+    "cooldown": "Refroidir",
+    "preheating": "Prechauffage du lit à {{bedTemp}}°C et du l'outil à {{toolTemp}}°C.",
+    "preheat_fail": "Échec du préchauffage. Est-ce que l'imprimante est connectée ?"
+  },
+  "settings": {
+    "actions": "Actions",
+    "actions.shutdown": "Éteindre",
+    "manage": "Gérer OctoWindow",
+    "manage.check_for_updates": "Rechercher des mises à jours.",
+    "manage.restart_setup": "Recommencer le setup",
+    "languages": "Langages"
+  },
+  "file": {
+    "name": "Imprimer (explorateur de fichiers)",
+    "thumbnail_name": "Aperçu de {{file_name}}",
+    "delete": "{{file_name}} a été supprimé.",
+    "dialog": {
+      "file-confirm": "Confirmer le fichier",
+      "file-confirm.title": "Confirmation du fichier",
+      "spool-select": "Bobine",
+      "spool-select.title": "Sélectionnez une bobine de filament.",
+      "spool-select.no-spool": "Aucune bobine de filament n'est disponible.",
+      "spool-select.confirm-spool": "Confirmer la bobine",
+      "print-confirm": "Confirmer l'impression",
+      "print-confirm.title": "Confirmation de l'impression",
+      "print-started": "Impression...",
+      "print": "Imprimer",
+      "success": "Succès",
+      "success.success-message": "Succès!",
+      "success.success-desc": "Votre impression a démarré avec succès!",
+      "success.error": "Une erreur s'est produite pendant le démarrage de l'impression!",
+      "success.restart": "Recommencer",
+      "success.finish": "Terminer"
+    }
+  },
+  "topbar": {
+    "status": {
+      "updating": {
+        "backend": "Vérification du statut du backend.",
+        "global": "Vérification du statut global",
+        "refresh": "Rafraîchissement du statut et tentative de connection à l'imprimante"
+      },
+      "refresh.fail": "Échec de la connection à l'imprimante ou du rafraîchissement du statut",
+      "both_disconnected": "Le backend et l'imprimante sont déconnectés.",
+      "printer_disconnected": "Aucune imprimante connectée.",
+      "backend_disconnected": "Le backend local n'est pas accessible. Vérifiez que le serveur local est lancé.",
+      "printer_operational": "Connecté à {{printer_name}}",
+      "backend_operational": "Le backend local est opérationel"
+    }
+  },
+  "errors": {
+    "E0001": "L'imprimante n'est pas connectée."
+  },
+  "printer_targets": {
+    "tool": "Buse",
+    "bed": "Lit"
+  },
+  "toast_messages": {
+    "temp_set": {
+      "success": "Chauffage avec succès de la temperature à {{temp}}°C ({{target}})",
+      "failure": "Échec du chauffage à {{temp}}°C ({{target}})"
+    }
+  }
+}

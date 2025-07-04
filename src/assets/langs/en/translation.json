@@ -50,7 +50,8 @@
     "actions.shutdown": "Shutdown",
     "manage": "Manage OctoWindow",
     "manage.check_for_updates": "Check for updates",
-    "manage.restart_setup": "Restart Setup"
+    "manage.restart_setup": "Restart Setup",
+    "languages": "Languages"
   },
   "file": {
     "name": "Print (File viewer)",
