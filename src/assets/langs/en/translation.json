@@ -102,7 +102,17 @@
     "E0008": "Failed to shutdown the host. Please try again later.",
     "E0009": "Data error, retry or create issue.",
     "E0010": "No job to be restarted",
-    "E0011": "No active job..."
+    "E0011": "No active job...",
+    "E0012": "Failed to obtain API key",
+    "E0013": "App token is not set. Please request authorization first.",
+    "E0014": "Authorization aborted",
+    "E0015": "Failed to fetch API version",
+    "E0016": "Node is not reachable",
+    "E0017": "Unexpected response from local API",
+    "E0018": "Failed to initiate update process.",
+    "E0019": "Invalid Spool",
+    "E0020": "Node URL or port is not defined",
+    "E0021": "The OctoPrint node does not support the appkeys plugin"
   },
   "infos": {
     "latest_release": "You are using the latest version of OctoWindow.",

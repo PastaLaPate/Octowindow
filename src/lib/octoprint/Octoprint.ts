@@ -1,4 +1,5 @@
 import axios, { Axios } from "axios";
+import { t } from "i18next";
 
 import { FileAPI } from "./apis/FileAPI";
 import JobAPI from "./apis/JobAPI";
@@ -78,7 +79,7 @@ export class OctoprintNode {
 
   public async getApiVersion() {
     if (!this.apiKey) {
-      throw new InvalidNode("API key is not set. Please authenticate first.");
+      throw new InvalidNode(t("errors.E0013"));
     }
 
     try {
@@ -98,27 +99,25 @@ export class OctoprintNode {
       }
     } catch (error) {
       console.error("Error fetching API version:", error);
-      throw new Error("Failed to fetch API version");
+      throw new Error(t("errors.E0015"));
     }
     return "Unknown";
   }
 
   public async authenticate(signal?: AbortSignal): Promise<string> {
     if (!this.node.url) {
-      throw new InvalidNode("Node URL or port is not defined");
+      throw new InvalidNode(t("errors.E0020"));
     }
 
     // Check if the node supports the appkeys plugin
     const supportsAppKeys = await this.authWorflow.probeForWorkflow();
     if (!supportsAppKeys) {
-      throw new InvalidNode(
-        "The OctoPrint node does not support the appkeys plugin"
-      );
+      throw new InvalidNode(t("errors.E0021"));
     }
 
     // Request authorization
     await this.authWorflow.requestAuthorization();
-    if (signal?.aborted) throw new Error("Authentication aborted");
+    if (signal?.aborted) throw new Error(t("errors.E0014"));
 
     this.apiKey = await this.authWorflow.getApiKey(signal);
     return this.apiKey;
@@ -137,10 +136,10 @@ export class OctoprintNode {
       }
     } catch (error) {
       if (signal?.aborted) {
-        throw new Error("Verification aborted");
+        throw new Error(t("errors.E0014"));
       }
       console.error("Error verifying node:", error);
-      throw new Error("Node is not reachable");
+      throw new Error(t("errors.E0016"));
     }
     return false;
   }
@@ -151,7 +150,7 @@ export class OctoprintNode {
     this.node.version = "Unknown";
 
     if (this.node.url === "" || this.node.port === 0) {
-      throw new InvalidNode("Node URL or port is not defined");
+      throw new InvalidNode(t("errors.E0020"));
     }
 
     // Reinitialize the HTTP client with the loaded URL and port

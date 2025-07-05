@@ -31,6 +31,17 @@ if (fs.existsSync(versionFilePath)) {
 
 const app = express();
 
+const logDir = path.join(__dirname, "log");
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+
+const year = new Date().getFullYear().toString();
+const yearDir = path.join(logDir, year);
+if (!fs.existsSync(yearDir)) {
+  fs.mkdirSync(yearDir, { recursive: true });
+}
+
 app.use(
   morgan("combined", {
     stream: rfs.createStream(
@@ -40,7 +51,7 @@ app.use(
           : "server.log",
       {
         interval: "1d",
-        path: path.join(__dirname, "log"),
+        path: logDir,
       }
     ),
   })
