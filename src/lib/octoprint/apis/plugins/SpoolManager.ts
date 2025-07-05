@@ -1,9 +1,17 @@
 import type { Axios } from "axios";
+import { t } from "i18next";
 
 import { OctoprintAPI } from "../OctoprintAPI";
 
 // Definitly not from OctoDash (https://github.com/UnchartedBull/OctoDash/blob/main/src/services/filament/spool-manager.octoprint.service.ts)
 // also https://github.com/UnchartedBull/OctoDash/blob/main/src/model/octoprint/plugins/spool-manager.model.ts#L1
+/**
+ * await fetch("https://ender3.alexprojects.ovh/plugin/SpoolManager/deleteSpool/6", { // 6 is maybe spool id
+    "credentials": "include",
+    "method": "DELETE",
+    "mode": "cors"
+});
+ */
 
 export type FilamentSpool = {
   id: number;
@@ -92,7 +100,7 @@ export default class SpoolManager extends OctoprintAPI {
   }
 
   private parseSpool(spool: any): FilamentSpool {
-    if (!spool) throw new Error("Invalid spool");
+    if (!spool) throw new Error(t("errors.E0019"));
     return {
       color: spool.color ?? "#FF0000",
       density: spool.density,

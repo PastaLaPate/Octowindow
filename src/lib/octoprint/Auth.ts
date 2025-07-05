@@ -1,5 +1,6 @@
 import type { AxiosResponse } from "axios";
 import axios from "axios";
+import { t } from "i18next";
 
 export default class AuthorizationWorkflow {
   public baseUrl: string = "";
@@ -47,7 +48,7 @@ export default class AuthorizationWorkflow {
             this.appToken = response.data.app_token;
             resolve(response.headers["Location"]);
           } else {
-            reject(new Error("Failed to obtain API key"));
+            reject(new Error(t("errors.E0012")));
           }
         })
         .catch((error: Error) => {
@@ -58,16 +59,14 @@ export default class AuthorizationWorkflow {
   // see https://docs.octoprint.org/en/master/bundledplugins/appkeys.html#workflow
   public async getApiKey(signal?: AbortSignal): Promise<string> {
     if (!this.appToken) {
-      throw new Error(
-        "App token is not set. Please request authorization first."
-      );
+      throw new Error(t("errors.E0013"));
     }
     return new Promise<string>((resolve, reject) => {
       const timer = setInterval(async () => {
         console.log("Checking for API key...");
         if (signal?.aborted) {
           clearInterval(timer);
-          reject(new Error("Authorization aborted"));
+          reject(new Error(t("errors.E0014")));
           return;
         }
         const response = await this.httpClient.get(

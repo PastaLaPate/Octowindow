@@ -32,15 +32,13 @@ export class OctoWindowAPI extends OctoprintAPI {
     try {
       const resp = await this.httpClient.get("/ping");
       if (resp.data.message !== "pong") {
-        throw new Error("Unexpected response from local API");
+        throw new Error(t("errors.E0017"));
       }
       if (resp.data.version !== this.version) {
         toast.error(t("errors.E0006"));
       }
     } catch (error) {
-      throw new Error(
-        "Local API is not reachable. Please ensure the local server is running."
-      );
+      throw new Error(t("topbar.status.backend_disconnected"));
     }
   }
 
@@ -92,7 +90,7 @@ export class OctoWindowAPI extends OctoprintAPI {
       if (response.status === 200) {
         toast.success(t("infos.update"));
       } else {
-        throw new Error("Failed to initiate update process.");
+        throw new Error(t("errors.E0018"));
       }
     } catch (error) {
       error instanceof Error

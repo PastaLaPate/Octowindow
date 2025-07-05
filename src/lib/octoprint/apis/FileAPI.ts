@@ -124,7 +124,7 @@ export class FileAPI extends OctoprintAPI {
     );
 
     if (resp.status === 404) {
-      throw new Error("File not found.");
+      throw new Error(t("errors.E0002"));
     }
 
     return resp.data.thumbnail;
