@@ -1,18 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { t } from "i18next";
 import { ArrowRight, Image, Printer, RefreshCw, Trash } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Dir, Print } from "@/lib/octoprint/apis/FileAPI";
-import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
+import type { FilamentSpool } from "@/lib/octoprint/apis/plugins/SpoolManager";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
 import StartPrintDialog from "@/components/print/StartPrintDialog";
 import ThumbnailPreviewer from "@/components/print/ThumbnailPreviewer";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { OctoprintState } from "./Home";
+import type { OctoprintState } from "./App";
 
 type ViewType = "list" | "gallery";
 
@@ -73,9 +74,15 @@ function Print3D({
       <p>·</p>
       <p className="text-sm text-slate-400">{print.size}</p>
       <div className="mr-2 ml-auto flex h-10 flex-row items-center md:gap-3 lg:gap-6">
-        <Trash onClick={onTrash} className="h-8 w-8" />
-        <Image onClick={onShowThumbnail} className="h-8 w-8" />
-        <Printer onClick={onPrint} className="h-8 w-8" />
+        <div className="h-8 w-8">
+          <Trash onClick={onTrash} className="h-full w-full" />
+        </div>
+        <div className="h-8 w-8">
+          <Image onClick={onShowThumbnail} className="h-full w-full" />
+        </div>
+        <div className="h-8 w-8">
+          <Printer onClick={onPrint} className="h-full w-full" />
+        </div>
       </div>
     </CListNode>
   );
@@ -187,7 +194,7 @@ function FileViewer({
         key={"gradient"}
         className="absolute top-0 z-10 h-8 w-full bg-gradient-to-b from-slate-900 to-transparent to-90%"
       />
-      <div className="flex h-4/5 w-full flex-col gap-2 overflow-y-auto p-3">
+      <div className="flex h-4/5 w-full flex-col gap-2 overflow-x-hidden overflow-y-auto p-6">
         {!loading
           ? files.map((dir) => {
               return (
@@ -207,10 +214,13 @@ function FileViewer({
                   onTrash={(print) => {
                     (async () => {
                       try {
+                        if (!octoprintState.node) return;
                         await octoprintState.node.file.deleteFile(print);
                         refresh();
                         toast.success(
-                          print.display + " was successfully deleted."
+                          t("file.delete", {
+                            file_name: print.display,
+                          })
                         );
                       } catch (e) {
                         if (e instanceof Error) {
@@ -233,7 +243,7 @@ function FileViewer({
             spools={spools}
             currentSpool={currentSpool}
             onPrint={async (spool) => {
-              if (selectedFile) {
+              if (selectedFile && octoprintState.node) {
                 await octoprintState.node.file.loadFile(
                   selectedFile.origin,
                   selectedFile.path
@@ -280,8 +290,7 @@ export default function PrintPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start rounded-2xl bg-slate-900 md:gap-4 md:p-6 lg:gap-8 lg:p-10">
-
-        <BackButton title="Print (File viewer)">
+        <BackButton title={t("file.name")}>
           <div
             className={cn(
               "absolute right-1 flex items-center justify-center rounded-full bg-slate-800 md:size-10 lg:size-14",

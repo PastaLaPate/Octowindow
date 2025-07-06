@@ -1,4 +1,10 @@
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { cn } from "@/lib/utils";
 import ControlledKeyboard from "@/components/Keyboard";
@@ -9,7 +15,10 @@ type ControlledInputProps = {
   placeholder?: string;
   label?: string;
   numeric?: boolean;
-  validate?: (value: string, setIsKeyboardVisible: (val: boolean) => void) => void;
+  validate?: (
+    value: string,
+    setIsKeyboardVisible: (val: boolean) => void
+  ) => void;
   className?: string;
   inputClassName?: string;
   standAlonePlaceholder?: boolean;
@@ -38,7 +47,8 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
       if (typeof ref === "function") {
         ref(inputRef.current);
       } else if (ref) {
-        (ref as React.MutableRefObject<HTMLInputElement | null>).current = inputRef.current;
+        (ref as React.MutableRefObject<HTMLInputElement | null>).current =
+          inputRef.current;
       }
     }, [ref]);
 
@@ -56,12 +66,18 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
         const input = inputRef.current;
         const keyboard = document.querySelector(".custom-keyboard-root");
         const path = e.composedPath ? e.composedPath() : [];
-        if (input && !path.includes(input) && keyboard && !path.includes(keyboard)) {
+        if (
+          input &&
+          !path.includes(input) &&
+          keyboard &&
+          !path.includes(keyboard)
+        ) {
           setIsKeyboardVisible(false);
         }
       };
       document.addEventListener("pointerdown", handlePointerDown);
-      return () => document.removeEventListener("pointerdown", handlePointerDown);
+      return () =>
+        document.removeEventListener("pointerdown", handlePointerDown);
     }, [isKeyboardVisible]);
 
     const handleInputChange = useCallback(
@@ -85,7 +101,9 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
     return (
       <div className={`w-full ${className}`}>
         {label && (
-          <label className="mb-2 block p-0 text-base font-bold text-white sm:mb-1 sm:text-lg md:mb-1">{label}</label>
+          <label className="mb-2 block p-0 text-base font-bold text-white sm:mb-1 sm:text-lg md:mb-1">
+            {label}
+          </label>
         )}
         <input
           ref={inputRef}
@@ -95,7 +113,9 @@ const ControlledInput = forwardRef<HTMLInputElement, ControlledInputProps>(
             `w-full appearance-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-3 text-base leading-tight text-white shadow focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-lg`,
             inputClassName
           )}
-          value={isKeyboardVisible || !standAlonePlaceholder ? value : placeholder}
+          value={
+            isKeyboardVisible || !standAlonePlaceholder ? value : placeholder
+          }
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           placeholder={placeholder}

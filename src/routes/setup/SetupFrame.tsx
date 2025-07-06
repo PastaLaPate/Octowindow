@@ -22,7 +22,7 @@ export default function SetupFrame({
           // Responsive: full width, less padding, smaller radius on small screens
           "mx-auto flex w-full max-w-xl flex-col overflow-y-auto rounded-lg bg-slate-800 p-2 text-white shadow-lg sm:rounded-2xl sm:p-4 md:p-8",
           "max-h-[100dvh] min-h-[40vh] sm:max-h-[90vh]",
-          className,
+          className
         )}
         style={{
           minHeight: "40vh",

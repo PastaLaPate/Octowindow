@@ -10,6 +10,8 @@
     "JakeWilson.vscode-placeholder-images",
     "bierner.emojisense",
     "christian-kohler.npm-intellisense",
-    "Enivia.oklch-decorator"
+    "Enivia.oklch-decorator",
+    "eamodio.gitlens",
+    "jbockle.jbockle-format-files"
   ]
 }

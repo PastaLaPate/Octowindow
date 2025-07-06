@@ -1,10 +1,11 @@
 import axios, { Axios } from "axios";
+import { t } from "i18next";
 
 import { FileAPI } from "./apis/FileAPI";
 import JobAPI from "./apis/JobAPI";
 import { OctoWindowAPI } from "./apis/OctoWindowAPI";
+import SpoolManager from "./apis/plugins/SpoolManager";
 import { PrinterAPI } from "./apis/PrinterAPI";
-import SpoolManager from "./apis/SpoolManager";
 import AuthorizationWorkflow from "./Auth";
 
 export type OctoprintNodeType = {
@@ -78,7 +79,7 @@ export class OctoprintNode {
 
   public async getApiVersion() {
     if (!this.apiKey) {
-      throw new InvalidNode("API key is not set. Please authenticate first.");
+      throw new InvalidNode(t("errors.E0013"));
     }
 
     try {
@@ -86,7 +87,11 @@ export class OctoprintNode {
         headers: { "X-Api-Key": this.apiKey },
       });
       if (response.status === 200 && response.data) {
-        if (this.node.version === "Unknown" || this.node.version === "" || this.node.version !== response.data.text) {
+        if (
+          this.node.version === "Unknown" ||
+          this.node.version === "" ||
+          this.node.version !== response.data.text
+        ) {
           this.node.version = response.data.text;
           this.saveToStore(new StoreManager());
         }
@@ -94,25 +99,25 @@ export class OctoprintNode {
       }
     } catch (error) {
       console.error("Error fetching API version:", error);
-      throw new Error("Failed to fetch API version");
+      throw new Error(t("errors.E0015"));
     }
     return "Unknown";
   }
 
   public async authenticate(signal?: AbortSignal): Promise<string> {
     if (!this.node.url) {
-      throw new InvalidNode("Node URL or port is not defined");
+      throw new InvalidNode(t("errors.E0020"));
     }
 
     // Check if the node supports the appkeys plugin
     const supportsAppKeys = await this.authWorflow.probeForWorkflow();
     if (!supportsAppKeys) {
-      throw new InvalidNode("The OctoPrint node does not support the appkeys plugin");
+      throw new InvalidNode(t("errors.E0021"));
     }
 
     // Request authorization
     await this.authWorflow.requestAuthorization();
-    if (signal?.aborted) throw new Error("Authentication aborted");
+    if (signal?.aborted) throw new Error(t("errors.E0014"));
 
     this.apiKey = await this.authWorflow.getApiKey(signal);
     return this.apiKey;
@@ -122,16 +127,19 @@ export class OctoprintNode {
     // Verify via /static/webassets/packed_client.js because /api/version needs authentication
     // and we want to ensure the node is reachable without authentication first.
     try {
-      const response = await this.httpClient.get("/static/webassets/packed_client.js", { signal });
+      const response = await this.httpClient.get(
+        "/static/webassets/packed_client.js",
+        { signal }
+      );
       if (response.status === 200) {
         return true;
       }
     } catch (error) {
       if (signal?.aborted) {
-        throw new Error("Verification aborted");
+        throw new Error(t("errors.E0014"));
       }
       console.error("Error verifying node:", error);
-      throw new Error("Node is not reachable");
+      throw new Error(t("errors.E0016"));
     }
     return false;
   }
@@ -142,7 +150,7 @@ export class OctoprintNode {
     this.node.version = "Unknown";
 
     if (this.node.url === "" || this.node.port === 0) {
-      throw new InvalidNode("Node URL or port is not defined");
+      throw new InvalidNode(t("errors.E0020"));
     }
 
     // Reinitialize the HTTP client with the loaded URL and port
@@ -241,7 +249,10 @@ export class StoreManager {
     for (const key in this.store) {
       if (Object.prototype.hasOwnProperty.call(this.store, key)) {
         if (key === "tempPresets") {
-          localStorage.setItem(key, JSON.stringify(this.store.tempPresets || []));
+          localStorage.setItem(
+            key,
+            JSON.stringify(this.store.tempPresets || [])
+          );
           continue;
         }
         localStorage.setItem(key, String(this.store[key as keyof StoreType]));

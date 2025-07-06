@@ -6,10 +6,19 @@
   },
   "editor.indentSize": 2,
   "editor.wordWrap": "on",
+  "formatFiles.excludePattern": "**/node_modules/**",
+  "formatFiles.extensionsToInclude": "*.{js,jsx,mjs,cjs,ts,tsx,json}",
   "vite.autoStart": true,
   "vite.devCommand": "pnpm run dev",
   "editor.formatOnSave": true,
-  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list", "inputClassName", "iconClassName"],
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "class:list",
+    "inputClassName",
+    "iconClassName"
+  ],
   "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
     "type": "text-and-comment",
@@ -61,6 +70,15 @@
       "iconColour": "green"
     }
   },
-  "todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO", "NOTE", "COMMENT", "[ ]", "[x]"],
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "NOTE",
+    "COMMENT",
+    "[ ]",
+    "[x]"
+  ],
   "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS).*(\\n\\s*//\\s{2,}.*)*"
 }

@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import urlJoin from "url-join";
 
 import { OctoprintAPI } from "./OctoprintAPI";
@@ -18,12 +19,13 @@ export type Print = Node & {
   thumbnail: string; // Thumbnail URL
 };
 
-type FilesInformation = {
+export type FilesInformation = {
   name: string;
   display: string;
   path: string;
   type: "model" | "machinecode" | "folder";
   typePath: string[];
+  origin: "local" | "sdcard";
   user: string;
 };
 
@@ -57,7 +59,6 @@ type FileInfo = FilesInformation & {
   hash: string;
   size: number;
   date: number;
-  origin: "local" | "sdcard";
   refs: References;
   prints: PrintHistory;
   statistics: PrintStatistics;
@@ -117,6 +118,21 @@ export class FileAPI extends OctoprintAPI {
     }
   }
 
+  public async getFileThumbnail(file: Node): Promise<string> {
+    const resp = await this.httpClient.get(
+      `/api/files/${file.origin}/${file.path}`
+    );
+
+    if (resp.status === 404) {
+      throw new Error(t("errors.E0002"));
+    }
+
+    return new URL(
+      resp.data.thumbnail,
+      this.httpClient.defaults.baseURL ?? undefined
+    ).toString();
+  }
+
   public async getAllFiles(): Promise<Dir[]> {
     const localResp = await this.httpClient.get("/api/files/local", {
       params: {
@@ -164,8 +180,8 @@ export class FileAPI extends OctoprintAPI {
     const resp = await this.httpClient.delete(
       urlJoin("/api/files", file.origin, file.path)
     );
-    if (resp.status === 404) throw new Error("File not found.");
-    if (resp.status === 409) throw new Error("File is being printed.");
+    if (resp.status === 404) throw new Error(t("errors.E0002"));
+    if (resp.status === 409) throw new Error(t("errors.E0003"));
   }
 
   private processFiles(

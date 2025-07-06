@@ -39,7 +39,7 @@ export default function ControlledKeyboard({
   numeric = false,
 }: ControlledKeyboardProps) {
   const [layoutName, setLayoutName] = useState(
-    !numeric ? "default" : "numeric",
+    !numeric ? "default" : "numeric"
   );
   const keyboard: RefObject<any> = useRef(null);
 
@@ -101,6 +101,6 @@ export default function ControlledKeyboard({
         </div>
       </motion.div>
     </AnimatePresence>,
-    document.body,
+    document.body
   );
 }

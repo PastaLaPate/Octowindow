@@ -3,6 +3,7 @@ NOTE: API Used to interact with the local backend server to shutdown the host an
 */
 
 import axios, { Axios } from "axios";
+import { t } from "i18next";
 import { gt } from "semver";
 import { toast } from "sonner";
 
@@ -31,59 +32,55 @@ export class OctoWindowAPI extends OctoprintAPI {
     try {
       const resp = await this.httpClient.get("/ping");
       if (resp.data.message !== "pong") {
-        throw new Error("Unexpected response from local API");
+        throw new Error(t("errors.E0017"));
       }
       if (resp.data.version !== this.version) {
-        toast.error(
-          "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
-        );
+        toast.error(t("errors.E0006"));
       }
     } catch (error) {
-      throw new Error(
-        "Local API is not reachable. Please ensure the local server is running.",
-      );
+      throw new Error(t("topbar.status.backend_disconnected"));
     }
   }
 
   public async checkForUpdates(): Promise<void> {
     const currentVersion = this.version;
     const response = await fetch(
-      "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest",
+      "https://api.github.com/repos/PastaLaPate/Octowindow/releases/latest"
     );
     const data = await response.json();
     const latestVersion = data.tag_name;
     if (gt(latestVersion, currentVersion)) {
       toast.info(
-        `A new version of OctoWindow is available: ${latestVersion}. Current: ${currentVersion}`,
+        t("infos.update_available", {
+          latestVersion: latestVersion,
+          currentVersion: currentVersion,
+        }),
         {
           duration: 10000,
           action: {
             label: "Update",
             onClick: () => {
-              toast.warning(
-                "Are you sure you want to update? The UI will exit, the update will take about a minute, and the system will reboot.",
-                {
-                  duration: 15000,
-                  action: {
-                    label: "Continue",
-                    onClick: () => {
-                      this.update();
-                    },
-                  },
-                  cancel: {
-                    label: "Cancel",
-                    onClick: () => {
-                      toast.info("Update cancelled.");
-                    },
+              toast.warning(t("infos.update_confirmation"), {
+                duration: 15000,
+                action: {
+                  label: "Continue",
+                  onClick: () => {
+                    this.update();
                   },
                 },
-              );
+                cancel: {
+                  label: "Cancel",
+                  onClick: () => {
+                    toast.info(t("infos.update_cancel"));
+                  },
+                },
+              });
             },
           },
-        },
+        }
       );
     } else {
-      toast.success("You are using the latest version of OctoWindow.");
+      toast.success(t("infos.latest_release"));
     }
   }
 
@@ -91,14 +88,16 @@ export class OctoWindowAPI extends OctoprintAPI {
     try {
       const response = await this.httpClient.post("/update");
       if (response.status === 200) {
-        toast.success("OctoWindow is updating. Please wait...");
+        toast.success(t("infos.update"));
       } else {
-        throw new Error("Failed to initiate update process.");
+        throw new Error(t("errors.E0018"));
       }
     } catch (error) {
       error instanceof Error
-        ? toast.error(`Update failed: ${error.message}`)
-        : toast.error("Update failed: An unknown error occurred.");
+        ? toast.error(t("errors.E0007", { error: error.message }))
+        : toast.error(
+            t("errors.E0007", { error: "An unknown error occurred" })
+          );
     }
   }
 
@@ -107,13 +106,12 @@ export class OctoWindowAPI extends OctoprintAPI {
       await this.testAPI();
       return {
         connected: true,
-        message: "Local backend is Operational",
+        message: t("topbar.status.backend_operational"),
       };
     } catch (error) {
       return {
         connected: false,
-        message:
-          "Local backend is not reachable. Please ensure the local server is running.",
+        message: t("topbar.status.backend_disconnected"),
       };
     }
   }
@@ -121,9 +119,9 @@ export class OctoWindowAPI extends OctoprintAPI {
   public async shutdownHost(): Promise<void> {
     const resp = await this.httpClient.post("/shutdown");
     if (resp.status === 500) {
-      toast.error("Failed to shutdown the host. Please try again later.");
+      toast.error(t("errors.E0008"));
     } else {
-      toast.info("Shutting down...");
+      toast.info(t("infos.shutdown"));
     }
   }
 

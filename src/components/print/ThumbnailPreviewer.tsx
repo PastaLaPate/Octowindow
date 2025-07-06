@@ -1,3 +1,5 @@
+import { t } from "i18next";
+
 import type { Print } from "@/lib/octoprint/apis/FileAPI";
 
 import { Button } from "../ui/button";
@@ -15,16 +17,21 @@ export default function ThumbnailPreviewer({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="flex flex-col items-center justify-center gap-2">
-        <DialogTitle>{file.display}'s thumbnail</DialogTitle>
+        <DialogTitle>
+          {t("file.thumbnail_name", {
+            file_name: file.display,
+          })}
+        </DialogTitle>
         <div className="p-6">
           <img
             src={file.thumbnail}
+            alt="File's thumbnail"
             className="aspect-square h-full max-h-[55vh] w-full max-w-[60vw]"
           />
         </div>
         <DialogFooter>
           <Button variant={"destructive"} onClick={() => setOpen(false)}>
-            Close
+            {t("general.close")}
           </Button>
         </DialogFooter>
       </DialogContent>

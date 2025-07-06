@@ -1,13 +1,14 @@
 import type { ClassValue } from "clsx";
+import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Temp } from "@/lib/octoprint/apis/PrinterAPI";
 import type { PrinterTarget } from "@/lib/octoprint/Octoprint";
-import { cn } from "@/lib/utils";
+import { cn, getTargetLabel } from "@/lib/utils";
 
-import type { OctoprintState } from "@/routes/app/Home";
+import type { OctoprintState } from "@/routes/app/App";
 import ControlledInput from "../ControlledInput";
 import HeatedPlate from "../svg/HeatedPlate";
 import Nozzle from "../svg/Nozzle";
@@ -29,7 +30,9 @@ export function TempViewer({
   const [temp, setTemp] = useState<Temp | undefined>(undefined);
 
   useEffect(() => {
-    setTemp(target === "tool" ? octoprintState.toolTemp : octoprintState.bedTemp);
+    setTemp(
+      target === "tool" ? octoprintState.toolTemp : octoprintState.bedTemp
+    );
   }, [octoprintState]);
 
   return (
@@ -42,11 +45,19 @@ export function TempViewer({
         minWidth: 0,
       }} // Responsive width
     >
-      <div className={cn("flex h-14 w-14 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24", iconClassName)}>
+      <div
+        className={cn(
+          "flex h-14 w-14 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24",
+          iconClassName
+        )}
+      >
         {target === "tool" ? (
           <Nozzle stroke={"var(--nozzle-color)"} className="h-full w-full" />
         ) : (
-          <HeatedPlate stroke={"var(--heated-bed-color)"} className="h-full w-full" />
+          <HeatedPlate
+            stroke={"var(--heated-bed-color)"}
+            className="h-full w-full"
+          />
         )}
       </div>
       {temp && (
@@ -55,29 +66,43 @@ export function TempViewer({
           value={tempInput}
           standAlonePlaceholder={true}
           onChange={setNumberInput}
-          label={target === "tool" ? "Tool" : "Bed"}
+          label={getTargetLabel(target)}
           numeric={true}
           validate={(input, setIsKeyboardVisible) => {
             const resp = temp.setTemp(Math.round(Number(input)));
             Promise.resolve(resp)
               .then(() => {
-                toast.success(`Set ${target}'s temp to ${Number(input)}°C`);
+                toast.success(
+                  t("toast_messages.temp_set.success", {
+                    target: getTargetLabel(target),
+                    temp: Number(input),
+                  })
+                );
               })
               .catch((e) => {
-                toast.error(`Failed to set ${target}'s temp to ${Number(input)}°C: ${e.message}`);
+                toast.error(
+                  t("toast_messages.temp_set.failure", {
+                    target: getTargetLabel(target),
+                    temp: Number(input),
+                  })
+                );
               });
             setNumberInput("");
             setIsKeyboardVisible(false);
           }}
           inputClassName={cn(
             "text-center w-20 sm:w-28 sm:text-4xl xl:w-50 2xl:w-80 lg:text-5xl",
-            target === "tool" ? "text-blue-200 font-bold" : "text-yellow-200 font-bold",
+            target === "tool"
+              ? "text-blue-200 font-bold"
+              : "text-yellow-200 font-bold",
             inputClassName
           )}
           className="flex flex-col items-center justify-center gap-2 text-center"
         />
       )}
-      <p className="text-lg text-slate-500 sm:text-xl">{temp && (temp.target !== 0 ? `${temp.target}` : "")}</p>
+      <p className="text-lg text-slate-500 sm:text-xl">
+        {temp && (temp.target !== 0 ? `${temp.target}` : "")}
+      </p>
       <div
         className={cn(
           "absolute bottom-0 h-2 w-full rounded-b-2xl",

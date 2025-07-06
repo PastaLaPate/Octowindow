@@ -1,14 +1,17 @@
 import { motion } from "framer-motion";
+import { t } from "i18next";
 import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
-import type { FilamentSpool } from "@/lib/octoprint/apis/SpoolManager";
+import type { FilamentSpool } from "@/lib/octoprint/apis/plugins/SpoolManager";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/backButton";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { OctoprintState } from "./Home";
+import type { OctoprintState } from "./App";
+
+// TODO: Add filament spools
 
 function Spool({
   spool,
@@ -58,7 +61,7 @@ function Spool({
           }
         }}
       >
-        {current ? "Current" : "Select"}
+        {current ? t("spools.current") : t("general.select")}
       </button>
     </motion.div>
   );
@@ -70,9 +73,11 @@ export default function FilamentPage() {
   const [currentSpool, setCurrentSpool] = useState<FilamentSpool>();
   const [loading, setLoading] = useState<boolean>(true);
   const refreshSpools = async () => {
+    if (!octoprintState.node) return;
     setSpools(await octoprintState.node.spools.getSpools());
   };
   const refreshCurrentSpool = async () => {
+    if (!octoprintState.node) return;
     setCurrentSpool(await octoprintState.node.spools.getCurrentSpool());
   };
   const filterByCurrentSpool = () =>
@@ -91,7 +96,7 @@ export default function FilamentPage() {
   return (
     <div className="flex min-h-0 w-screen flex-1 items-center justify-center">
       <div className="flex h-5/6 min-h-0 w-11/12 flex-col items-start gap-8 rounded-2xl bg-slate-900 p-10">
-        <BackButton title="Spools">
+        <BackButton title={t("home.actions.spools")}>
           <div
             className={cn(
               "absolute right-1 flex items-center justify-center rounded-full bg-slate-800 md:size-10 lg:size-14",
@@ -116,6 +121,7 @@ export default function FilamentPage() {
                   key={i + 1}
                   idx={i + 1}
                   onSelect={(spool) => {
+                    if (!octoprintState.node) return;
                     octoprintState.node.spools.selectSpool(spool);
                     refresh();
                   }}

@@ -1,0 +1,140 @@
+{
+  "general": {
+    "select": "Select",
+    "name": "Name",
+    "path": "Path",
+    "size": "Size",
+    "create": "Create",
+    "close": "Close",
+    "origin": "Origin",
+    "confirm": "Confirm",
+    "spool": {
+      "color": "Color",
+      "material": "Material",
+      "vendor": "Vendor",
+      "spool": "Spool"
+    }
+  },
+  "home": {
+    "actions": {
+      "control": "Control",
+      "spools": "Spools",
+      "preheat": "Preheat",
+      "settings": "Settings",
+      "print": "Print"
+    }
+  },
+  "back_button": "Back",
+  "control": {
+    "xy_axes": "X/Y Axes",
+    "z_axis": "Z Axis",
+    "step_mm": "Step in mm",
+    "intrude": "Intrude",
+    "extrude": "Extrude",
+    "amount": "Amount"
+  },
+  "spools": {
+    "current": "Current"
+  },
+  "preheat": {
+    "drawer_title": "Select a temp preset or create one.",
+    "preset_no_exist": "Preset with {{selector}} {{preset_name}} does not exist.",
+    "fields_not_completed": "Please fill in all fields before creating a preset.",
+    "preheat": "Preheat",
+    "cooldown": "Cooldown",
+    "preheating": "Preheating bed to {{bedTemp}}°C and tool to {{toolTemp}}°C.",
+    "preheat_fail": "Failed to preheat. Is the printer connected?"
+  },
+  "settings": {
+    "actions": "Actions",
+    "actions.shutdown": "Shutdown",
+    "manage": "Manage OctoWindow",
+    "manage.check_for_updates": "Check for updates",
+    "manage.restart_setup": "Restart Setup",
+    "languages": "Languages"
+  },
+  "file": {
+    "name": "Print (File viewer)",
+    "thumbnail_name": "{{file_name}}'s thumbnail",
+    "delete": "{{file_name}} was successfully deleted.",
+    "dialog": {
+      "file-confirm": "Confirm File",
+      "file-confirm.title": "File Confirmation",
+      "spool-select": "Spool",
+      "spool-select.title": "Select a filament spool",
+      "spool-select.no-spool": "No filament spool available",
+      "spool-select.confirm-spool": "Confirm Spool",
+      "print-confirm": "Confirm Print",
+      "print-confirm.title": "Print Confirmation",
+      "print-started": "Printing...",
+      "print": "Print",
+      "success": "Success",
+      "success.success-message": "Success!",
+      "success.success-desc": "Your print has started successfully.",
+      "success.error": "An error has occured while starting print...",
+      "success.restart": "Start over",
+      "success.finish": "Finish"
+    }
+  },
+  "topbar": {
+    "status": {
+      "updating": {
+        "backend": "Checking backend's status...",
+        "global": "Checking global status...",
+        "refresh": "Refreshing status and trying to connect to printer..."
+      },
+      "refresh.fail": "Failed to refresh status or connect to printer.",
+      "both_disconnected": "Backend and printer are disconnected.",
+      "printer_disconnected": "No printer's connected.",
+      "backend_disconnected": "Local backend isn't reachable. Please ensure the local server is running.",
+      "printer_operational": "Connected to {{printer_name}}",
+      "backend_operational": "Local backend is Operational"
+    }
+  },
+  "errors": {
+    "E0001": "Printer isn't connected!",
+    "E0002": "File not found!",
+    "E0003": "The file is being printed!",
+    "E0004": "Printer isn't connected or is already printing.",
+    "E0005": "Printer isn't connected or operational.",
+    "E0006": "Frontend and backend versions do not match. This can break the app. Please update the frontend or backend to the same version.",
+    "E0007": "Update failed: {{error}}.",
+    "E0008": "Failed to shutdown the host. Please try again later.",
+    "E0009": "Data error, retry or create issue.",
+    "E0010": "No job to be restarted",
+    "E0011": "No active job...",
+    "E0012": "Failed to obtain API key",
+    "E0013": "App token is not set. Please request authorization first.",
+    "E0014": "Authorization aborted",
+    "E0015": "Failed to fetch API version",
+    "E0016": "Node is not reachable",
+    "E0017": "Unexpected response from local API",
+    "E0018": "Failed to initiate update process.",
+    "E0019": "Invalid Spool",
+    "E0020": "Node URL or port is not defined",
+    "E0021": "The OctoPrint node does not support the appkeys plugin"
+  },
+  "infos": {
+    "latest_release": "You are using the latest version of OctoWindow.",
+    "update": "OctoWindow is updating. Please wait...",
+    "update_available": "A new version of OctoWindow is available: {{latestVersion}}. Current: {{currentVersion}}",
+    "update_cancel": "Update cancelled.",
+    "update_confirmation": "Are you sure you want to update? The UI will exit, the update will take about a minute, and the system will reboot.",
+    "shutdown": "Shutting down...",
+    "job": {
+      "stopped": "Successfully stopped the job.",
+      "pause": "Successfully paused the job.",
+      "resume": "Successfully resumed the job."
+    }
+  },
+  "printer_targets": {
+    "tool": "Nozzle",
+    "bed": "Bed"
+  },
+  "toast_messages": {
+    "temp_set": {
+      "success": "Successfully set {{target}}'s temp to {{temp}}°C",
+      "failure": "Failed to set {{target}}'s temp to {{temp}}°C"
+    }
+  }
+}

@@ -67,7 +67,7 @@ export default function NodeDiscovery({ nodeSelected }: NodeDiscoveryProps) {
       nodeSelected(nodeType, node);
     } catch (error) {
       setErrorMsg(
-        "Invalid OctoPrint Node URL. Please try again. Tip : Instead of https use http if you are using a self-certified certificate.",
+        "Invalid OctoPrint Node URL. Please try again. Tip : Instead of https use http if you are using a self-certified certificate."
       );
     } finally {
       setLoading(false);

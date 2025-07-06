@@ -1,4 +1,5 @@
 import type { Axios } from "axios";
+import { t } from "i18next";
 import { toast } from "sonner";
 
 import { OctoprintAPI } from "./OctoprintAPI";
@@ -14,7 +15,7 @@ export default class MovementAPI extends OctoprintAPI {
   public async jogPrintHead(
     movementAxis: MovementAxis,
     amount: number,
-    absolute = false,
+    absolute = false
   ): Promise<void> {
     const resp = await this.httpClient.post("/api/printer/printhead", {
       command: "jog",
@@ -22,7 +23,7 @@ export default class MovementAPI extends OctoprintAPI {
       [movementAxis]: amount,
     });
     if (resp.status === 409) {
-      toast.error("Printer isn't connected or operational");
+      toast.error(t("errors.E0005"));
     } else if (resp.status === 204) {
       // toast.success("Successfully issued command")
     }
@@ -34,7 +35,7 @@ export default class MovementAPI extends OctoprintAPI {
       axes: axis instanceof Array ? axis : [axis],
     });
     if (resp.status === 409) {
-      toast.error("Printer isn't connected or operational");
+      toast.error(t("errors.E0005"));
     }
   }
 
@@ -54,7 +55,7 @@ export default class MovementAPI extends OctoprintAPI {
       factor: feedRate,
     });
     if (resp.status === 409) {
-      toast.error("Printer isn't connected or operational");
+      toast.error(t("errors.E0005"));
     }
   }
 }
