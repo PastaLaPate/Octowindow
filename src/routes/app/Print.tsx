@@ -74,9 +74,15 @@ function Print3D({
       <p>·</p>
       <p className="text-sm text-slate-400">{print.size}</p>
       <div className="mr-2 ml-auto flex h-10 flex-row items-center md:gap-3 lg:gap-6">
-        <Trash onClick={onTrash} className="h-8 w-8" />
-        <Image onClick={onShowThumbnail} className="h-8 w-8" />
-        <Printer onClick={onPrint} className="h-8 w-8" />
+        <div className="h-8 w-8">
+          <Trash onClick={onTrash} className="h-full w-full" />
+        </div>
+        <div className="h-8 w-8">
+          <Image onClick={onShowThumbnail} className="h-full w-full" />
+        </div>
+        <div className="h-8 w-8">
+          <Printer onClick={onPrint} className="h-full w-full" />
+        </div>
       </div>
     </CListNode>
   );
@@ -188,7 +194,7 @@ function FileViewer({
         key={"gradient"}
         className="absolute top-0 z-10 h-8 w-full bg-gradient-to-b from-slate-900 to-transparent to-90%"
       />
-      <div className="flex h-4/5 w-full flex-col gap-2 overflow-y-auto p-3">
+      <div className="flex h-4/5 w-full flex-col gap-2 overflow-x-hidden overflow-y-auto p-6">
         {!loading
           ? files.map((dir) => {
               return (
@@ -208,6 +214,7 @@ function FileViewer({
                   onTrash={(print) => {
                     (async () => {
                       try {
+                        if (!octoprintState.node) return;
                         await octoprintState.node.file.deleteFile(print);
                         refresh();
                         toast.success(
@@ -236,7 +243,7 @@ function FileViewer({
             spools={spools}
             currentSpool={currentSpool}
             onPrint={async (spool) => {
-              if (selectedFile) {
+              if (selectedFile && octoprintState.node) {
                 await octoprintState.node.file.loadFile(
                   selectedFile.origin,
                   selectedFile.path

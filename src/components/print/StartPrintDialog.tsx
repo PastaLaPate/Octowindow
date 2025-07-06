@@ -12,10 +12,10 @@ import { Dialog, DialogContent } from "../ui/dialog";
 
 // Stepper definition
 const stepper = defineStepper(
-  { id: "file-confirm", label: t("file.dialog.file-confirm"), icon: FileText },
-  { id: "spool-select", label: t("file.dialog.spool-select"), icon: Spool },
-  { id: "print-confirm", label: t("file.dialog.print-confirm"), icon: Printer },
-  { id: "success", label: t("file.dialog.success"), icon: CheckCircle }
+  { id: "file-confirm", label: "file.dialog.file-confirm", icon: FileText },
+  { id: "spool-select", label: "file.dialog.spool-select", icon: Spool },
+  { id: "print-confirm", label: "file.dialog.print-confirm", icon: Printer },
+  { id: "success", label: "file.dialog.success", icon: CheckCircle }
 );
 
 const slideVariants = {
@@ -507,7 +507,7 @@ const StepperHeader = ({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 + 0.1 * index }}
               >
-                {step.label}
+                {t(step.label)}
               </motion.span>
             </motion.li>
           );
