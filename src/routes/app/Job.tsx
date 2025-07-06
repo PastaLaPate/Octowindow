@@ -50,7 +50,6 @@ function FanViewer({ octoprintState }: { octoprintState: OctoprintState }) {
 export default function JobPage() {
   const octoprintState: OctoprintState = useOutletContext();
   const navigate = useNavigate();
-  const [percent, setPercent] = useState(0);
   const [thumbnail, setThumbnail] = useState(
     "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png"
   );
@@ -74,6 +73,12 @@ export default function JobPage() {
   const filamentUsed = !dummy
     ? `${octoprintState.job?.filament.length ?? 0 / 1000}m`
     : "1.7m";
+  const percent = Math.round(
+    ((octoprintState.progress?.printTime ?? 0) /
+      ((octoprintState.progress?.printTime ?? 0) +
+        (octoprintState.progress?.printTimeLeft ?? 0))) *
+      100
+  );
 
   const nozzleTemp = octoprintState.toolTemp.current;
   const nozzleTarget = octoprintState.toolTemp.target;
