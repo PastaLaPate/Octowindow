@@ -25,6 +25,7 @@ export default function ThumbnailPreviewer({
         <div className="p-6">
           <img
             src={file.thumbnail}
+            alt="File's thumbnail"
             className="aspect-square h-full max-h-[55vh] w-full max-w-[60vw]"
           />
         </div>

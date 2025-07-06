@@ -73,9 +73,11 @@ export default function FilamentPage() {
   const [currentSpool, setCurrentSpool] = useState<FilamentSpool>();
   const [loading, setLoading] = useState<boolean>(true);
   const refreshSpools = async () => {
+    if (!octoprintState.node) return;
     setSpools(await octoprintState.node.spools.getSpools());
   };
   const refreshCurrentSpool = async () => {
+    if (!octoprintState.node) return;
     setCurrentSpool(await octoprintState.node.spools.getCurrentSpool());
   };
   const filterByCurrentSpool = () =>
@@ -119,6 +121,7 @@ export default function FilamentPage() {
                   key={i + 1}
                   idx={i + 1}
                   onSelect={(spool) => {
+                    if (!octoprintState.node) return;
                     octoprintState.node.spools.selectSpool(spool);
                     refresh();
                   }}
