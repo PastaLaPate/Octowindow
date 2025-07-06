@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 import { t } from "i18next";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import type { DisplayLayerProgressData } from "@/lib/octoprint/apis/plugins/DisplayLayerProgress";
 import {
@@ -20,7 +20,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AnimationLayout } from "../PageAnimation";
 
 export type OctoprintState = {
-  node: OctoprintNode;
+  node?: OctoprintNode;
   bedTemp: Temp;
   toolTemp: Temp;
   connectionInfos: ConnectionInfos;
@@ -31,8 +31,9 @@ export type OctoprintState = {
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [node, setNode] = useState<OctoprintNode>(new OctoprintNode());
+  const [node, setNode] = useState<OctoprintNode>();
   const [bedTemp, setBedTemp] = useState<Temp>({
     current: 0,
     target: 0,
@@ -65,6 +66,7 @@ function App() {
   const [layerProgress, setLayerProgress] =
     useState<DisplayLayerProgressData>();
   useEffect(() => {
+    const node = new OctoprintNode();
     if (!new StoreManager().store.connected) {
       navigate("/setup/");
     }
@@ -74,7 +76,8 @@ function App() {
     });
     node?.printer.addListener("status", (infos) => {
       setConnectionInfos(infos);
-      if (infos.flags.printing) {
+      console.log(location.pathname);
+      if (infos.flags.printing && !location.pathname.includes("job")) {
         navigate("/app/job");
       }
     });

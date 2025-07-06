@@ -34,9 +34,11 @@ export default function TopBar({ octoprintState }: TopBarProps) {
 
   useEffect(() => {
     const fetchBackendStatus = async () => {
-      const response = await octoprintState.node.local.getBackendStatus();
-      setBackendStatus(response);
-      setLoading(false);
+      if (octoprintState.node) {
+        const response = await octoprintState.node.local.getBackendStatus();
+        setBackendStatus(response);
+        setLoading(false);
+      }
     };
 
     fetchBackendStatus();
@@ -77,75 +79,82 @@ export default function TopBar({ octoprintState }: TopBarProps) {
     });
   }, [backendStatus, octoprintState.connectionInfos]);
   return (
-    <div className="relative flex items-center justify-between bg-slate-800 sm:h-10 md:h-15 lg:h-20">
-      <div className="flex flex-row items-center">
-        {octoprintState.toolTemp.current !== 0 && (
-          <>
-            <div className="flex h-8 w-8 items-center justify-center sm:h-12 sm:w-12 sm:p-2 md:h-16 md:w-16 md:pt-4 md:pb-4">
-              <Nozzle stroke="#FFFFFF" className="h-full w-full" />
-            </div>
-            <p className="text-lg">
-              {String(Math.round(octoprintState.toolTemp.current)) +
-                (octoprintState.toolTemp.target !== 0
-                  ? `/${octoprintState.toolTemp.target}`
-                  : "")}
-            </p>
-          </>
-        )}
-        {octoprintState.bedTemp.current !== 0 && (
-          <>
-            <div className="flex h-8 w-8 items-center justify-center sm:h-12 sm:w-12 sm:p-2 md:h-16 md:w-16 md:pt-4 md:pb-4">
-              <HeatedPlate stroke="#FFFFFF" className="h-full w-full" />
-            </div>
-            <p className="text-lg">
-              {String(Math.round(octoprintState.bedTemp.current)) +
-                (octoprintState.bedTemp.target !== 0
-                  ? `/${octoprintState.bedTemp.target}`
-                  : "")}
-            </p>
-          </>
-        )}
-      </div>
-      <h2 className="absolute left-1/2 w-max -translate-x-1/2 text-center">
-        OctoWindow ({octoprintState.node.local.version})
-      </h2>
-      <div className="mr-4 flex flex-row items-center gap-2">
-        <p>{globalStatus.message}</p>
-        <div className={`h-2.5 w-2.5 rounded-full ${globalStatus.color}`} />
-        <div
-          className={cn(
-            "flex items-center justify-center rounded-lg bg-slate-700 hover:cursor-pointer md:h-8 md:w-8 md:rounded-md lg:h-12 lg:w-12",
-            loading && "!cursor-not-allowed"
+    octoprintState.node && (
+      <div className="relative flex items-center justify-between bg-slate-800 sm:h-10 md:h-15 lg:h-20">
+        <div className="flex flex-row items-center">
+          {octoprintState.toolTemp.current !== 0 && (
+            <>
+              <div className="flex h-8 w-8 items-center justify-center sm:h-12 sm:w-12 sm:p-2 md:h-16 md:w-16 md:pt-4 md:pb-4">
+                <Nozzle stroke="#FFFFFF" className="h-full w-full" />
+              </div>
+              <p className="text-lg">
+                {String(Math.round(octoprintState.toolTemp.current)) +
+                  (octoprintState.toolTemp.target !== 0
+                    ? `/${octoprintState.toolTemp.target}`
+                    : "")}
+              </p>
+            </>
           )}
-          onClick={async () => {
-            if (loading) return;
-            setLoading(true);
-            setGlobalStatus({
-              color: "bg-gray-500",
-              message: t("topbar.status.updating.refresh"),
-            });
-            try {
-              const response =
-                await octoprintState.node.local.getBackendStatus();
-              await octoprintState.node.printer.connectPrinter();
-              setBackendStatus(response);
-            } catch (error) {
-              toast.error(t("topbar.status.refresh.fail"));
-            } finally {
-              setTimeout(() => {
-                setLoading(false);
-              }, 1000); // To be safe against race conditions
-            }
-          }}
-        >
-          <RefreshCw
+          {octoprintState.bedTemp.current !== 0 && (
+            <>
+              <div className="flex h-8 w-8 items-center justify-center sm:h-12 sm:w-12 sm:p-2 md:h-16 md:w-16 md:pt-4 md:pb-4">
+                <HeatedPlate stroke="#FFFFFF" className="h-full w-full" />
+              </div>
+              <p className="text-lg">
+                {String(Math.round(octoprintState.bedTemp.current)) +
+                  (octoprintState.bedTemp.target !== 0
+                    ? `/${octoprintState.bedTemp.target}`
+                    : "")}
+              </p>
+            </>
+          )}
+        </div>
+        <h2 className="absolute left-1/2 w-max -translate-x-1/2 text-center">
+          OctoWindow ({octoprintState.node.local.version})
+        </h2>
+        <div className="mr-4 flex flex-row items-center gap-2">
+          <p>{globalStatus.message}</p>
+          <div className={`h-2.5 w-2.5 rounded-full ${globalStatus.color}`} />
+          <div
             className={cn(
-              "md:h-6 md:w-6 lg:h-8 lg:w-8",
-              loading && "animate-spin"
+              "flex items-center justify-center rounded-lg bg-slate-700 hover:cursor-pointer md:h-8 md:w-8 md:rounded-md lg:h-12 lg:w-12",
+              loading && "!cursor-not-allowed"
             )}
-          />
+            onClick={async () => {
+              if (loading) return;
+              setLoading(true);
+              setGlobalStatus({
+                color: "bg-gray-500",
+                message: t("topbar.status.updating.refresh"),
+              });
+              try {
+                const response =
+                  await octoprintState.node?.local.getBackendStatus();
+                await octoprintState.node?.printer.connectPrinter();
+                setBackendStatus(
+                  response ?? {
+                    connected: false,
+                    message: "Undefined node",
+                  }
+                );
+              } catch (error) {
+                toast.error(t("topbar.status.refresh.fail"));
+              } finally {
+                setTimeout(() => {
+                  setLoading(false);
+                }, 1000); // To be safe against race conditions
+              }
+            }}
+          >
+            <RefreshCw
+              className={cn(
+                "md:h-6 md:w-6 lg:h-8 lg:w-8",
+                loading && "animate-spin"
+              )}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    )
   );
 }

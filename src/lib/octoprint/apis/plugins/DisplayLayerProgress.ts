@@ -44,7 +44,6 @@ export default class DisplayLayerProgressPlugin extends OctoprintPluginAPI {
   }
 
   public parseMSG(data: any): DisplayLayerProgressData | undefined {
-    data = data["plugin"];
     if (data.plugin !== "DisplayLayerProgress-websocket-payload") return;
     return data.data as DisplayLayerProgressData;
   }

@@ -127,7 +127,10 @@ export class FileAPI extends OctoprintAPI {
       throw new Error(t("errors.E0002"));
     }
 
-    return resp.data.thumbnail;
+    return new URL(
+      resp.data.thumbnail,
+      this.httpClient.defaults.baseURL ?? undefined
+    ).toString();
   }
 
   public async getAllFiles(): Promise<Dir[]> {

@@ -54,7 +54,7 @@ export default function JobPage() {
   const [thumbnail, setThumbnail] = useState(
     "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png"
   );
-  const dummy = true;
+  const dummy = false;
 
   const elapsed = !dummy
     ? Duration.fromObject({
@@ -84,8 +84,13 @@ export default function JobPage() {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (circumference * percent) / 100;
   useEffect(() => {
+    if (!octoprintState.node) {
+      return;
+    }
+
     if (
       octoprintState.connectionInfos &&
+      octoprintState.connectionInfos.flags.operational &&
       !octoprintState.connectionInfos.flags.printing &&
       !dummy
     ) {
@@ -94,8 +99,12 @@ export default function JobPage() {
       });
     }
 
-    if (octoprintState.node && octoprintState.job) {
-      const file: FilesInformation = octoprintState.job?.file!;
+    if (
+      octoprintState.job &&
+      thumbnail ===
+        "https://images.cults3d.com/HdTHHlECkxM5ANNhheoivtg90to=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/133/illustration-file/1428782343-8151-3672/_4___3DBenchy__Default_view.png"
+    ) {
+      const file: FilesInformation = octoprintState.job.file;
       octoprintState.node.file
         .getFileThumbnail({
           display: file.display,
@@ -106,147 +115,127 @@ export default function JobPage() {
         })
         .then((thumb) => setThumbnail(thumb));
     }
-
-    const inter = setInterval(() => {
-      setPercent((prev) => (prev + Math.round(Math.random() * 10)) % 100);
-    }, 200);
-    return () => clearInterval(inter);
-  }, [octoprintState.connectionInfos]);
+  }, [octoprintState.connectionInfos, octoprintState.job?.file]);
 
   return (
-    <div className="flex flex-row items-center justify-center">
-      {/* Progress + Thumbnail Panel */}
-      <div className="flex w-[50vw] flex-col items-center">
-        <div className="relative flex h-48 w-48 items-center justify-center">
-          <svg
-            className="absolute top-0 left-0 h-full w-full"
-            viewBox="0 0 100 100"
-            style={{
-              transform: "rotate(-90deg)",
-              transition: "stroke-dashoffset 0.35s",
-            }}
-          >
-            <circle
-              className="stroke-current text-gray-700"
-              strokeWidth="10"
-              cx="50"
-              cy="50"
-              r={radius}
-              fill="transparent"
-            />
-            <circle
-              className="stroke-current text-green-500"
-              strokeWidth="10"
-              strokeLinecap="round"
-              cx="50"
-              cy="50"
-              r={radius}
-              fill="transparent"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              style={{ transition: "stroke-dashoffset 0.5s" }}
-            />
-          </svg>
-          <svg
-            viewBox="0 0 100 100"
-            className="absolute z-10 size-[136px] rounded-full"
-            preserveAspectRatio="xMidYMid slice"
-          >
-            <defs>
-              <clipPath id="circleClip">
-                <circle cx="50" cy="50" r="50" />
-              </clipPath>
-            </defs>
-
-            <image
-              href={thumbnail}
-              x="0"
-              y="0"
-              width="100"
-              height="100"
-              clipPath="url(#circleClip)"
-            />
-            <rect
-              x="0"
-              y={0}
-              width="100"
-              height={100 - percent}
-              fill="rgba(0,0,0,0.5)"
-              clipPath="url(#circleClip)"
+    octoprintState.node !== undefined && (
+      <div className="flex flex-row items-center justify-center">
+        {/* Progress + Thumbnail Panel */}
+        <div className="flex w-[50vw] flex-col items-center">
+          <div className="relative flex h-48 w-48 items-center justify-center">
+            <svg
+              className="absolute top-0 left-0 h-full w-full"
+              viewBox="0 0 100 100"
               style={{
-                transition: "height 0.3s cubic-bezier(0.4,0,0.2,1)",
+                transform: "rotate(-90deg)",
+                transition: "stroke-dashoffset 0.35s",
               }}
+            >
+              <circle
+                className="stroke-current text-gray-700"
+                strokeWidth="10"
+                cx="50"
+                cy="50"
+                r={radius}
+                fill="transparent"
+              />
+              <circle
+                className="stroke-current text-green-500"
+                strokeWidth="10"
+                strokeLinecap="round"
+                cx="50"
+                cy="50"
+                r={radius}
+                fill="transparent"
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+                style={{ transition: "stroke-dashoffset 0.5s" }}
+              />
+            </svg>
+            <svg
+              viewBox="0 0 100 100"
+              className="absolute z-10 size-[136px] rounded-full"
+              preserveAspectRatio="xMidYMid slice"
+            >
+              <defs>
+                <clipPath id="circleClip">
+                  <circle cx="50" cy="50" r="50" />
+                </clipPath>
+              </defs>
+
+              <image
+                href={thumbnail}
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                clipPath="url(#circleClip)"
+              />
+              <rect
+                x="0"
+                y={0}
+                width="100"
+                height={100 - percent}
+                fill="rgba(0,0,0,0.5)"
+                clipPath="url(#circleClip)"
+                style={{
+                  transition: "height 0.3s cubic-bezier(0.4,0,0.2,1)",
+                }}
+              />
+            </svg>
+          </div>
+          <div className="mt-4 flex flex-col items-center gap-1 text-center">
+            <span className="text-3xl font-bold text-white">
+              {percent}% - {octoprintState.layerProgress?.currentLayer}/
+              {octoprintState.layerProgress?.totalLayer} Layers
+            </span>
+            <span className="text-base font-semibold text-blue-300">
+              Time left: {timeLeft}
+            </span>
+            <span className="text-base font-semibold text-blue-300">
+              Finish at: {estimatedFinish}
+            </span>
+            <span className="text-base font-semibold text-blue-300">
+              Elapsed: {elapsed}
+            </span>
+            <span className="text-base font-semibold text-blue-300">
+              Filament: {filamentUsed}
+            </span>
+          </div>
+        </div>
+        <div className="flex w-[50vw] flex-col items-center justify-center gap-6 rounded-2xl p-5 shadow-lg">
+          <div className="flex w-full flex-row items-center justify-center gap-3">
+            <TempViewer
+              octoprintState={octoprintState}
+              target="bed"
+              className="md:h-46 md:w-34 lg:h-60 lg:w-60"
+              inputClassName={
+                "w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"
+              }
+              iconClassName={"md:w-10 md:h-10"}
             />
-          </svg>
-        </div>
-        <div className="mt-4 flex flex-col items-center gap-1 text-center">
-          <span className="text-3xl font-bold text-white">
-            {percent}% - {Math.round((percent / 100) * 56)}/56 Layers
-          </span>
-          <span className="text-base font-semibold text-blue-300">
-            Time left: {timeLeft}
-          </span>
-          <span className="text-base font-semibold text-blue-300">
-            Finish at: {estimatedFinish}
-          </span>
-          <span className="text-base font-semibold text-blue-300">
-            Elapsed: {elapsed}
-          </span>
-          <span className="text-base font-semibold text-blue-300">
-            Filament: {filamentUsed}
-          </span>
-        </div>
-      </div>
-      <div className="flex w-[50vw] flex-col items-center justify-center gap-6 rounded-2xl p-5 shadow-lg">
-        <div className="flex w-full flex-row items-center justify-center gap-3">
-          <TempViewer
-            octoprintState={octoprintState}
-            target="bed"
-            className="md:h-46 md:w-34 lg:h-60 lg:w-60"
-            inputClassName={
-              "w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"
-            }
-            iconClassName={"md:w-10 md:h-10"}
-          />
-          <TempViewer
-            octoprintState={octoprintState}
-            target="tool"
-            className="md:h-46 md:w-34 lg:h-60 lg:w-60"
-            inputClassName={
-              "w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"
-            }
-            iconClassName={"md:w-10 md:h-10"}
-          />
-          <FanViewer octoprintState={octoprintState} />
-        </div>
-        <div className="flex w-full flex-row items-center justify-center gap-3">
-          <ActionBox
-            color="bg-red-500"
-            icon={CircleStop}
-            label="Stop"
-            onClick={() => {
-              octoprintState.node.job
-                .cancelJob()
-                .then(() => {
-                  toast.success(t("infos.job.stopped"));
-                })
-                .catch((e) => {
-                  if (e instanceof Error) {
-                    toast.error(e.message);
-                  }
-                });
-            }}
-          />
-          {!octoprintState.connectionInfos.flags.paused ? (
+            <TempViewer
+              octoprintState={octoprintState}
+              target="tool"
+              className="md:h-46 md:w-34 lg:h-60 lg:w-60"
+              inputClassName={
+                "w-25 md:w-20 xl:w-30 2xl:w-30 md:text-lg lg:text-2xl"
+              }
+              iconClassName={"md:w-10 md:h-10"}
+            />
+            <FanViewer octoprintState={octoprintState} />
+          </div>
+          <div className="flex w-full flex-row items-center justify-center gap-3">
             <ActionBox
-              color={"bg-yellow-500"}
-              icon={CirclePause}
-              label="Pause"
+              color="bg-red-500"
+              icon={CircleStop}
+              label="Stop"
               onClick={() => {
-                octoprintState.node.job
-                  .pauseJob()
+                octoprintState.node;
+                octoprintState.node?.job
+                  .cancelJob()
                   .then(() => {
-                    toast.success(t("infos.job.pause"));
+                    toast.success(t("infos.job.stopped"));
                   })
                   .catch((e) => {
                     if (e instanceof Error) {
@@ -255,27 +244,46 @@ export default function JobPage() {
                   });
               }}
             />
-          ) : (
-            <ActionBox
-              color={"bg-green-500"}
-              icon={CirclePlay}
-              label="Resume"
-              onClick={() => {
-                octoprintState.node.job
-                  .resumeJob()
-                  .then(() => {
-                    toast.success(t("infos.job.resume"));
-                  })
-                  .catch((e) => {
-                    if (e instanceof Error) {
-                      toast.error(e.message);
-                    }
-                  });
-              }}
-            />
-          )}
+            {!octoprintState.connectionInfos.flags.paused ? (
+              <ActionBox
+                color={"bg-yellow-500"}
+                icon={CirclePause}
+                label="Pause"
+                onClick={() => {
+                  octoprintState.node?.job
+                    .pauseJob()
+                    .then(() => {
+                      toast.success(t("infos.job.pause"));
+                    })
+                    .catch((e) => {
+                      if (e instanceof Error) {
+                        toast.error(e.message);
+                      }
+                    });
+                }}
+              />
+            ) : (
+              <ActionBox
+                color={"bg-green-500"}
+                icon={CirclePlay}
+                label="Resume"
+                onClick={() => {
+                  octoprintState.node?.job
+                    .resumeJob()
+                    .then(() => {
+                      toast.success(t("infos.job.resume"));
+                    })
+                    .catch((e) => {
+                      if (e instanceof Error) {
+                        toast.error(e.message);
+                      }
+                    });
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    )
   );
 }
