@@ -10,6 +10,7 @@
 - 📂**File explorer**: Start 3D prints directly from the file explorer.
 - 🔥**Preheat presets**: Quickly preheat your printer with custom presets.
 - 🧵**Filament Spool Selector**: Select if you have SpoolManager installed a filament spool to print with.
+- 👀**See layer progress**: ✅ See your layer progress with DisplayLayerProgress plugin's integration.
 
 ## Screenshots
 
