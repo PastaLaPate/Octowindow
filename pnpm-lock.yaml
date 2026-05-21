@@ -1371,10 +1371,6 @@ packages:
       svelte:
         optional: true
 
-  '@trysound/sax@0.2.0':
-    resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
-    engines: {node: '>=10.13.0'}
-
   '@types/dnssd@0.4.5':
     resolution: {integrity: sha512-Bz9UXpWOrAZGUKm4Z1FrBS0tXQf29DKLK2K5ZtC6kQwuHw6TJ2qqpJLyHANAtSa1QWPr6Tw7enc7RFyCqbDlqQ==}
 
@@ -2705,6 +2701,10 @@ packages:
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
+  sax@1.6.0:
+    resolution: {integrity: sha512-6R3J5M4AcbtLUdZmRv2SygeVaM7IhrLXu9BmnOGmmACak8fiUtOsYNWUS4uK7upbmHIBbLBeFeI//477BKLBzA==}
+    engines: {node: '>=11.0.0'}
+
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
 
@@ -2808,8 +2808,8 @@ packages:
   svg-country-flags@1.2.10:
     resolution: {integrity: sha512-xrqwo0TYf/h2cfPvGpjdSuSguUbri4vNNizBnwzoZnX0xGo3O5nGJMlbYEp7NOYcnPGBm6LE2axqDWSB847bLw==}
 
-  svgo@3.3.2:
-    resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
+  svgo@3.3.3:
+    resolution: {integrity: sha512-+wn7I4p7YgJhHs38k2TNjy1vCfPIfLIJWR5MnCStsN8WuuTcBnRKcMHQLMM2ijxGZmDoZwNv8ipl5aTTen62ng==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -4089,8 +4089,6 @@ snapshots:
       - supports-color
     optional: true
 
-  '@trysound/sax@0.2.0': {}
-
   '@types/dnssd@0.4.5':
     dependencies:
       '@types/node': 22.15.21
@@ -5339,7 +5337,7 @@ snapshots:
     dependencies:
       react: 19.1.0
       svg-country-flags: 1.2.10
-      svgo: 3.3.2
+      svgo: 3.3.3
       world-countries: 5.1.0
 
   react@19.1.0: {}
@@ -5408,6 +5406,8 @@ snapshots:
       tslib: 2.8.1
 
   safe-buffer@5.2.1: {}
+
+  sax@1.6.0: {}
 
   scheduler@0.26.0: {}
 
@@ -5503,15 +5503,15 @@ snapshots:
 
   svg-country-flags@1.2.10: {}
 
-  svgo@3.3.2:
+  svgo@3.3.3:
     dependencies:
-      '@trysound/sax': 0.2.0
       commander: 7.2.0
       css-select: 5.2.2
       css-tree: 2.3.1
       css-what: 6.2.2
       csso: 5.0.5
       picocolors: 1.1.1
+      sax: 1.6.0
 
   tailwind-merge@3.3.0: {}
 
